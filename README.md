@@ -13,6 +13,8 @@
 
 用Xcode打开 `01-lesson-1/watch-pig-live/HealthPig.xcodeproj`，选择自己的开发团队，设置唯一的Bundle Identifier，连接已开启开发者模式的手表。当前工程最低watchOS版本为27.0；安装者自行决定健康读取授权。
 
+顶部运行目标选择实际Apple Watch；`Any watchOS Device`只能构建，不能启动。若Xcode提示解锁设备，在手表上解锁后继续运行。Mac本地预览需要另行安装watchOS模拟器运行时。
+
 应用已包含实际训练的轻量模型，无须先下载训练数据。HealthKit展示已有心率、睡眠和步数；这些记录不参与本次动作分类。健康数据只在设备本地处理。
 
 ## 查看公平性页面
