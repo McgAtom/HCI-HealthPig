@@ -1,0 +1,18 @@
+{
+  "version": "capture24-walking-v1",
+  "written_before_training": "2026-10-08",
+  "reason": "User requires actual >=85% test accuracy and sensor-driven Apple Watch. Narrow to a supervised guided activity check suitable for foreground accelerometer capture.",
+  "target": "Independent CAPTURE-24 annotation label:Willetts2018 walking=1, sit-stand=0; all other activities excluded from training/evaluation and outside deployment scope",
+  "deployment_domain": "Adult user deliberately either walks normally or sits/stands still for a foreground 10-second check. Not a general activity, disease, sleep, exercise adequacy, or current health classifier.",
+  "source": "Unrestricted CC BY4.0 Oxford CAPTURE-24 archive:151 people; wrist100Hz xyz in g; age and sex from actual metadata.csv",
+  "windows": {"seconds": 10, "source_hz": 100, "target_hz": 20, "sampling": "Every sixth non-overlapping10s window anchored at participant record start, irrespective of label. Block mean of5source samples per target sample. Not label-balanced sampling.", "quality": "Exactly1000 finite xyz points; monotonic timestamps with max gap<=0.025s; at least90% sample annotations share an eligible binary label; majority mapswalking orsit-stand. Other labels/unknown/transition rejected."},
+  "features": "24 orientation-independent magnitude, temporal/spectral and axis-dispersion statistics, defined in features.py; no ID/sex/age/time/annotation used as predictors",
+  "split": {"unit": "participant", "seed": 20261009, "train": 90, "validation": 30, "test": 31, "stratify": "sex only", "freeze_before_data_features": true},
+  "models": {"logistic_regression": {"C": [0.1,1,10], "class_weight": "balanced", "scaler": "train only"}, "random_forest": {"n_estimators": 120, "max_depth": [12,20], "min_samples_leaf": [5,15], "class_weight": "balanced", "random_state": 20261009}},
+  "threshold_grid": [0.25,0.30,0.35,0.40,0.45,0.50,0.55,0.60,0.65,0.70,0.75],
+  "selection": "Maximum validation balanced accuracy, then macroF1, then accuracy; ties nearest0.5, then logistic. Freeze selected configuration before any test evaluation. Report selected and best configuration in other family plus majority baseline on test once.",
+  "success": "Actual held-out-person accuracy>=0.85; also report balancedaccuracy, macroF1, precision,recall,confusion,majority so threshold cannot conceal poorpositive performance. Failure is reported as failure.",
+  "fairness": "Sex M/F and published age bins18-29/30-37/38-52/53+; share same frozen data and IDs. RF supports sample_weight. Test once for original model; subsequentFairlearn predefined finalcomparison only, mitigationtuning onvalidation.",
+  "bootstrap": {"unit": "participant", "replicates": 300, "seed": 20261009},
+  "device": "CoreMotion foreground capture, timestamps verified and resampled20Hz; device/placement/filtering shift must be disclosed and tested. HealthKit readings separatelydisplayed, never substituted into acceleration model. No claims of实机success without actual installation and capture."
+}

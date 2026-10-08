@@ -1,0 +1,234 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A00000000000000000000015 /* HealthReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000000F /* HealthReader.swift */; };
+		A00000000000000000000016 /* HealthPigApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000010 /* HealthPigApp.swift */; };
+		A00000000000000000000017 /* motion-model.json in Resources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000011 /* motion-model.json */; };
+		A0000000000000000000001B /* LiveMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000019 /* LiveMotion.swift */; };
+		A0000000000000000000001C /* MotionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000001A /* MotionEngine.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A0000000000000000000000A /* HealthPig.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = HealthPig.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A0000000000000000000000F /* HealthReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthReader.swift; sourceTree = "<group>"; };
+		A00000000000000000000010 /* HealthPigApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthPigApp.swift; sourceTree = "<group>"; };
+		A00000000000000000000011 /* motion-model.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "motion-model.json"; sourceTree = "<group>"; };
+		A00000000000000000000019 /* LiveMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMotion.swift; sourceTree = "<group>"; };
+		A0000000000000000000001A /* MotionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionEngine.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A0000000000000000000000E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A00000000000000000000003 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000008 /* Sources */,
+				A00000000000000000000009 /* Resources */,
+				A00000000000000000000004 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A00000000000000000000004 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A0000000000000000000000A /* HealthPig.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000008 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				A0000000000000000000000F /* HealthReader.swift */,
+				A00000000000000000000010 /* HealthPigApp.swift */,
+				A00000000000000000000019 /* LiveMotion.swift */,
+				A0000000000000000000001A /* MotionEngine.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000009 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000011 /* motion-model.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A00000000000000000000005 /* HealthPig */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A0000000000000000000000B /* Build configuration list for PBXNativeTarget "HealthPig" */;
+			buildPhases = (
+				A0000000000000000000000C /* Sources */,
+				A0000000000000000000000D /* Resources */,
+				A0000000000000000000000E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HealthPig;
+			productName = HealthPig;
+			productReference = A0000000000000000000000A /* HealthPig.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A00000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = A00000000000000000000002 /* Build configuration list for PBXProject "HealthPig" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = zh_CN;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				zh_CN,
+				en,
+				Base,
+			);
+			mainGroup = A00000000000000000000003;
+			productRefGroup = A00000000000000000000004 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A00000000000000000000005 /* HealthPig */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A0000000000000000000000D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A00000000000000000000017 /* motion-model.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A0000000000000000000000C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A00000000000000000000015 /* HealthReader.swift in Sources */,
+				A00000000000000000000016 /* HealthPigApp.swift in Sources */,
+				A0000000000000000000001B /* LiveMotion.swift in Sources */,
+				A0000000000000000000001C /* MotionEngine.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A00000000000000000000006 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				SDKROOT = watchos;
+				SWIFT_VERSION = 5.0;
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Debug;
+		};
+		A00000000000000000000007 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				SDKROOT = watchos;
+				SWIFT_VERSION = 5.0;
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Release;
+		};
+		A00000000000000000000013 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = HealthPig.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HealthPig-Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "走走猪猪";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "读取你的睡眠、步数和已有心率记录，在猪猪中显示真实记录。数据只在本机处理。";
+				INFOPLIST_KEY_NSMotionUsageDescription = "读取手表加速度，识别10秒内的步行或坐站动作，让猪猪跟随你的活动。";
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKWatchOnly = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.example.HealthPig;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Debug;
+		};
+		A00000000000000000000014 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = HealthPig.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HealthPig-Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "走走猪猪";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "读取你的睡眠、步数和已有心率记录，在猪猪中显示真实记录。数据只在本机处理。";
+				INFOPLIST_KEY_NSMotionUsageDescription = "读取手表加速度，识别10秒内的步行或坐站动作，让猪猪跟随你的活动。";
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKWatchOnly = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.example.HealthPig;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A00000000000000000000002 /* Build configuration list for PBXProject "HealthPig" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A00000000000000000000006 /* Debug */,
+				A00000000000000000000007 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A0000000000000000000000B /* Build configuration list for PBXNativeTarget "HealthPig" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A00000000000000000000013 /* Debug */,
+				A00000000000000000000014 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A00000000000000000000001 /* Project object */;
+}

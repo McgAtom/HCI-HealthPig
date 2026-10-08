@@ -1,0 +1,151 @@
+{
+  "source": "CAPTURE-24",
+  "task": "Independent CAPTURE-24 annotation label:Willetts2018 walking=1, sit-stand=0; all other activities excluded from training/evaluation and outside deployment scope",
+  "selected": "random_forest",
+  "test_previously_seen": false,
+  "splits": {
+    "train": {
+      "people": 90,
+      "samples": 42110,
+      "positive": 5761,
+      "negative": 36349
+    },
+    "validation": {
+      "people": 30,
+      "samples": 12993,
+      "positive": 1953,
+      "negative": 11040
+    },
+    "test": {
+      "people": 31,
+      "samples": 13584,
+      "positive": 1946,
+      "negative": 11638
+    }
+  },
+  "test": {
+    "logistic_regression": {
+      "accuracy": 0.8603504122497055,
+      "balanced_accuracy": 0.842538759604351,
+      "precision": 0.5078199808490265,
+      "recall": 0.8175745118191161,
+      "f1_positive": 0.6265012797794841,
+      "macro_f1": 0.7703107150402695,
+      "confusion_matrix": [
+        [
+          10096,
+          1542
+        ],
+        [
+          355,
+          1591
+        ]
+      ],
+      "fpr": 0.13249699261041417,
+      "fnr": 0.18242548818088386,
+      "predicted_positive_rate": 0.23063898704358068,
+      "roc_auc": 0.9143123573465877,
+      "brier": 0.11093604605836663
+    },
+    "random_forest": {
+      "accuracy": 0.8459952885747939,
+      "balanced_accuracy": 0.848069380402682,
+      "precision": 0.47888953152111047,
+      "recall": 0.8509763617677287,
+      "f1_positive": 0.612879348630644,
+      "macro_f1": 0.7583786561201373,
+      "confusion_matrix": [
+        [
+          9836,
+          1802
+        ],
+        [
+          290,
+          1656
+        ]
+      ],
+      "fpr": 0.15483760096236468,
+      "fnr": 0.14902363823227133,
+      "predicted_positive_rate": 0.25456419316843343,
+      "roc_auc": 0.9180611958521955,
+      "brier": 0.10321074586554735
+    },
+    "training_majority": {
+      "accuracy": 0.8567432273262662,
+      "balanced_accuracy": 0.5,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_positive": 0.0,
+      "macro_f1": 0.46142256759971456,
+      "confusion_matrix": [
+        [
+          11638,
+          0
+        ],
+        [
+          1946,
+          0
+        ]
+      ],
+      "fpr": 0.0,
+      "fnr": 1.0,
+      "predicted_positive_rate": 0.0,
+      "roc_auc": 0.5,
+      "brier": 0.1432567726737338
+    }
+  },
+  "validation": {
+    "logistic_regression": {
+      "accuracy": 0.8713153236358039,
+      "balanced_accuracy": 0.8532605217168681,
+      "precision": 0.547610979329041,
+      "recall": 0.8274449564772145,
+      "f1_positive": 0.6590538336052202,
+      "macro_f1": 0.789872235083608,
+      "confusion_matrix": [
+        [
+          9705,
+          1335
+        ],
+        [
+          337,
+          1616
+        ]
+      ],
+      "fpr": 0.12092391304347826,
+      "fnr": 0.17255504352278545,
+      "predicted_positive_rate": 0.2271222966212576,
+      "roc_auc": 0.9151744436281604,
+      "brier": 0.10462058385595203
+    },
+    "random_forest": {
+      "accuracy": 0.8620026167936581,
+      "balanced_accuracy": 0.8585275022818852,
+      "precision": 0.5252047889098929,
+      "recall": 0.8535586277521762,
+      "f1_positive": 0.6502828164618686,
+      "macro_f1": 0.782162358420301,
+      "confusion_matrix": [
+        [
+          9533,
+          1507
+        ],
+        [
+          286,
+          1667
+        ]
+      ],
+      "fpr": 0.1365036231884058,
+      "fnr": 0.14644137224782386,
+      "predicted_positive_rate": 0.24428538443777417,
+      "roc_auc": 0.9214656288727118,
+      "brier": 0.09366238891709305
+    }
+  },
+  "accuracy_cluster_bootstrap_95ci": [
+    0.8186593110516317,
+    0.8710602151680961
+  ],
+  "meets_accuracy_85": false,
+  "training_seconds": 8.982931333011948
+}

@@ -1,0 +1,3158 @@
+{
+  "run_id": "fairness-v1",
+  "metrics": {
+    "validation": {
+      "baseline": {
+        "sex": {
+          "overall": {
+            "samples": 3777.0,
+            "positive": 1753.0,
+            "negative": 2024.0,
+            "label_positive_rate": 0.46412496690495103,
+            "accuracy": 0.6566057717765422,
+            "balanced_accuracy": 0.657864891129605,
+            "f1_positive": 0.6461118690313779,
+            "f1_macro": 0.6563035560122176,
+            "tpr": 0.6754135767256132,
+            "fnr": 0.32458642327438675,
+            "fpr": 0.35968379446640314,
+            "selection_rate": 0.5062218692083664,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "1",
+              "subjects": 472,
+              "samples": 1307.0,
+              "positive": 695.0,
+              "negative": 612.0,
+              "label_positive_rate": 0.531752104055088,
+              "accuracy": 0.6572302983932671,
+              "balanced_accuracy": 0.6522323317816334,
+              "f1_positive": 0.6939890710382514,
+              "f1_macro": 0.6522119268234735,
+              "tpr": 0.7309352517985611,
+              "fnr": 0.26906474820143883,
+              "fpr": 0.4264705882352941,
+              "selection_rate": 0.5883703136954859,
+              "warnings": []
+            },
+            {
+              "group": "2",
+              "subjects": 706,
+              "samples": 2470.0,
+              "positive": 1058.0,
+              "negative": 1412.0,
+              "label_positive_rate": 0.42834008097165993,
+              "accuracy": 0.6562753036437247,
+              "balanced_accuracy": 0.654102427478218,
+              "f1_positive": 0.6142662426169923,
+              "f1_macro": 0.6521495506622749,
+              "tpr": 0.6389413988657845,
+              "fnr": 0.3610586011342155,
+              "fpr": 0.3307365439093484,
+              "selection_rate": 0.46275303643724697,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 1163.0,
+            "positive": 363.0,
+            "negative": 800.0,
+            "label_positive_rate": 0.10341202308342806,
+            "accuracy": 0.0009549947495424149,
+            "balanced_accuracy": 0.0018700956965845839,
+            "f1_positive": 0.0797228284212591,
+            "f1_macro": 6.237616119864065e-05,
+            "tpr": 0.09199385293277662,
+            "fnr": 0.09199385293277668,
+            "fpr": 0.09573404432594568,
+            "selection_rate": 0.1256172772582389
+          },
+          "eo_difference": 0.09573404432594568,
+          "dp_difference": 0.1256172772582389,
+          "eo_estimable": true
+        },
+        "age_group": {
+          "overall": {
+            "samples": 3777.0,
+            "positive": 1753.0,
+            "negative": 2024.0,
+            "label_positive_rate": 0.46412496690495103,
+            "accuracy": 0.6566057717765422,
+            "balanced_accuracy": 0.657864891129605,
+            "f1_positive": 0.6461118690313779,
+            "f1_macro": 0.6563035560122176,
+            "tpr": 0.6754135767256132,
+            "fnr": 0.32458642327438675,
+            "fpr": 0.35968379446640314,
+            "selection_rate": 0.5062218692083664,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "18-29",
+              "subjects": 242,
+              "samples": 746.0,
+              "positive": 350.0,
+              "negative": 396.0,
+              "label_positive_rate": 0.4691689008042895,
+              "accuracy": 0.5683646112600537,
+              "balanced_accuracy": 0.569040404040404,
+              "f1_positive": 0.5576923076923077,
+              "f1_macro": 0.5681131695529602,
+              "tpr": 0.58,
+              "fnr": 0.42,
+              "fpr": 0.44191919191919193,
+              "selection_rate": 0.5067024128686327,
+              "warnings": []
+            },
+            {
+              "group": "30-44",
+              "subjects": 310,
+              "samples": 1017.0,
+              "positive": 506.0,
+              "negative": 511.0,
+              "label_positive_rate": 0.4975417895771878,
+              "accuracy": 0.6440511307767945,
+              "balanced_accuracy": 0.6442842446416002,
+              "f1_positive": 0.6591337099811676,
+              "f1_macro": 0.6433528632210365,
+              "tpr": 0.691699604743083,
+              "fnr": 0.308300395256917,
+              "fpr": 0.40313111545988256,
+              "selection_rate": 0.5467059980334317,
+              "warnings": []
+            },
+            {
+              "group": "45-59",
+              "subjects": 301,
+              "samples": 1014.0,
+              "positive": 521.0,
+              "negative": 493.0,
+              "label_positive_rate": 0.5138067061143984,
+              "accuracy": 0.6706114398422091,
+              "balanced_accuracy": 0.6695970068482751,
+              "f1_positive": 0.6878504672897197,
+              "f1_macro": 0.6696037305133358,
+              "tpr": 0.7063339731285988,
+              "fnr": 0.29366602687140114,
+              "fpr": 0.3671399594320487,
+              "selection_rate": 0.5414201183431953,
+              "warnings": []
+            },
+            {
+              "group": "60+",
+              "subjects": 325,
+              "samples": 1000.0,
+              "positive": 376.0,
+              "negative": 624.0,
+              "label_positive_rate": 0.376,
+              "accuracy": 0.721,
+              "balanced_accuracy": 0.7167212220403709,
+              "f1_positive": 0.653416149068323,
+              "f1_macro": 0.7099716728605213,
+              "tpr": 0.699468085106383,
+              "fnr": 0.300531914893617,
+              "fpr": 0.266025641025641,
+              "selection_rate": 0.429,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 271.0,
+            "positive": 171.0,
+            "negative": 228.0,
+            "label_positive_rate": 0.13780670611439838,
+            "accuracy": 0.1526353887399463,
+            "balanced_accuracy": 0.1476808179999669,
+            "f1_positive": 0.13015815959741195,
+            "f1_macro": 0.1418585033075611,
+            "tpr": 0.12633397312859884,
+            "fnr": 0.12633397312859884,
+            "fpr": 0.1758935508935509,
+            "selection_rate": 0.11770599803343168
+          },
+          "eo_difference": 0.1758935508935509,
+          "dp_difference": 0.11770599803343168,
+          "eo_estimable": true
+        },
+        "intersection": {
+          "overall": {
+            "samples": 3777.0,
+            "positive": 1753.0,
+            "negative": 2024.0,
+            "label_positive_rate": 0.46412496690495103,
+            "accuracy": 0.6566057717765422,
+            "balanced_accuracy": 0.657864891129605,
+            "f1_positive": 0.6461118690313779,
+            "f1_macro": 0.6563035560122176,
+            "tpr": 0.6754135767256132,
+            "fnr": 0.32458642327438675,
+            "fpr": 0.35968379446640314,
+            "selection_rate": 0.5062218692083664,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "Female / 18-29",
+              "subjects": 140,
+              "samples": 469.0,
+              "positive": 186.0,
+              "negative": 283.0,
+              "label_positive_rate": 0.39658848614072495,
+              "accuracy": 0.5671641791044776,
+              "balanced_accuracy": 0.5538109350659219,
+              "f1_positive": 0.4727272727272727,
+              "f1_macro": 0.552819332566168,
+              "tpr": 0.489247311827957,
+              "fnr": 0.510752688172043,
+              "fpr": 0.38162544169611307,
+              "selection_rate": 0.42430703624733473,
+              "warnings": []
+            },
+            {
+              "group": "Female / 30-44",
+              "subjects": 186,
+              "samples": 668.0,
+              "positive": 303.0,
+              "negative": 365.0,
+              "label_positive_rate": 0.4535928143712575,
+              "accuracy": 0.655688622754491,
+              "balanced_accuracy": 0.6574619105746191,
+              "f1_positive": 0.640625,
+              "f1_macro": 0.6550826149425287,
+              "tpr": 0.6765676567656765,
+              "fnr": 0.3234323432343234,
+              "fpr": 0.36164383561643837,
+              "selection_rate": 0.5044910179640718,
+              "warnings": []
+            },
+            {
+              "group": "Female / 45-59",
+              "subjects": 181,
+              "samples": 644.0,
+              "positive": 311.0,
+              "negative": 333.0,
+              "label_positive_rate": 0.4829192546583851,
+              "accuracy": 0.6537267080745341,
+              "balanced_accuracy": 0.6539063178934561,
+              "f1_positive": 0.6477093206951027,
+              "f1_macro": 0.6536256527139636,
+              "tpr": 0.6591639871382636,
+              "fnr": 0.3408360128617363,
+              "fpr": 0.35135135135135137,
+              "selection_rate": 0.5,
+              "warnings": []
+            },
+            {
+              "group": "Female / 60+",
+              "subjects": 199,
+              "samples": 689.0,
+              "positive": 258.0,
+              "negative": 431.0,
+              "label_positive_rate": 0.37445573294629897,
+              "accuracy": 0.7198838896952104,
+              "balanced_accuracy": 0.7115370780050001,
+              "f1_positive": 0.6445672191528545,
+              "f1_macro": 0.7067147473009782,
+              "tpr": 0.6782945736434108,
+              "fnr": 0.32170542635658916,
+              "fpr": 0.2552204176334107,
+              "selection_rate": 0.41364296081277213,
+              "warnings": []
+            },
+            {
+              "group": "Male / 18-29",
+              "subjects": 102,
+              "samples": 277.0,
+              "positive": 164.0,
+              "negative": 113.0,
+              "label_positive_rate": 0.592057761732852,
+              "accuracy": 0.5703971119133574,
+              "balanced_accuracy": 0.545003237642996,
+              "f1_positive": 0.6530612244897959,
+              "f1_macro": 0.5445400909178837,
+              "tpr": 0.6829268292682927,
+              "fnr": 0.3170731707317073,
+              "fpr": 0.5929203539823009,
+              "selection_rate": 0.6462093862815884,
+              "warnings": []
+            },
+            {
+              "group": "Male / 30-44",
+              "subjects": 124,
+              "samples": 349.0,
+              "positive": 203.0,
+              "negative": 146.0,
+              "label_positive_rate": 0.5816618911174785,
+              "accuracy": 0.6217765042979942,
+              "balanced_accuracy": 0.6037181996086105,
+              "f1_positive": 0.6872037914691943,
+              "f1_macro": 0.6044714609519884,
+              "tpr": 0.7142857142857143,
+              "fnr": 0.2857142857142857,
+              "fpr": 0.5068493150684932,
+              "selection_rate": 0.6275071633237822,
+              "warnings": []
+            },
+            {
+              "group": "Male / 45-59",
+              "subjects": 120,
+              "samples": 370.0,
+              "positive": 210.0,
+              "negative": 160.0,
+              "label_positive_rate": 0.5675675675675675,
+              "accuracy": 0.7,
+              "balanced_accuracy": 0.6880952380952381,
+              "f1_positive": 0.7459954233409611,
+              "f1_macro": 0.6898293948387975,
+              "tpr": 0.7761904761904762,
+              "fnr": 0.22380952380952382,
+              "fpr": 0.4,
+              "selection_rate": 0.6135135135135135,
+              "warnings": []
+            },
+            {
+              "group": "Male / 60+",
+              "subjects": 126,
+              "samples": 311.0,
+              "positive": 118.0,
+              "negative": 193.0,
+              "label_positive_rate": 0.37942122186495175,
+              "accuracy": 0.7234726688102894,
+              "balanced_accuracy": 0.7278036357249495,
+              "f1_positive": 0.6717557251908397,
+              "f1_macro": 0.7164334181509754,
+              "tpr": 0.7457627118644068,
+              "fnr": 0.2542372881355932,
+              "fpr": 0.29015544041450775,
+              "selection_rate": 0.4630225080385852,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 412.0,
+            "positive": 193.0,
+            "negative": 318.0,
+            "label_positive_rate": 0.217602028786553,
+            "accuracy": 0.1563084897058118,
+            "balanced_accuracy": 0.18280039808195359,
+            "f1_positive": 0.2732681506136884,
+            "f1_macro": 0.1718933272330917,
+            "tpr": 0.2869431643625192,
+            "fnr": 0.2869431643625192,
+            "fpr": 0.33769993634889023,
+            "selection_rate": 0.23256642546881628
+          },
+          "eo_difference": 0.33769993634889023,
+          "dp_difference": 0.23256642546881628,
+          "eo_estimable": true
+        }
+      },
+      "mitigated": {
+        "sex": {
+          "overall": {
+            "samples": 3777.0,
+            "positive": 1753.0,
+            "negative": 2024.0,
+            "label_positive_rate": 0.46412496690495103,
+            "accuracy": 0.6547524490336246,
+            "balanced_accuracy": 0.6485358808953143,
+            "f1_positive": 0.6017104459376909,
+            "f1_macro": 0.6485187743707146,
+            "tpr": 0.5618938961779806,
+            "fnr": 0.4381061038220194,
+            "fpr": 0.2648221343873518,
+            "selection_rate": 0.40270055599682286,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "1",
+              "subjects": 472,
+              "samples": 1307.0,
+              "positive": 695.0,
+              "negative": 612.0,
+              "label_positive_rate": 0.531752104055088,
+              "accuracy": 0.640397857689365,
+              "balanced_accuracy": 0.6419664268585132,
+              "f1_positive": 0.6460843373493976,
+              "f1_macro": 0.6403049991568139,
+              "tpr": 0.6172661870503597,
+              "fnr": 0.38273381294964026,
+              "fpr": 0.3333333333333333,
+              "selection_rate": 0.4843152257077276,
+              "warnings": []
+            },
+            {
+              "group": "2",
+              "subjects": 706,
+              "samples": 2470.0,
+              "positive": 1058.0,
+              "negative": 1412.0,
+              "label_positive_rate": 0.42834008097165993,
+              "accuracy": 0.6623481781376518,
+              "balanced_accuracy": 0.6451961850088628,
+              "f1_positive": 0.5714285714285714,
+              "f1_macro": 0.6464357286000573,
+              "tpr": 0.5255198487712666,
+              "fnr": 0.47448015122873344,
+              "fpr": 0.23512747875354106,
+              "selection_rate": 0.3595141700404858,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 1163.0,
+            "positive": 363.0,
+            "negative": 800.0,
+            "label_positive_rate": 0.10341202308342806,
+            "accuracy": 0.02195032044828682,
+            "balanced_accuracy": 0.0032297581503495376,
+            "f1_positive": 0.07465576592082623,
+            "f1_macro": 0.006130729443243332,
+            "tpr": 0.09174633827909318,
+            "fnr": 0.09174633827909318,
+            "fpr": 0.09820585457979225,
+            "selection_rate": 0.12480105566724181
+          },
+          "eo_difference": 0.09820585457979225,
+          "dp_difference": 0.12480105566724181,
+          "eo_estimable": true
+        },
+        "age_group": {
+          "overall": {
+            "samples": 3777.0,
+            "positive": 1753.0,
+            "negative": 2024.0,
+            "label_positive_rate": 0.46412496690495103,
+            "accuracy": 0.6547524490336246,
+            "balanced_accuracy": 0.6485358808953143,
+            "f1_positive": 0.6017104459376909,
+            "f1_macro": 0.6485187743707146,
+            "tpr": 0.5618938961779806,
+            "fnr": 0.4381061038220194,
+            "fpr": 0.2648221343873518,
+            "selection_rate": 0.40270055599682286,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "18-29",
+              "subjects": 242,
+              "samples": 746.0,
+              "positive": 350.0,
+              "negative": 396.0,
+              "label_positive_rate": 0.4691689008042895,
+              "accuracy": 0.5764075067024129,
+              "balanced_accuracy": 0.5711399711399712,
+              "f1_positive": 0.5182926829268293,
+              "f1_macro": 0.5701511261524099,
+              "tpr": 0.4857142857142857,
+              "fnr": 0.5142857142857142,
+              "fpr": 0.3434343434343434,
+              "selection_rate": 0.4101876675603217,
+              "warnings": []
+            },
+            {
+              "group": "30-44",
+              "subjects": 310,
+              "samples": 1017.0,
+              "positive": 506.0,
+              "negative": 511.0,
+              "label_positive_rate": 0.4975417895771878,
+              "accuracy": 0.6470009832841691,
+              "balanced_accuracy": 0.6466008678635242,
+              "f1_positive": 0.6143931256713212,
+              "f1_macro": 0.644458575528317,
+              "tpr": 0.5652173913043478,
+              "fnr": 0.43478260869565216,
+              "fpr": 0.2720156555772994,
+              "selection_rate": 0.41789577187807275,
+              "warnings": []
+            },
+            {
+              "group": "45-59",
+              "subjects": 301,
+              "samples": 1014.0,
+              "positive": 521.0,
+              "negative": 493.0,
+              "label_positive_rate": 0.5138067061143984,
+              "accuracy": 0.6617357001972387,
+              "balanced_accuracy": 0.6633035238054451,
+              "f1_positive": 0.6482051282051282,
+              "f1_macro": 0.6612345679012346,
+              "tpr": 0.6065259117082533,
+              "fnr": 0.3934740882917466,
+              "fpr": 0.2799188640973631,
+              "selection_rate": 0.4477317554240631,
+              "warnings": []
+            },
+            {
+              "group": "60+",
+              "subjects": 325,
+              "samples": 1000.0,
+              "positive": 376.0,
+              "negative": 624.0,
+              "label_positive_rate": 0.376,
+              "accuracy": 0.714,
+              "balanced_accuracy": 0.6846869885433715,
+              "f1_positive": 0.598314606741573,
+              "f1_macro": 0.6881324586502896,
+              "tpr": 0.5664893617021277,
+              "fnr": 0.43351063829787234,
+              "fpr": 0.1971153846153846,
+              "selection_rate": 0.336,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 271.0,
+            "positive": 171.0,
+            "negative": 228.0,
+            "label_positive_rate": 0.13780670611439838,
+            "accuracy": 0.13759249329758705,
+            "balanced_accuracy": 0.11354701740340034,
+            "f1_positive": 0.12991244527829893,
+            "f1_macro": 0.11798133249787968,
+            "tpr": 0.12081162599396761,
+            "fnr": 0.12081162599396761,
+            "fpr": 0.14631895881895882,
+            "selection_rate": 0.1117317554240631
+          },
+          "eo_difference": 0.14631895881895882,
+          "dp_difference": 0.1117317554240631,
+          "eo_estimable": true
+        },
+        "intersection": {
+          "overall": {
+            "samples": 3777.0,
+            "positive": 1753.0,
+            "negative": 2024.0,
+            "label_positive_rate": 0.46412496690495103,
+            "accuracy": 0.6547524490336246,
+            "balanced_accuracy": 0.6485358808953143,
+            "f1_positive": 0.6017104459376909,
+            "f1_macro": 0.6485187743707146,
+            "tpr": 0.5618938961779806,
+            "fnr": 0.4381061038220194,
+            "fpr": 0.2648221343873518,
+            "selection_rate": 0.40270055599682286,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "Female / 18-29",
+              "subjects": 140,
+              "samples": 469.0,
+              "positive": 186.0,
+              "negative": 283.0,
+              "label_positive_rate": 0.39658848614072495,
+              "accuracy": 0.5778251599147122,
+              "balanced_accuracy": 0.5432957179224135,
+              "f1_positive": 0.41420118343195267,
+              "f1_macro": 0.5421005917159764,
+              "tpr": 0.3763440860215054,
+              "fnr": 0.6236559139784946,
+              "fpr": 0.28975265017667845,
+              "selection_rate": 0.32409381663113007,
+              "warnings": []
+            },
+            {
+              "group": "Female / 30-44",
+              "subjects": 186,
+              "samples": 668.0,
+              "positive": 303.0,
+              "negative": 365.0,
+              "label_positive_rate": 0.4535928143712575,
+              "accuracy": 0.6751497005988024,
+              "balanced_accuracy": 0.6643383516433835,
+              "f1_positive": 0.604735883424408,
+              "f1_macro": 0.6645026304034365,
+              "tpr": 0.5478547854785478,
+              "fnr": 0.4521452145214521,
+              "fpr": 0.2191780821917808,
+              "selection_rate": 0.36826347305389223,
+              "warnings": []
+            },
+            {
+              "group": "Female / 45-59",
+              "subjects": 181,
+              "samples": 644.0,
+              "positive": 311.0,
+              "negative": 333.0,
+              "label_positive_rate": 0.4829192546583851,
+              "accuracy": 0.65527950310559,
+              "balanced_accuracy": 0.6526462153471799,
+              "f1_positive": 0.6172413793103448,
+              "f1_macro": 0.6518410286382232,
+              "tpr": 0.5755627009646302,
+              "fnr": 0.42443729903536975,
+              "fpr": 0.2702702702702703,
+              "selection_rate": 0.41770186335403725,
+              "warnings": []
+            },
+            {
+              "group": "Female / 60+",
+              "subjects": 199,
+              "samples": 689.0,
+              "positive": 258.0,
+              "negative": 431.0,
+              "label_positive_rate": 0.37445573294629897,
+              "accuracy": 0.714078374455733,
+              "balanced_accuracy": 0.6804483893595208,
+              "f1_positive": 0.5887265135699373,
+              "f1_macro": 0.684797072135358,
+              "tpr": 0.5465116279069767,
+              "fnr": 0.45348837209302323,
+              "fpr": 0.18561484918793503,
+              "selection_rate": 0.32075471698113206,
+              "warnings": []
+            },
+            {
+              "group": "Male / 18-29",
+              "subjects": 102,
+              "samples": 277.0,
+              "positive": 164.0,
+              "negative": 113.0,
+              "label_positive_rate": 0.592057761732852,
+              "accuracy": 0.5740072202166066,
+              "balanced_accuracy": 0.5659399956831427,
+              "f1_positive": 0.6289308176100629,
+              "f1_macro": 0.5644654088050314,
+              "tpr": 0.6097560975609756,
+              "fnr": 0.3902439024390244,
+              "fpr": 0.4778761061946903,
+              "selection_rate": 0.555956678700361,
+              "warnings": []
+            },
+            {
+              "group": "Male / 30-44",
+              "subjects": 124,
+              "samples": 349.0,
+              "positive": 203.0,
+              "negative": 146.0,
+              "label_positive_rate": 0.5816618911174785,
+              "accuracy": 0.5931232091690545,
+              "balanced_accuracy": 0.5935117079425063,
+              "f1_positive": 0.6282722513089005,
+              "f1_macro": 0.5894525813506528,
+              "tpr": 0.5911330049261084,
+              "fnr": 0.4088669950738916,
+              "fpr": 0.4041095890410959,
+              "selection_rate": 0.5128939828080229,
+              "warnings": []
+            },
+            {
+              "group": "Male / 45-59",
+              "subjects": 120,
+              "samples": 370.0,
+              "positive": 210.0,
+              "negative": 160.0,
+              "label_positive_rate": 0.5675675675675675,
+              "accuracy": 0.672972972972973,
+              "balanced_accuracy": 0.6761904761904762,
+              "f1_positive": 0.6936708860759494,
+              "f1_macro": 0.671473124197395,
+              "tpr": 0.6523809523809524,
+              "fnr": 0.3476190476190476,
+              "fpr": 0.3,
+              "selection_rate": 0.5,
+              "warnings": []
+            },
+            {
+              "group": "Male / 60+",
+              "subjects": 126,
+              "samples": 311.0,
+              "positive": 118.0,
+              "negative": 193.0,
+              "label_positive_rate": 0.37942122186495175,
+              "accuracy": 0.7138263665594855,
+              "balanced_accuracy": 0.6936857820321419,
+              "f1_positive": 0.6180257510729614,
+              "f1_macro": 0.6946169886470206,
+              "tpr": 0.6101694915254238,
+              "fnr": 0.3898305084745763,
+              "fpr": 0.22279792746113988,
+              "selection_rate": 0.36977491961414793,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 412.0,
+            "positive": 193.0,
+            "negative": 318.0,
+            "label_positive_rate": 0.217602028786553,
+            "accuracy": 0.14007115423912642,
+            "balanced_accuracy": 0.15039006410972844,
+            "f1_positive": 0.27946970264399673,
+            "f1_macro": 0.15251639693104424,
+            "tpr": 0.276036866359447,
+            "fnr": 0.276036866359447,
+            "fpr": 0.29226125700675526,
+            "selection_rate": 0.23520196171922897
+          },
+          "eo_difference": 0.29226125700675526,
+          "dp_difference": 0.23520196171922897,
+          "eo_estimable": true
+        }
+      },
+      "oracle_reference": {
+        "sex": {
+          "overall": {
+            "samples": 3777.0,
+            "positive": 1753.0,
+            "negative": 2024.0,
+            "label_positive_rate": 0.46412496690495103,
+            "accuracy": 0.6576648133439238,
+            "balanced_accuracy": 0.6519024980327344,
+            "f1_positive": 0.607825295723385,
+            "f1_macro": 0.6520451355290638,
+            "tpr": 0.5715915573302909,
+            "fnr": 0.42840844266970907,
+            "fpr": 0.26778656126482214,
+            "selection_rate": 0.40879004500926663,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "1",
+              "subjects": 472,
+              "samples": 1307.0,
+              "positive": 695.0,
+              "negative": 612.0,
+              "label_positive_rate": 0.531752104055088,
+              "accuracy": 0.6449885233358837,
+              "balanced_accuracy": 0.6456975595993792,
+              "f1_positive": 0.6552748885586924,
+              "f1_macro": 0.6446721445948036,
+              "tpr": 0.6345323741007194,
+              "fnr": 0.36546762589928056,
+              "fpr": 0.3431372549019608,
+              "selection_rate": 0.49808722264728383,
+              "warnings": []
+            },
+            {
+              "group": "2",
+              "subjects": 706,
+              "samples": 2470.0,
+              "positive": 1058.0,
+              "negative": 1412.0,
+              "label_positive_rate": 0.42834008097165993,
+              "accuracy": 0.6643724696356276,
+              "balanced_accuracy": 0.6475591339691651,
+              "f1_positive": 0.5750896975909789,
+              "f1_macro": 0.6488697066074667,
+              "tpr": 0.5302457466918714,
+              "fnr": 0.46975425330812853,
+              "fpr": 0.23512747875354106,
+              "selection_rate": 0.36153846153846153,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 1163.0,
+            "positive": 363.0,
+            "negative": 800.0,
+            "label_positive_rate": 0.10341202308342806,
+            "accuracy": 0.019383946299743826,
+            "balanced_accuracy": 0.0018615743697858456,
+            "f1_positive": 0.08018519096771348,
+            "f1_macro": 0.004197562012663081,
+            "tpr": 0.10428662740884798,
+            "fnr": 0.10428662740884798,
+            "fpr": 0.10800977614841972,
+            "selection_rate": 0.1365487611088223
+          },
+          "eo_difference": 0.10800977614841972,
+          "dp_difference": 0.1365487611088223,
+          "eo_estimable": true
+        },
+        "age_group": {
+          "overall": {
+            "samples": 3777.0,
+            "positive": 1753.0,
+            "negative": 2024.0,
+            "label_positive_rate": 0.46412496690495103,
+            "accuracy": 0.6576648133439238,
+            "balanced_accuracy": 0.6519024980327344,
+            "f1_positive": 0.607825295723385,
+            "f1_macro": 0.6520451355290638,
+            "tpr": 0.5715915573302909,
+            "fnr": 0.42840844266970907,
+            "fpr": 0.26778656126482214,
+            "selection_rate": 0.40879004500926663,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "18-29",
+              "subjects": 242,
+              "samples": 746.0,
+              "positive": 350.0,
+              "negative": 396.0,
+              "label_positive_rate": 0.4691689008042895,
+              "accuracy": 0.5737265415549598,
+              "balanced_accuracy": 0.568946608946609,
+              "f1_positive": 0.5196374622356495,
+              "f1_macro": 0.5682524660575838,
+              "tpr": 0.49142857142857144,
+              "fnr": 0.5085714285714286,
+              "fpr": 0.35353535353535354,
+              "selection_rate": 0.41823056300268097,
+              "warnings": []
+            },
+            {
+              "group": "30-44",
+              "subjects": 310,
+              "samples": 1017.0,
+              "positive": 506.0,
+              "negative": 511.0,
+              "label_positive_rate": 0.4975417895771878,
+              "accuracy": 0.6381514257620452,
+              "balanced_accuracy": 0.6377946056326045,
+              "f1_positive": 0.6085106382978723,
+              "f1_macro": 0.6360651911781866,
+              "tpr": 0.5652173913043478,
+              "fnr": 0.43478260869565216,
+              "fpr": 0.2896281800391389,
+              "selection_rate": 0.42674532940019666,
+              "warnings": []
+            },
+            {
+              "group": "45-59",
+              "subjects": 301,
+              "samples": 1014.0,
+              "positive": 521.0,
+              "negative": 493.0,
+              "label_positive_rate": 0.5138067061143984,
+              "accuracy": 0.665680473372781,
+              "balanced_accuracy": 0.6671968012832243,
+              "f1_positive": 0.6530194472876152,
+              "f1_macro": 0.6652347474306772,
+              "tpr": 0.6122840690978887,
+              "fnr": 0.3877159309021113,
+              "fpr": 0.2778904665314402,
+              "selection_rate": 0.44970414201183434,
+              "warnings": []
+            },
+            {
+              "group": "60+",
+              "subjects": 325,
+              "samples": 1000.0,
+              "positive": 376.0,
+              "negative": 624.0,
+              "label_positive_rate": 0.376,
+              "accuracy": 0.732,
+              "balanced_accuracy": 0.7054521276595744,
+              "f1_positive": 0.6267409470752089,
+              "f1_macro": 0.7088462925703658,
+              "tpr": 0.598404255319149,
+              "fnr": 0.4015957446808511,
+              "fpr": 0.1875,
+              "selection_rate": 0.342,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 271.0,
+            "positive": 171.0,
+            "negative": 228.0,
+            "label_positive_rate": 0.13780670611439838,
+            "accuracy": 0.15827345844504015,
+            "balanced_accuracy": 0.13650551871296546,
+            "f1_positive": 0.13338198505196563,
+            "f1_macro": 0.14059382651278196,
+            "tpr": 0.12085549766931725,
+            "fnr": 0.12085549766931725,
+            "fpr": 0.16603535353535354,
+            "selection_rate": 0.10770414201183431
+          },
+          "eo_difference": 0.16603535353535354,
+          "dp_difference": 0.10770414201183431,
+          "eo_estimable": true
+        },
+        "intersection": {
+          "overall": {
+            "samples": 3777.0,
+            "positive": 1753.0,
+            "negative": 2024.0,
+            "label_positive_rate": 0.46412496690495103,
+            "accuracy": 0.6576648133439238,
+            "balanced_accuracy": 0.6519024980327344,
+            "f1_positive": 0.607825295723385,
+            "f1_macro": 0.6520451355290638,
+            "tpr": 0.5715915573302909,
+            "fnr": 0.42840844266970907,
+            "fpr": 0.26778656126482214,
+            "selection_rate": 0.40879004500926663,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "Female / 18-29",
+              "subjects": 140,
+              "samples": 469.0,
+              "positive": 186.0,
+              "negative": 283.0,
+              "label_positive_rate": 0.39658848614072495,
+              "accuracy": 0.582089552238806,
+              "balanced_accuracy": 0.5505148371898628,
+              "f1_positive": 0.43023255813953487,
+              "f1_macro": 0.5501331140866024,
+              "tpr": 0.3978494623655914,
+              "fnr": 0.6021505376344086,
+              "fpr": 0.2968197879858657,
+              "selection_rate": 0.3368869936034115,
+              "warnings": []
+            },
+            {
+              "group": "Female / 30-44",
+              "subjects": 186,
+              "samples": 668.0,
+              "positive": 303.0,
+              "negative": 365.0,
+              "label_positive_rate": 0.4535928143712575,
+              "accuracy": 0.655688622754491,
+              "balanced_accuracy": 0.6448483204484832,
+              "f1_positive": 0.5818181818181818,
+              "f1_macro": 0.6445986583391163,
+              "tpr": 0.528052805280528,
+              "fnr": 0.47194719471947194,
+              "fpr": 0.23835616438356164,
+              "selection_rate": 0.36976047904191617,
+              "warnings": []
+            },
+            {
+              "group": "Female / 45-59",
+              "subjects": 181,
+              "samples": 644.0,
+              "positive": 311.0,
+              "negative": 333.0,
+              "label_positive_rate": 0.4829192546583851,
+              "accuracy": 0.656832298136646,
+              "balanced_accuracy": 0.6540415013083823,
+              "f1_positive": 0.6169844020797227,
+              "f1_macro": 0.6530772924603958,
+              "tpr": 0.572347266881029,
+              "fnr": 0.42765273311897106,
+              "fpr": 0.26426426426426425,
+              "selection_rate": 0.41304347826086957,
+              "warnings": []
+            },
+            {
+              "group": "Female / 60+",
+              "subjects": 199,
+              "samples": 689.0,
+              "positive": 258.0,
+              "negative": 431.0,
+              "label_positive_rate": 0.37445573294629897,
+              "accuracy": 0.7358490566037735,
+              "balanced_accuracy": 0.7040729149804853,
+              "f1_positive": 0.6208333333333333,
+              "f1_macro": 0.7090803637713438,
+              "tpr": 0.5775193798449613,
+              "fnr": 0.42248062015503873,
+              "fpr": 0.16937354988399073,
+              "selection_rate": 0.32220609579100146,
+              "warnings": []
+            },
+            {
+              "group": "Male / 18-29",
+              "subjects": 102,
+              "samples": 277.0,
+              "positive": 164.0,
+              "negative": 113.0,
+              "label_positive_rate": 0.592057761732852,
+              "accuracy": 0.5595667870036101,
+              "balanced_accuracy": 0.550992877185409,
+              "f1_positive": 0.6163522012578616,
+              "f1_macro": 0.5497015243577443,
+              "tpr": 0.5975609756097561,
+              "fnr": 0.4024390243902439,
+              "fpr": 0.49557522123893805,
+              "selection_rate": 0.555956678700361,
+              "warnings": []
+            },
+            {
+              "group": "Male / 30-44",
+              "subjects": 124,
+              "samples": 349.0,
+              "positive": 203.0,
+              "negative": 146.0,
+              "label_positive_rate": 0.5816618911174785,
+              "accuracy": 0.6045845272206304,
+              "balanced_accuracy": 0.6014407179971658,
+              "f1_positive": 0.6461538461538462,
+              "f1_macro": 0.599050949050949,
+              "tpr": 0.6206896551724138,
+              "fnr": 0.3793103448275862,
+              "fpr": 0.4178082191780822,
+              "selection_rate": 0.5358166189111748,
+              "warnings": []
+            },
+            {
+              "group": "Male / 45-59",
+              "subjects": 120,
+              "samples": 370.0,
+              "positive": 210.0,
+              "negative": 160.0,
+              "label_positive_rate": 0.5675675675675675,
+              "accuracy": 0.6810810810810811,
+              "balanced_accuracy": 0.6825892857142857,
+              "f1_positive": 0.705,
+              "f1_macro": 0.6789705882352941,
+              "tpr": 0.6714285714285714,
+              "fnr": 0.32857142857142857,
+              "fpr": 0.30625,
+              "selection_rate": 0.5135135135135135,
+              "warnings": []
+            },
+            {
+              "group": "Male / 60+",
+              "subjects": 126,
+              "samples": 311.0,
+              "positive": 118.0,
+              "negative": 193.0,
+              "label_positive_rate": 0.37942122186495175,
+              "accuracy": 0.7234726688102894,
+              "balanced_accuracy": 0.7080442609993852,
+              "f1_positive": 0.6386554621848739,
+              "f1_macro": 0.7073485644257702,
+              "tpr": 0.6440677966101694,
+              "fnr": 0.3559322033898305,
+              "fpr": 0.22797927461139897,
+              "selection_rate": 0.3858520900321543,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 412.0,
+            "positive": 193.0,
+            "negative": 318.0,
+            "label_positive_rate": 0.217602028786553,
+            "accuracy": 0.17628226960016347,
+            "balanced_accuracy": 0.1575294238095224,
+            "f1_positive": 0.2747674418604651,
+            "f1_macro": 0.15937883941359943,
+            "tpr": 0.27357910906298,
+            "fnr": 0.27357910906298005,
+            "fpr": 0.3262016713549473,
+            "selection_rate": 0.23375058290935957
+          },
+          "eo_difference": 0.3262016713549473,
+          "dp_difference": 0.23375058290935957,
+          "eo_estimable": true
+        }
+      }
+    },
+    "test": {
+      "baseline": {
+        "sex": {
+          "overall": {
+            "samples": 3879.0,
+            "positive": 1740.0,
+            "negative": 2139.0,
+            "label_positive_rate": 0.448569218870843,
+            "accuracy": 0.6648620778551173,
+            "balanced_accuracy": 0.6649231835695055,
+            "f1_positive": 0.6404867256637168,
+            "f1_macro": 0.663314343034659,
+            "tpr": 0.6655172413793103,
+            "fnr": 0.33448275862068966,
+            "fpr": 0.33567087424029923,
+            "selection_rate": 0.4836298014952307,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "1",
+              "subjects": 472,
+              "samples": 1440.0,
+              "positive": 713.0,
+              "negative": 727.0,
+              "label_positive_rate": 0.4951388888888889,
+              "accuracy": 0.6673611111111111,
+              "balanced_accuracy": 0.6676875321934365,
+              "f1_positive": 0.676132521974307,
+              "f1_macro": 0.6671169390742342,
+              "tpr": 0.7012622720897616,
+              "fnr": 0.29873772791023845,
+              "fpr": 0.3658872077028886,
+              "selection_rate": 0.5319444444444444,
+              "warnings": []
+            },
+            {
+              "group": "2",
+              "subjects": 706,
+              "samples": 2439.0,
+              "positive": 1027.0,
+              "negative": 1412.0,
+              "label_positive_rate": 0.42107421074210744,
+              "accuracy": 0.6633866338663387,
+              "balanced_accuracy": 0.6602938783166129,
+              "f1_positive": 0.6158165652784277,
+              "f1_macro": 0.6581454223692393,
+              "tpr": 0.6407010710808179,
+              "fnr": 0.3592989289191821,
+              "fpr": 0.32011331444759206,
+              "selection_rate": 0.45510455104551045,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 999.0,
+            "positive": 314.0,
+            "negative": 685.0,
+            "label_positive_rate": 0.07406467814678147,
+            "accuracy": 0.003974477244772401,
+            "balanced_accuracy": 0.007393653876823558,
+            "f1_positive": 0.0603159566958793,
+            "f1_macro": 0.008971516704994853,
+            "tpr": 0.06056120100894369,
+            "fnr": 0.06056120100894363,
+            "fpr": 0.045773893255296516,
+            "selection_rate": 0.07683989339893399
+          },
+          "eo_difference": 0.06056120100894369,
+          "dp_difference": 0.07683989339893399,
+          "eo_estimable": true
+        },
+        "age_group": {
+          "overall": {
+            "samples": 3879.0,
+            "positive": 1740.0,
+            "negative": 2139.0,
+            "label_positive_rate": 0.448569218870843,
+            "accuracy": 0.6648620778551173,
+            "balanced_accuracy": 0.6649231835695055,
+            "f1_positive": 0.6404867256637168,
+            "f1_macro": 0.663314343034659,
+            "tpr": 0.6655172413793103,
+            "fnr": 0.33448275862068966,
+            "fpr": 0.33567087424029923,
+            "selection_rate": 0.4836298014952307,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "18-29",
+              "subjects": 247,
+              "samples": 775.0,
+              "positive": 343.0,
+              "negative": 432.0,
+              "label_positive_rate": 0.4425806451612903,
+              "accuracy": 0.6025806451612903,
+              "balanced_accuracy": 0.6002726487420365,
+              "f1_positive": 0.5637393767705382,
+              "f1_macro": 0.5994052334089658,
+              "tpr": 0.5801749271137027,
+              "fnr": 0.4198250728862974,
+              "fpr": 0.37962962962962965,
+              "selection_rate": 0.46838709677419355,
+              "warnings": []
+            },
+            {
+              "group": "30-44",
+              "subjects": 324,
+              "samples": 1083.0,
+              "positive": 529.0,
+              "negative": 554.0,
+              "label_positive_rate": 0.4884579870729455,
+              "accuracy": 0.667590027700831,
+              "balanced_accuracy": 0.6686070714446575,
+              "f1_positive": 0.6768402154398564,
+              "f1_macro": 0.6673174461229701,
+              "tpr": 0.7126654064272212,
+              "fnr": 0.28733459357277885,
+              "fpr": 0.37545126353790614,
+              "selection_rate": 0.5401662049861495,
+              "warnings": []
+            },
+            {
+              "group": "45-59",
+              "subjects": 303,
+              "samples": 1063.0,
+              "positive": 558.0,
+              "negative": 505.0,
+              "label_positive_rate": 0.5249294449670743,
+              "accuracy": 0.6528692380056444,
+              "balanced_accuracy": 0.6496060896412221,
+              "f1_positive": 0.6838046272493573,
+              "f1_macro": 0.6495144095579425,
+              "tpr": 0.7150537634408602,
+              "fnr": 0.2849462365591398,
+              "fpr": 0.4158415841584158,
+              "selection_rate": 0.5729068673565381,
+              "warnings": []
+            },
+            {
+              "group": "60+",
+              "subjects": 304,
+              "samples": 958.0,
+              "positive": 310.0,
+              "negative": 648.0,
+              "label_positive_rate": 0.3235908141962422,
+              "accuracy": 0.7254697286012526,
+              "balanced_accuracy": 0.6902230187176424,
+              "f1_positive": 0.5818759936406995,
+              "f1_macro": 0.6887623946447476,
+              "tpr": 0.5903225806451613,
+              "fnr": 0.4096774193548387,
+              "fpr": 0.20987654320987653,
+              "selection_rate": 0.33298538622129437,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 308.0,
+            "positive": 248.0,
+            "negative": 216.0,
+            "label_positive_rate": 0.20133863077083208,
+            "accuracy": 0.1228890834399623,
+            "balanced_accuracy": 0.0899503699756059,
+            "f1_positive": 0.12006525047881911,
+            "f1_macro": 0.08935716123578186,
+            "tpr": 0.13487883632715758,
+            "fnr": 0.13487883632715758,
+            "fpr": 0.2059650409485393,
+            "selection_rate": 0.2399214811352437
+          },
+          "eo_difference": 0.2059650409485393,
+          "dp_difference": 0.2399214811352437,
+          "eo_estimable": true
+        },
+        "intersection": {
+          "overall": {
+            "samples": 3879.0,
+            "positive": 1740.0,
+            "negative": 2139.0,
+            "label_positive_rate": 0.448569218870843,
+            "accuracy": 0.6648620778551173,
+            "balanced_accuracy": 0.6649231835695055,
+            "f1_positive": 0.6404867256637168,
+            "f1_macro": 0.663314343034659,
+            "tpr": 0.6655172413793103,
+            "fnr": 0.33448275862068966,
+            "fpr": 0.33567087424029923,
+            "selection_rate": 0.4836298014952307,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "Female / 18-29",
+              "subjects": 140,
+              "samples": 447.0,
+              "positive": 172.0,
+              "negative": 275.0,
+              "label_positive_rate": 0.38478747203579416,
+              "accuracy": 0.6353467561521253,
+              "balanced_accuracy": 0.6187103594080339,
+              "f1_positive": 0.5356125356125356,
+              "f1_macro": 0.6177141867749603,
+              "tpr": 0.5465116279069767,
+              "fnr": 0.45348837209302323,
+              "fpr": 0.3090909090909091,
+              "selection_rate": 0.4004474272930649,
+              "warnings": []
+            },
+            {
+              "group": "Female / 30-44",
+              "subjects": 188,
+              "samples": 670.0,
+              "positive": 295.0,
+              "negative": 375.0,
+              "label_positive_rate": 0.44029850746268656,
+              "accuracy": 0.6567164179104478,
+              "balanced_accuracy": 0.6564519774011299,
+              "f1_positive": 0.6266233766233766,
+              "f1_macro": 0.6544719093061635,
+              "tpr": 0.6542372881355932,
+              "fnr": 0.34576271186440677,
+              "fpr": 0.3413333333333333,
+              "selection_rate": 0.4791044776119403,
+              "warnings": []
+            },
+            {
+              "group": "Female / 45-59",
+              "subjects": 192,
+              "samples": 705.0,
+              "positive": 364.0,
+              "negative": 341.0,
+              "label_positive_rate": 0.5163120567375886,
+              "accuracy": 0.649645390070922,
+              "balanced_accuracy": 0.6470948406432278,
+              "f1_positive": 0.6812903225806451,
+              "f1_macro": 0.6461569723139446,
+              "tpr": 0.7252747252747253,
+              "fnr": 0.27472527472527475,
+              "fpr": 0.4310850439882698,
+              "selection_rate": 0.5829787234042553,
+              "warnings": []
+            },
+            {
+              "group": "Female / 60+",
+              "subjects": 186,
+              "samples": 617.0,
+              "positive": 196.0,
+              "negative": 421.0,
+              "label_positive_rate": 0.31766612641815234,
+              "accuracy": 0.706645056726094,
+              "balanced_accuracy": 0.6636955257162247,
+              "f1_positive": 0.5417721518987342,
+              "f1_macro": 0.6630195682020488,
+              "tpr": 0.5459183673469388,
+              "fnr": 0.45408163265306123,
+              "fpr": 0.21852731591448932,
+              "selection_rate": 0.3225283630470016,
+              "warnings": []
+            },
+            {
+              "group": "Male / 18-29",
+              "subjects": 107,
+              "samples": 328.0,
+              "positive": 171.0,
+              "negative": 157.0,
+              "label_positive_rate": 0.5213414634146342,
+              "accuracy": 0.5579268292682927,
+              "balanced_accuracy": 0.555425187171751,
+              "f1_positive": 0.5915492957746479,
+              "f1_macro": 0.5549108605119086,
+              "tpr": 0.6140350877192983,
+              "fnr": 0.38596491228070173,
+              "fpr": 0.5031847133757962,
+              "selection_rate": 0.5609756097560976,
+              "warnings": []
+            },
+            {
+              "group": "Male / 30-44",
+              "subjects": 136,
+              "samples": 413.0,
+              "positive": 234.0,
+              "negative": 179.0,
+              "label_positive_rate": 0.5665859564164649,
+              "accuracy": 0.6852300242130751,
+              "balanced_accuracy": 0.6696987060115551,
+              "f1_positive": 0.7389558232931727,
+              "f1_macro": 0.6713071799392692,
+              "tpr": 0.7863247863247863,
+              "fnr": 0.21367521367521367,
+              "fpr": 0.44692737430167595,
+              "selection_rate": 0.639225181598063,
+              "warnings": []
+            },
+            {
+              "group": "Male / 45-59",
+              "subjects": 111,
+              "samples": 358.0,
+              "positive": 194.0,
+              "negative": 164.0,
+              "label_positive_rate": 0.5418994413407822,
+              "accuracy": 0.659217877094972,
+              "balanced_accuracy": 0.6558649735981896,
+              "f1_positive": 0.6887755102040817,
+              "f1_macro": 0.6561161501637692,
+              "tpr": 0.6958762886597938,
+              "fnr": 0.30412371134020616,
+              "fpr": 0.38414634146341464,
+              "selection_rate": 0.553072625698324,
+              "warnings": []
+            },
+            {
+              "group": "Male / 60+",
+              "subjects": 118,
+              "samples": 341.0,
+              "positive": 114.0,
+              "negative": 227.0,
+              "label_positive_rate": 0.3343108504398827,
+              "accuracy": 0.7595307917888563,
+              "balanced_accuracy": 0.736417033773862,
+              "f1_positive": 0.6495726495726496,
+              "f1_macro": 0.7332684676434676,
+              "tpr": 0.6666666666666666,
+              "fnr": 0.3333333333333333,
+              "fpr": 0.19383259911894274,
+              "selection_rate": 0.3519061583577713,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 377.0,
+            "positive": 250.0,
+            "negative": 264.0,
+            "label_positive_rate": 0.24891982999831258,
+            "accuracy": 0.20160396252056356,
+            "balanced_accuracy": 0.18099184660211098,
+            "f1_positive": 0.20334328768063703,
+            "f1_macro": 0.17835760713155902,
+            "tpr": 0.24040641897784754,
+            "fnr": 0.24040641897784756,
+            "fpr": 0.30935211425685344,
+            "selection_rate": 0.31669681855106135
+          },
+          "eo_difference": 0.30935211425685344,
+          "dp_difference": 0.31669681855106135,
+          "eo_estimable": true
+        }
+      },
+      "mitigated": {
+        "sex": {
+          "overall": {
+            "samples": 3879.0,
+            "positive": 1740.0,
+            "negative": 2139.0,
+            "label_positive_rate": 0.448569218870843,
+            "accuracy": 0.6651198762567672,
+            "balanced_accuracy": 0.6544900936628459,
+            "f1_positive": 0.5962076468759714,
+            "f1_macro": 0.6550736538718108,
+            "tpr": 0.5511494252873563,
+            "fnr": 0.44885057471264367,
+            "fpr": 0.24216923796166434,
+            "selection_rate": 0.3807682392369167,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "1",
+              "subjects": 472,
+              "samples": 1440.0,
+              "positive": 713.0,
+              "negative": 727.0,
+              "label_positive_rate": 0.4951388888888889,
+              "accuracy": 0.6590277777777778,
+              "balanced_accuracy": 0.6582865664385715,
+              "f1_positive": 0.6283118849356548,
+              "f1_macro": 0.6566832035326124,
+              "tpr": 0.5820476858345021,
+              "fnr": 0.4179523141654979,
+              "fpr": 0.265474552957359,
+              "selection_rate": 0.4222222222222222,
+              "warnings": []
+            },
+            {
+              "group": "2",
+              "subjects": 706,
+              "samples": 2439.0,
+              "positive": 1027.0,
+              "negative": 1412.0,
+              "label_positive_rate": 0.42107421074210744,
+              "accuracy": 0.6687166871668717,
+              "balanced_accuracy": 0.6497640891399632,
+              "f1_positive": 0.5738396624472574,
+              "f1_macro": 0.6514402872933805,
+              "tpr": 0.5296981499513145,
+              "fnr": 0.47030185004868547,
+              "fpr": 0.2301699716713881,
+              "selection_rate": 0.35629356293562936,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 999.0,
+            "positive": 314.0,
+            "negative": 685.0,
+            "label_positive_rate": 0.07406467814678147,
+            "accuracy": 0.009688909389093947,
+            "balanced_accuracy": 0.008522477298608333,
+            "f1_positive": 0.05447222248839745,
+            "f1_macro": 0.005242916239231898,
+            "tpr": 0.05234953588318758,
+            "fnr": 0.05234953588318758,
+            "fpr": 0.03530458128597089,
+            "selection_rate": 0.06592865928659286
+          },
+          "eo_difference": 0.05234953588318758,
+          "dp_difference": 0.06592865928659286,
+          "eo_estimable": true
+        },
+        "age_group": {
+          "overall": {
+            "samples": 3879.0,
+            "positive": 1740.0,
+            "negative": 2139.0,
+            "label_positive_rate": 0.448569218870843,
+            "accuracy": 0.6651198762567672,
+            "balanced_accuracy": 0.6544900936628459,
+            "f1_positive": 0.5962076468759714,
+            "f1_macro": 0.6550736538718108,
+            "tpr": 0.5511494252873563,
+            "fnr": 0.44885057471264367,
+            "fpr": 0.24216923796166434,
+            "selection_rate": 0.3807682392369167,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "18-29",
+              "subjects": 247,
+              "samples": 775.0,
+              "positive": 343.0,
+              "negative": 432.0,
+              "label_positive_rate": 0.4425806451612903,
+              "accuracy": 0.6141935483870967,
+              "balanced_accuracy": 0.6016797592052694,
+              "f1_positive": 0.5306122448979592,
+              "f1_macro": 0.6015602297874243,
+              "tpr": 0.49271137026239065,
+              "fnr": 0.5072886297376094,
+              "fpr": 0.28935185185185186,
+              "selection_rate": 0.3793548387096774,
+              "warnings": []
+            },
+            {
+              "group": "30-44",
+              "subjects": 324,
+              "samples": 1083.0,
+              "positive": 529.0,
+              "negative": 554.0,
+              "label_positive_rate": 0.4884579870729455,
+              "accuracy": 0.6528162511542013,
+              "balanced_accuracy": 0.6511383101417427,
+              "f1_positive": 0.6194331983805668,
+              "f1_macro": 0.6501240694789081,
+              "tpr": 0.5784499054820416,
+              "fnr": 0.4215500945179584,
+              "fpr": 0.27617328519855594,
+              "selection_rate": 0.42382271468144045,
+              "warnings": []
+            },
+            {
+              "group": "45-59",
+              "subjects": 303,
+              "samples": 1063.0,
+              "positive": 558.0,
+              "negative": 505.0,
+              "label_positive_rate": 0.5249294449670743,
+              "accuracy": 0.6396989651928504,
+              "balanced_accuracy": 0.64232761985876,
+              "f1_positive": 0.6320845341018252,
+              "f1_macro": 0.639544571198378,
+              "tpr": 0.589605734767025,
+              "fnr": 0.4103942652329749,
+              "fpr": 0.30495049504950494,
+              "selection_rate": 0.4543744120413923,
+              "warnings": []
+            },
+            {
+              "group": "60+",
+              "subjects": 304,
+              "samples": 958.0,
+              "positive": 310.0,
+              "negative": 648.0,
+              "label_positive_rate": 0.3235908141962422,
+              "accuracy": 0.7484342379958246,
+              "balanced_accuracy": 0.683641975308642,
+              "f1_positive": 0.5626134301270418,
+              "f1_macro": 0.6930283267851326,
+              "tpr": 0.5,
+              "fnr": 0.5,
+              "fpr": 0.13271604938271606,
+              "selection_rate": 0.25156576200417535,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 308.0,
+            "positive": 248.0,
+            "negative": 216.0,
+            "label_positive_rate": 0.20133863077083208,
+            "accuracy": 0.13424068960872793,
+            "balanced_accuracy": 0.08196221610337262,
+            "f1_positive": 0.10147228920386597,
+            "f1_macro": 0.0914680969977083,
+            "tpr": 0.0968943645046344,
+            "fnr": 0.09689436450463446,
+            "fpr": 0.1722344456667889,
+            "selection_rate": 0.20280865003721693
+          },
+          "eo_difference": 0.1722344456667889,
+          "dp_difference": 0.20280865003721693,
+          "eo_estimable": true
+        },
+        "intersection": {
+          "overall": {
+            "samples": 3879.0,
+            "positive": 1740.0,
+            "negative": 2139.0,
+            "label_positive_rate": 0.448569218870843,
+            "accuracy": 0.6651198762567672,
+            "balanced_accuracy": 0.6544900936628459,
+            "f1_positive": 0.5962076468759714,
+            "f1_macro": 0.6550736538718108,
+            "tpr": 0.5511494252873563,
+            "fnr": 0.44885057471264367,
+            "fpr": 0.24216923796166434,
+            "selection_rate": 0.3807682392369167,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "Female / 18-29",
+              "subjects": 140,
+              "samples": 447.0,
+              "positive": 172.0,
+              "negative": 275.0,
+              "label_positive_rate": 0.38478747203579416,
+              "accuracy": 0.6420581655480985,
+              "balanced_accuracy": 0.6023890063424947,
+              "f1_positive": 0.4805194805194805,
+              "f1_macro": 0.6037409689286822,
+              "tpr": 0.43023255813953487,
+              "fnr": 0.5697674418604651,
+              "fpr": 0.22545454545454546,
+              "selection_rate": 0.3042505592841163,
+              "warnings": []
+            },
+            {
+              "group": "Female / 30-44",
+              "subjects": 188,
+              "samples": 670.0,
+              "positive": 295.0,
+              "negative": 375.0,
+              "label_positive_rate": 0.44029850746268656,
+              "accuracy": 0.6567164179104478,
+              "balanced_accuracy": 0.6441581920903955,
+              "f1_positive": 0.5802919708029197,
+              "f1_macro": 0.6449439651994396,
+              "tpr": 0.5389830508474577,
+              "fnr": 0.4610169491525424,
+              "fpr": 0.25066666666666665,
+              "selection_rate": 0.3776119402985075,
+              "warnings": []
+            },
+            {
+              "group": "Female / 45-59",
+              "subjects": 192,
+              "samples": 705.0,
+              "positive": 364.0,
+              "negative": 341.0,
+              "label_positive_rate": 0.5163120567375886,
+              "accuracy": 0.64822695035461,
+              "balanced_accuracy": 0.6496124842899036,
+              "f1_positive": 0.6405797101449275,
+              "f1_macro": 0.6480676328502415,
+              "tpr": 0.6071428571428571,
+              "fnr": 0.39285714285714285,
+              "fpr": 0.30791788856304986,
+              "selection_rate": 0.4624113475177305,
+              "warnings": []
+            },
+            {
+              "group": "Female / 60+",
+              "subjects": 186,
+              "samples": 617.0,
+              "positive": 196.0,
+              "negative": 421.0,
+              "label_positive_rate": 0.31766612641815234,
+              "accuracy": 0.7244732576985413,
+              "balanced_accuracy": 0.6535823355470455,
+              "f1_positive": 0.5142857142857142,
+              "f1_macro": 0.660989010989011,
+              "tpr": 0.45918367346938777,
+              "fnr": 0.5408163265306123,
+              "fpr": 0.15201900237529692,
+              "selection_rate": 0.24959481361426256,
+              "warnings": []
+            },
+            {
+              "group": "Male / 18-29",
+              "subjects": 107,
+              "samples": 328.0,
+              "positive": 171.0,
+              "negative": 157.0,
+              "label_positive_rate": 0.5213414634146342,
+              "accuracy": 0.5762195121951219,
+              "balanced_accuracy": 0.5771408351026186,
+              "f1_positive": 0.5775075987841946,
+              "f1_macro": 0.576215573092403,
+              "tpr": 0.5555555555555556,
+              "fnr": 0.4444444444444444,
+              "fpr": 0.4012738853503185,
+              "selection_rate": 0.4817073170731707,
+              "warnings": []
+            },
+            {
+              "group": "Male / 30-44",
+              "subjects": 136,
+              "samples": 413.0,
+              "positive": 234.0,
+              "negative": 179.0,
+              "label_positive_rate": 0.5665859564164649,
+              "accuracy": 0.6464891041162227,
+              "balanced_accuracy": 0.6492980948288211,
+              "f1_positive": 0.6681818181818182,
+              "f1_macro": 0.6449717381064531,
+              "tpr": 0.6282051282051282,
+              "fnr": 0.3717948717948718,
+              "fpr": 0.329608938547486,
+              "selection_rate": 0.49878934624697335,
+              "warnings": []
+            },
+            {
+              "group": "Male / 45-59",
+              "subjects": 111,
+              "samples": 358.0,
+              "positive": 194.0,
+              "negative": 164.0,
+              "label_positive_rate": 0.5418994413407822,
+              "accuracy": 0.6229050279329609,
+              "balanced_accuracy": 0.6289602715614785,
+              "f1_positive": 0.6153846153846154,
+              "f1_macro": 0.6227608008429926,
+              "tpr": 0.5567010309278351,
+              "fnr": 0.44329896907216493,
+              "fpr": 0.29878048780487804,
+              "selection_rate": 0.43854748603351956,
+              "warnings": []
+            },
+            {
+              "group": "Male / 60+",
+              "subjects": 118,
+              "samples": 341.0,
+              "positive": 114.0,
+              "negative": 227.0,
+              "label_positive_rate": 0.3343108504398827,
+              "accuracy": 0.7917888563049853,
+              "balanced_accuracy": 0.7366295695185099,
+              "f1_positive": 0.6467661691542289,
+              "f1_macro": 0.7495785107725407,
+              "tpr": 0.5701754385964912,
+              "fnr": 0.4298245614035088,
+              "fpr": 0.09691629955947137,
+              "selection_rate": 0.25513196480938416,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 377.0,
+            "positive": 250.0,
+            "negative": 264.0,
+            "label_positive_rate": 0.24891982999831258,
+            "accuracy": 0.2155693441098634,
+            "balanced_accuracy": 0.1594887344158913,
+            "f1_positive": 0.1876623376623377,
+            "f1_macro": 0.17336293768013766,
+            "tpr": 0.19797257006559332,
+            "fnr": 0.19797257006559332,
+            "fpr": 0.30435758579084715,
+            "selection_rate": 0.2491945326327108
+          },
+          "eo_difference": 0.30435758579084715,
+          "dp_difference": 0.2491945326327108,
+          "eo_estimable": true
+        }
+      },
+      "oracle_reference": {
+        "sex": {
+          "overall": {
+            "samples": 3879.0,
+            "positive": 1740.0,
+            "negative": 2139.0,
+            "label_positive_rate": 0.448569218870843,
+            "accuracy": 0.6682134570765661,
+            "balanced_accuracy": 0.6582599829117699,
+            "f1_positive": 0.6029003394014193,
+            "f1_macro": 0.6589883587642473,
+            "tpr": 0.5614942528735632,
+            "fnr": 0.4385057471264368,
+            "fpr": 0.2449742870500234,
+            "selection_rate": 0.3869554008765146,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "1",
+              "subjects": 472,
+              "samples": 1440.0,
+              "positive": 713.0,
+              "negative": 727.0,
+              "label_positive_rate": 0.4951388888888889,
+              "accuracy": 0.6618055555555555,
+              "balanced_accuracy": 0.6611591373412996,
+              "f1_positive": 0.6352059925093633,
+              "f1_macro": 0.6599978182611541,
+              "tpr": 0.5946704067321178,
+              "fnr": 0.4053295932678822,
+              "fpr": 0.2723521320495186,
+              "selection_rate": 0.43194444444444446,
+              "warnings": []
+            },
+            {
+              "group": "2",
+              "subjects": 706,
+              "samples": 2439.0,
+              "positive": 1027.0,
+              "negative": 1412.0,
+              "label_positive_rate": 0.42107421074210744,
+              "accuracy": 0.6719967199671997,
+              "balanced_accuracy": 0.65379167574635,
+              "f1_positive": 0.5802728226652676,
+              "f1_macro": 0.6555469093137913,
+              "tpr": 0.5384615384615384,
+              "fnr": 0.46153846153846156,
+              "fpr": 0.23087818696883852,
+              "selection_rate": 0.36039360393603936,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 999.0,
+            "positive": 314.0,
+            "negative": 685.0,
+            "label_positive_rate": 0.07406467814678147,
+            "accuracy": 0.010191164411644138,
+            "balanced_accuracy": 0.007367461594949609,
+            "f1_positive": 0.054933169844095686,
+            "f1_macro": 0.004450908947362775,
+            "tpr": 0.05620886827057936,
+            "fnr": 0.05620886827057936,
+            "fpr": 0.04147394508068006,
+            "selection_rate": 0.0715508405084051
+          },
+          "eo_difference": 0.05620886827057936,
+          "dp_difference": 0.0715508405084051,
+          "eo_estimable": true
+        },
+        "age_group": {
+          "overall": {
+            "samples": 3879.0,
+            "positive": 1740.0,
+            "negative": 2139.0,
+            "label_positive_rate": 0.448569218870843,
+            "accuracy": 0.6682134570765661,
+            "balanced_accuracy": 0.6582599829117699,
+            "f1_positive": 0.6029003394014193,
+            "f1_macro": 0.6589883587642473,
+            "tpr": 0.5614942528735632,
+            "fnr": 0.4385057471264368,
+            "fpr": 0.2449742870500234,
+            "selection_rate": 0.3869554008765146,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "18-29",
+              "subjects": 247,
+              "samples": 775.0,
+              "positive": 343.0,
+              "negative": 432.0,
+              "label_positive_rate": 0.4425806451612903,
+              "accuracy": 0.6219354838709678,
+              "balanced_accuracy": 0.6104261148904007,
+              "f1_positive": 0.5443234836702955,
+              "f1_macro": 0.6106402423864157,
+              "tpr": 0.5102040816326531,
+              "fnr": 0.4897959183673469,
+              "fpr": 0.28935185185185186,
+              "selection_rate": 0.3870967741935484,
+              "warnings": []
+            },
+            {
+              "group": "30-44",
+              "subjects": 324,
+              "samples": 1083.0,
+              "positive": 529.0,
+              "negative": 554.0,
+              "label_positive_rate": 0.4884579870729455,
+              "accuracy": 0.6491228070175439,
+              "balanced_accuracy": 0.6476988118717286,
+              "f1_positive": 0.62,
+              "f1_macro": 0.6470497427101201,
+              "tpr": 0.5860113421550095,
+              "fnr": 0.41398865784499056,
+              "fpr": 0.29061371841155237,
+              "selection_rate": 0.43490304709141275,
+              "warnings": []
+            },
+            {
+              "group": "45-59",
+              "subjects": 303,
+              "samples": 1063.0,
+              "positive": 558.0,
+              "negative": 505.0,
+              "label_positive_rate": 0.5249294449670743,
+              "accuracy": 0.6434619002822202,
+              "balanced_accuracy": 0.6460999325739025,
+              "f1_positive": 0.6359269932756965,
+              "f1_macro": 0.6433091187576638,
+              "tpr": 0.5931899641577061,
+              "fnr": 0.4068100358422939,
+              "fpr": 0.300990099009901,
+              "selection_rate": 0.4543744120413923,
+              "warnings": []
+            },
+            {
+              "group": "60+",
+              "subjects": 304,
+              "samples": 958.0,
+              "positive": 310.0,
+              "negative": 648.0,
+              "label_positive_rate": 0.3235908141962422,
+              "accuracy": 0.7546972860125261,
+              "balanced_accuracy": 0.6933193946634807,
+              "f1_positive": 0.578096947935368,
+              "f1_macro": 0.7025878411494353,
+              "tpr": 0.5193548387096775,
+              "fnr": 0.4806451612903226,
+              "fpr": 0.13271604938271606,
+              "selection_rate": 0.2578288100208768,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 308.0,
+            "positive": 248.0,
+            "negative": 216.0,
+            "label_positive_rate": 0.20133863077083208,
+            "accuracy": 0.1327618021415583,
+            "balanced_accuracy": 0.08289327977308003,
+            "f1_positive": 0.09160350960540098,
+            "f1_macro": 0.09194759876301961,
+            "tpr": 0.08298588252505301,
+            "fnr": 0.08298588252505301,
+            "fpr": 0.16827404962718492,
+            "selection_rate": 0.19654560202051546
+          },
+          "eo_difference": 0.16827404962718492,
+          "dp_difference": 0.19654560202051546,
+          "eo_estimable": true
+        },
+        "intersection": {
+          "overall": {
+            "samples": 3879.0,
+            "positive": 1740.0,
+            "negative": 2139.0,
+            "label_positive_rate": 0.448569218870843,
+            "accuracy": 0.6682134570765661,
+            "balanced_accuracy": 0.6582599829117699,
+            "f1_positive": 0.6029003394014193,
+            "f1_macro": 0.6589883587642473,
+            "tpr": 0.5614942528735632,
+            "fnr": 0.4385057471264368,
+            "fpr": 0.2449742870500234,
+            "selection_rate": 0.3869554008765146,
+            "subjects": 1178
+          },
+          "groups": [
+            {
+              "group": "Female / 18-29",
+              "subjects": 140,
+              "samples": 447.0,
+              "positive": 172.0,
+              "negative": 275.0,
+              "label_positive_rate": 0.38478747203579416,
+              "accuracy": 0.6465324384787472,
+              "balanced_accuracy": 0.6114693446088795,
+              "f1_positive": 0.5,
+              "f1_macro": 0.6133217993079585,
+              "tpr": 0.45930232558139533,
+              "fnr": 0.5406976744186046,
+              "fpr": 0.23636363636363636,
+              "selection_rate": 0.3221476510067114,
+              "warnings": []
+            },
+            {
+              "group": "Female / 30-44",
+              "subjects": 188,
+              "samples": 670.0,
+              "positive": 295.0,
+              "negative": 375.0,
+              "label_positive_rate": 0.44029850746268656,
+              "accuracy": 0.6507462686567164,
+              "balanced_accuracy": 0.6381016949152543,
+              "f1_positive": 0.572992700729927,
+              "f1_macro": 0.6387690776376909,
+              "tpr": 0.5322033898305085,
+              "fnr": 0.46779661016949153,
+              "fpr": 0.256,
+              "selection_rate": 0.3776119402985075,
+              "warnings": []
+            },
+            {
+              "group": "Female / 45-59",
+              "subjects": 192,
+              "samples": 705.0,
+              "positive": 364.0,
+              "negative": 341.0,
+              "label_positive_rate": 0.5163120567375886,
+              "accuracy": 0.6567375886524822,
+              "balanced_accuracy": 0.658132190390255,
+              "f1_positive": 0.6492753623188405,
+              "f1_macro": 0.6565821256038646,
+              "tpr": 0.6153846153846154,
+              "fnr": 0.38461538461538464,
+              "fpr": 0.2991202346041056,
+              "selection_rate": 0.4624113475177305,
+              "warnings": []
+            },
+            {
+              "group": "Female / 60+",
+              "subjects": 186,
+              "samples": 617.0,
+              "positive": 196.0,
+              "negative": 421.0,
+              "label_positive_rate": 0.31766612641815234,
+              "accuracy": 0.7309562398703403,
+              "balanced_accuracy": 0.6624230452275922,
+              "f1_positive": 0.5284090909090909,
+              "f1_macro": 0.6701002370645228,
+              "tpr": 0.4744897959183674,
+              "fnr": 0.5255102040816326,
+              "fpr": 0.1496437054631829,
+              "selection_rate": 0.25283630470016205,
+              "warnings": []
+            },
+            {
+              "group": "Male / 18-29",
+              "subjects": 107,
+              "samples": 328.0,
+              "positive": 171.0,
+              "negative": 157.0,
+              "label_positive_rate": 0.5213414634146342,
+              "accuracy": 0.5884146341463414,
+              "balanced_accuracy": 0.5896189518381942,
+              "f1_positive": 0.5871559633027523,
+              "f1_macro": 0.5884108083990965,
+              "tpr": 0.5614035087719298,
+              "fnr": 0.43859649122807015,
+              "fpr": 0.3821656050955414,
+              "selection_rate": 0.47560975609756095,
+              "warnings": []
+            },
+            {
+              "group": "Male / 30-44",
+              "subjects": 136,
+              "samples": 413.0,
+              "positive": 234.0,
+              "negative": 179.0,
+              "label_positive_rate": 0.5665859564164649,
+              "accuracy": 0.6464891041162227,
+              "balanced_accuracy": 0.6453588311130211,
+              "f1_positive": 0.6769911504424779,
+              "f1_macro": 0.6433084094458379,
+              "tpr": 0.6538461538461539,
+              "fnr": 0.34615384615384615,
+              "fpr": 0.36312849162011174,
+              "selection_rate": 0.5278450363196125,
+              "warnings": []
+            },
+            {
+              "group": "Male / 45-59",
+              "subjects": 111,
+              "samples": 358.0,
+              "positive": 194.0,
+              "negative": 164.0,
+              "label_positive_rate": 0.5418994413407822,
+              "accuracy": 0.61731843575419,
+              "balanced_accuracy": 0.6233341714860448,
+              "f1_positive": 0.6096866096866097,
+              "f1_macro": 0.6171720719665925,
+              "tpr": 0.5515463917525774,
+              "fnr": 0.4484536082474227,
+              "fpr": 0.3048780487804878,
+              "selection_rate": 0.43854748603351956,
+              "warnings": []
+            },
+            {
+              "group": "Male / 60+",
+              "subjects": 118,
+              "samples": 341.0,
+              "positive": 114.0,
+              "negative": 227.0,
+              "label_positive_rate": 0.3343108504398827,
+              "accuracy": 0.7976539589442815,
+              "balanced_accuracy": 0.7475848210835458,
+              "f1_positive": 0.6634146341463415,
+              "f1_macro": 0.7593802730480135,
+              "tpr": 0.5964912280701754,
+              "fnr": 0.40350877192982454,
+              "fpr": 0.1013215859030837,
+              "selection_rate": 0.2668621700879765,
+              "warnings": []
+            }
+          ],
+          "difference": {
+            "samples": 377.0,
+            "positive": 250.0,
+            "negative": 264.0,
+            "label_positive_rate": 0.24891982999831258,
+            "accuracy": 0.20923932479794005,
+            "balanced_accuracy": 0.1579658692453516,
+            "f1_positive": 0.17699115044247793,
+            "f1_macro": 0.17096946464891694,
+            "tpr": 0.19454382826475852,
+            "fnr": 0.19454382826475847,
+            "fpr": 0.2808440191924577,
+            "selection_rate": 0.2750087316194505
+          },
+          "eo_difference": 0.2808440191924577,
+          "dp_difference": 0.2750087316194505,
+          "eo_estimable": true
+        }
+      }
+    }
+  },
+  "selection": {
+    "selection_at_utc": "2026-10-08T06:18:25.929058+00:00",
+    "bound": 0.03,
+    "rule": "Among EG candidates with validation balanced accuracy AND macro F1 each no more than 0.02 below assignment1 baseline, choose smallest validation sex EO difference; ties higher macro F1, then tighter bound. If none qualify, highest balanced accuracy then smallest EO. Attempted mitigation is reported even if it fails; recommend only if validation EO improves and performance budget passes.",
+    "performance_budget_passed": true,
+    "recommended_on_validation": false,
+    "selected_validation": {
+      "bound": 0.03,
+      "samples": 3777.0,
+      "positive": 1753.0,
+      "negative": 2024.0,
+      "label_positive_rate": 0.46412496690495103,
+      "accuracy": 0.6547524490336246,
+      "balanced_accuracy": 0.6485358808953143,
+      "f1_positive": 0.6017104459376909,
+      "f1_macro": 0.6485187743707146,
+      "tpr": 0.5618938961779806,
+      "fnr": 0.4381061038220194,
+      "fpr": 0.2648221343873518,
+      "selection_rate": 0.40270055599682286,
+      "subjects": 1178,
+      "eo_difference": 0.09820585457979225,
+      "dp_difference": 0.12480105566724181,
+      "eligible": true,
+      "elapsed_seconds": 4.768369416997302,
+      "best_gap": 0.0,
+      "best_iter": 6,
+      "last_iter": 6,
+      "oracle_calls": 23,
+      "weights": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.14802419303023345,
+        "10": 0.6154481361717522,
+        "11": 0.23652767079801437,
+        "12": 0.0,
+        "13": 0.0
+      },
+      "predictor_count": 14
+    },
+    "baseline_validation": {
+      "samples": 3777.0,
+      "positive": 1753.0,
+      "negative": 2024.0,
+      "label_positive_rate": 0.46412496690495103,
+      "accuracy": 0.6566057717765422,
+      "balanced_accuracy": 0.657864891129605,
+      "f1_positive": 0.6461118690313779,
+      "f1_macro": 0.6563035560122176,
+      "tpr": 0.6754135767256132,
+      "fnr": 0.32458642327438675,
+      "fpr": 0.35968379446640314,
+      "selection_rate": 0.5062218692083664,
+      "subjects": 1178,
+      "eo_difference": 0.09573404432594568,
+      "dp_difference": 0.1256172772582389
+    }
+  },
+  "bootstrap": {
+    "unit": "participant",
+    "stratify": "sex x age",
+    "replicates": 500,
+    "paired": true,
+    "conditional_on_fixed_prediction_draw": true,
+    "models": {
+      "baseline": {
+        "overall": {
+          "accuracy": {
+            "interval95": [
+              0.6476008131967753,
+              0.6827119416802383
+            ],
+            "valid_replicates": 500
+          },
+          "balanced_accuracy": {
+            "interval95": [
+              0.647509255772913,
+              0.682536505159026
+            ],
+            "valid_replicates": 500
+          },
+          "f1_macro": {
+            "interval95": [
+              0.6454237814850052,
+              0.6807360034770092
+            ],
+            "valid_replicates": 500
+          }
+        },
+        "sex": {
+          "eo_difference": {
+            "interval95": [
+              0.020511701714518125,
+              0.11142912892229924
+            ],
+            "valid_replicates": 500
+          },
+          "groups": {
+            "1": {
+              "tpr": {
+                "interval95": [
+                  0.6627568148247617,
+                  0.7384794482918918
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.2615205517081082,
+                  0.3372431851752383
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.32467179287445314,
+                  0.40914165359447363
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "2": {
+              "tpr": {
+                "interval95": [
+                  0.6042394246395959,
+                  0.6745083235988957
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.3254916764011042,
+                  0.3957605753604041
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.28977029591054054,
+                  0.3552264376996805
+                ],
+                "valid_replicates": 500
+              }
+            }
+          }
+        },
+        "age_group": {
+          "eo_difference": {
+            "interval95": [
+              0.1493877184104945,
+              0.284438082717064
+            ],
+            "valid_replicates": 500
+          },
+          "groups": {
+            "18-29": {
+              "tpr": {
+                "interval95": [
+                  0.5198618421052632,
+                  0.6370553359683794
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.36294466403162057,
+                  0.48013815789473685
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.32377350680994627,
+                  0.4444534901540112
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "30-44": {
+              "tpr": {
+                "interval95": [
+                  0.6669559104127749,
+                  0.7576356362217018
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.24236436377829818,
+                  0.3330440895872251
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.32846087647292466,
+                  0.4281728845054317
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "45-59": {
+              "tpr": {
+                "interval95": [
+                  0.664888639208101,
+                  0.7600703407330924
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.2399296592669076,
+                  0.33511136079189896
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.35768539488083656,
+                  0.473348358156955
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "60+": {
+              "tpr": {
+                "interval95": [
+                  0.5202846441947566,
+                  0.6469672801635992
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.35303271983640083,
+                  0.4797153558052434
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.17061658445225336,
+                  0.2528741176470588
+                ],
+                "valid_replicates": 500
+              }
+            }
+          }
+        },
+        "intersection": {
+          "eo_difference": {
+            "interval95": [
+              0.2455845438109332,
+              0.44085878511599014
+            ],
+            "valid_replicates": 500
+          },
+          "groups": {
+            "Female / 18-29": {
+              "tpr": {
+                "interval95": [
+                  0.46153846153846156,
+                  0.6356108597285067
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.3643891402714933,
+                  0.5384615384615384
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.24714055632164095,
+                  0.37840411189753953
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Female / 30-44": {
+              "tpr": {
+                "interval95": [
+                  0.5897862387714786,
+                  0.7177812573480686
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.28221874265193136,
+                  0.4102137612285214
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.28533984575835475,
+                  0.40616072324624486
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Female / 45-59": {
+              "tpr": {
+                "interval95": [
+                  0.6606028046395019,
+                  0.7825854700854701
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.21741452991452995,
+                  0.3393971953604981
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.36107468443197754,
+                  0.5
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Female / 60+": {
+              "tpr": {
+                "interval95": [
+                  0.45643876445086706,
+                  0.6198168498168498
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.3801831501831502,
+                  0.5435612355491329
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.1691095879896844,
+                  0.27469845852931585
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Male / 18-29": {
+              "tpr": {
+                "interval95": [
+                  0.5253390804597701,
+                  0.6854711538461539
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.31452884615384613,
+                  0.4746609195402298
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.3976161067193676,
+                  0.6152960526315788
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Male / 30-44": {
+              "tpr": {
+                "interval95": [
+                  0.7233673532954027,
+                  0.8461181972789115
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.15388180272108842,
+                  0.2766326467045973
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.3772929936305733,
+                  0.518736271051055
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Male / 45-59": {
+              "tpr": {
+                "interval95": [
+                  0.6039212588473205,
+                  0.7690680354267311
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.23093196457326895,
+                  0.39607874115267944
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.2884375,
+                  0.47279726866023064
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Male / 60+": {
+              "tpr": {
+                "interval95": [
+                  0.5353535353535354,
+                  0.762803599510746
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.23719640048925392,
+                  0.46464646464646464
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.13737132352941178,
+                  0.2648572796934865
+                ],
+                "valid_replicates": 500
+              }
+            }
+          }
+        }
+      },
+      "mitigated": {
+        "overall": {
+          "accuracy": {
+            "interval95": [
+              0.6475629842821436,
+              0.683593641713184
+            ],
+            "valid_replicates": 500
+          },
+          "balanced_accuracy": {
+            "interval95": [
+              0.6363932507121665,
+              0.6727533766968805
+            ],
+            "valid_replicates": 500
+          },
+          "f1_macro": {
+            "interval95": [
+              0.6366375820303544,
+              0.6736625223054294
+            ],
+            "valid_replicates": 500
+          }
+        },
+        "sex": {
+          "eo_difference": {
+            "interval95": [
+              0.013683309860071508,
+              0.11147124771395804
+            ],
+            "valid_replicates": 500
+          },
+          "groups": {
+            "1": {
+              "tpr": {
+                "interval95": [
+                  0.5384451872596703,
+                  0.6233300740806771
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.37666992591932286,
+                  0.46155481274032967
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.22932003618272276,
+                  0.3026135674199909
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "2": {
+              "tpr": {
+                "interval95": [
+                  0.4925772073176578,
+                  0.5651786805753637
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.43482131942463637,
+                  0.5074227926823421
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.2042938659401804,
+                  0.25826206744544855
+                ],
+                "valid_replicates": 500
+              }
+            }
+          }
+        },
+        "age_group": {
+          "eo_difference": {
+            "interval95": [
+              0.13306210482538755,
+              0.23497183554255385
+            ],
+            "valid_replicates": 500
+          },
+          "groups": {
+            "18-29": {
+              "tpr": {
+                "interval95": [
+                  0.4303222713864307,
+                  0.5481206518186487
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.4518793481813513,
+                  0.5696777286135694
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.23925328490545883,
+                  0.34282939845306853
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "30-44": {
+              "tpr": {
+                "interval95": [
+                  0.5267101767112311,
+                  0.6255869856887298
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.3744130143112701,
+                  0.47328982328876895
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.2287406364738458,
+                  0.32048554158313586
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "45-59": {
+              "tpr": {
+                "interval95": [
+                  0.5401477602169644,
+                  0.641435706353624
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.358564293646376,
+                  0.4598522397830356
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.2556649396519461,
+                  0.359394991418318
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "60+": {
+              "tpr": {
+                "interval95": [
+                  0.43649762866890895,
+                  0.5567253885086969
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.44327461149130315,
+                  0.563502371331091
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.10078099249221754,
+                  0.16654120443740095
+                ],
+                "valid_replicates": 500
+              }
+            }
+          }
+        },
+        "intersection": {
+          "eo_difference": {
+            "interval95": [
+              0.22880002439423297,
+              0.42189542584972656
+            ],
+            "valid_replicates": 500
+          },
+          "groups": {
+            "Female / 18-29": {
+              "tpr": {
+                "interval95": [
+                  0.3505747126436782,
+                  0.5148187073042564
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.48518129269574356,
+                  0.6494252873563218
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.17119980290711997,
+                  0.2832857406042741
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Female / 30-44": {
+              "tpr": {
+                "interval95": [
+                  0.4691224238351254,
+                  0.6025860268938444
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.3974139731061555,
+                  0.5308775761648745
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.19840955579511846,
+                  0.3142496294466403
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Female / 45-59": {
+              "tpr": {
+                "interval95": [
+                  0.5450227068849517,
+                  0.6675877192982456
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.33241228070175444,
+                  0.45497729311504825
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.25364268530089346,
+                  0.37509426551453257
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Female / 60+": {
+              "tpr": {
+                "interval95": [
+                  0.3802362501345388,
+                  0.5289797008547008
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.47102029914529914,
+                  0.6197637498654612
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.11011853448275861,
+                  0.1972149873082441
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Male / 18-29": {
+              "tpr": {
+                "interval95": [
+                  0.4650385128129166,
+                  0.6330649717514124
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.36693502824858754,
+                  0.5349614871870834
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.30025791789914147,
+                  0.5090460526315788
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Male / 30-44": {
+              "tpr": {
+                "interval95": [
+                  0.5502884615384616,
+                  0.7025354445711028
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.29746455542889716,
+                  0.44971153846153844
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.25574866310160427,
+                  0.39900523560209417
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Male / 45-59": {
+              "tpr": {
+                "interval95": [
+                  0.46320352430761913,
+                  0.6415315315315314
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.35846846846846847,
+                  0.5367964756923809
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.21607034566403882,
+                  0.38624833358021027
+                ],
+                "valid_replicates": 500
+              }
+            },
+            "Male / 60+": {
+              "tpr": {
+                "interval95": [
+                  0.4429347826086956,
+                  0.6642857142857141
+                ],
+                "valid_replicates": 500
+              },
+              "fnr": {
+                "interval95": [
+                  0.33571428571428574,
+                  0.5570652173913042
+                ],
+                "valid_replicates": 500
+              },
+              "fpr": {
+                "interval95": [
+                  0.05969190351086697,
+                  0.14794213670464015
+                ],
+                "valid_replicates": 500
+              }
+            }
+          }
+        }
+      }
+    },
+    "paired_delta": {
+      "accuracy": {
+        "interval95": [
+          -0.009254465305530235,
+          0.011144234854681743
+        ],
+        "valid_replicates": 500
+      },
+      "balanced_accuracy": {
+        "interval95": [
+          -0.019031456297846465,
+          -0.000590201689267063
+        ],
+        "valid_replicates": 500
+      },
+      "f1_macro": {
+        "interval95": [
+          -0.01755209665960672,
+          0.0023044087890817704
+        ],
+        "valid_replicates": 500
+      },
+      "sex_eo_difference": {
+        "interval95": [
+          -0.035994943658252565,
+          0.02016487608373263
+        ],
+        "valid_replicates": 500
+      },
+      "age_group_eo_difference": {
+        "interval95": [
+          -0.06753038970287284,
+          0.010153346459284236
+        ],
+        "valid_replicates": 500
+      },
+      "intersection_eo_difference": {
+        "interval95": [
+          -0.08426873522631718,
+          0.03541934937309378
+        ],
+        "valid_replicates": 500
+      }
+    }
+  },
+  "randomization_sensitivity": [
+    {
+      "seed": 20261008,
+      "samples": 3879.0,
+      "positive": 1740.0,
+      "negative": 2139.0,
+      "label_positive_rate": 0.448569218870843,
+      "accuracy": 0.6651198762567672,
+      "balanced_accuracy": 0.6544900936628459,
+      "f1_positive": 0.5962076468759714,
+      "f1_macro": 0.6550736538718108,
+      "tpr": 0.5511494252873563,
+      "fnr": 0.44885057471264367,
+      "fpr": 0.24216923796166434,
+      "selection_rate": 0.3807682392369167,
+      "subjects": 1178,
+      "eo_difference": 0.05234953588318758,
+      "dp_difference": 0.06592865928659286
+    },
+    {
+      "seed": 20261009,
+      "samples": 3879.0,
+      "positive": 1740.0,
+      "negative": 2139.0,
+      "label_positive_rate": 0.448569218870843,
+      "accuracy": 0.6615106986336685,
+      "balanced_accuracy": 0.6509495252373814,
+      "f1_positive": 0.5923626203042534,
+      "f1_macro": 0.6514821697509805,
+      "tpr": 0.5482758620689655,
+      "fnr": 0.4517241379310345,
+      "fpr": 0.2463768115942029,
+      "selection_rate": 0.38179943284351636,
+      "subjects": 1178,
+      "eo_difference": 0.047713147540938805,
+      "dp_difference": 0.06649753997539976
+    },
+    {
+      "seed": 20261010,
+      "samples": 3879.0,
+      "positive": 1740.0,
+      "negative": 2139.0,
+      "label_positive_rate": 0.448569218870843,
+      "accuracy": 0.6648620778551173,
+      "balanced_accuracy": 0.654524350727862,
+      "f1_positive": 0.59727385377943,
+      "f1_macro": 0.6551490681700682,
+      "tpr": 0.5540229885057472,
+      "fnr": 0.4459770114942529,
+      "fpr": 0.2449742870500234,
+      "selection_rate": 0.38360402165506574,
+      "subjects": 1178,
+      "eo_difference": 0.03730648284891536,
+      "dp_difference": 0.05810526855268555
+    },
+    {
+      "seed": 20261011,
+      "samples": 3879.0,
+      "positive": 1740.0,
+      "negative": 2139.0,
+      "label_positive_rate": 0.448569218870843,
+      "accuracy": 0.6646042794534673,
+      "balanced_accuracy": 0.6543978010994502,
+      "f1_positive": 0.5975873801422827,
+      "f1_macro": 0.6550367839937933,
+      "tpr": 0.5551724137931034,
+      "fnr": 0.44482758620689655,
+      "fpr": 0.2463768115942029,
+      "selection_rate": 0.3848930136633153,
+      "subjects": 1178,
+      "eo_difference": 0.03726556807244644,
+      "dp_difference": 0.05936859368593683
+    },
+    {
+      "seed": 20261012,
+      "samples": 3879.0,
+      "positive": 1740.0,
+      "negative": 2139.0,
+      "label_positive_rate": 0.448569218870843,
+      "accuracy": 0.6643464810518175,
+      "balanced_accuracy": 0.6541104447776112,
+      "f1_positive": 0.5971534653465347,
+      "f1_macro": 0.6547411162349112,
+      "tpr": 0.5545977011494253,
+      "fnr": 0.4454022988505747,
+      "fpr": 0.2463768115942029,
+      "selection_rate": 0.3846352152616654,
+      "subjects": 1178,
+      "eo_difference": 0.04650727687637157,
+      "dp_difference": 0.06530084050840507
+    },
+    {
+      "seed": 20261013,
+      "samples": 3879.0,
+      "positive": 1740.0,
+      "negative": 2139.0,
+      "label_positive_rate": 0.448569218870843,
+      "accuracy": 0.6597061098221191,
+      "balanced_accuracy": 0.6489380309845078,
+      "f1_positive": 0.5892968263845675,
+      "f1_macro": 0.6494019343190442,
+      "tpr": 0.5442528735632184,
+      "fnr": 0.4557471264367816,
+      "fpr": 0.2463768115942029,
+      "selection_rate": 0.379994844031967,
+      "subjects": 1178,
+      "eo_difference": 0.05452911638222413,
+      "dp_difference": 0.07157646576465765
+    },
+    {
+      "seed": 20261014,
+      "samples": 3879.0,
+      "positive": 1740.0,
+      "negative": 2139.0,
+      "label_positive_rate": 0.448569218870843,
+      "accuracy": 0.6640886826501675,
+      "balanced_accuracy": 0.653930292918057,
+      "f1_positive": 0.5972179289026275,
+      "f1_macro": 0.65456739911857,
+      "tpr": 0.5551724137931034,
+      "fnr": 0.44482758620689655,
+      "fpr": 0.24731182795698925,
+      "selection_rate": 0.3854086104666151,
+      "subjects": 1178,
+      "eo_difference": 0.05460271752048662,
+      "dp_difference": 0.076219762197622
+    },
+    {
+      "seed": 20261015,
+      "samples": 3879.0,
+      "positive": 1740.0,
+      "negative": 2139.0,
+      "label_positive_rate": 0.448569218870843,
+      "accuracy": 0.662799690641918,
+      "balanced_accuracy": 0.6523327046154342,
+      "f1_positive": 0.5942928039702233,
+      "f1_macro": 0.6529029083812299,
+      "tpr": 0.5505747126436782,
+      "fnr": 0.4494252873563218,
+      "fpr": 0.24590930341280973,
+      "selection_rate": 0.3825728280484661,
+      "subjects": 1178,
+      "eo_difference": 0.037973783369896846,
+      "dp_difference": 0.05974528495284953
+    },
+    {
+      "seed": 20261016,
+      "samples": 3879.0,
+      "positive": 1740.0,
+      "negative": 2139.0,
+      "label_positive_rate": 0.448569218870843,
+      "accuracy": 0.6635730858468677,
+      "balanced_accuracy": 0.6533019780432365,
+      "f1_positive": 0.596100278551532,
+      "f1_macro": 0.6539149504089667,
+      "tpr": 0.553448275862069,
+      "fnr": 0.44655172413793104,
+      "fpr": 0.24684431977559607,
+      "selection_rate": 0.3843774168600155,
+      "subjects": 1178,
+      "eo_difference": 0.048454696545310205,
+      "dp_difference": 0.06571084460844606
+    },
+    {
+      "seed": 20261017,
+      "samples": 3879.0,
+      "positive": 1740.0,
+      "negative": 2139.0,
+      "label_positive_rate": 0.448569218870843,
+      "accuracy": 0.6633152874452178,
+      "balanced_accuracy": 0.6528002127968274,
+      "f1_positive": 0.5946617008069522,
+      "f1_macro": 0.6533714147773738,
+      "tpr": 0.5505747126436782,
+      "fnr": 0.4494252873563218,
+      "fpr": 0.2449742870500234,
+      "selection_rate": 0.3820572312451663,
+      "subjects": 1178,
+      "eo_difference": 0.048570776960359274,
+      "dp_difference": 0.06166974169741696
+    }
+  ],
+  "human_testing_completed": false
+}

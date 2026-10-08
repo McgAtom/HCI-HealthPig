@@ -1,0 +1,28 @@
+{
+  "sources": [
+    {
+      "file": "DEMO_G.xpt",
+      "sha256": "eaf0525d1952626885af3e935415a1f66ad62c18698080e7354789c125af252d",
+      "bytes": 3753760,
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2011/DataFiles/DEMO_G.xpt"
+    },
+    {
+      "file": "PAXDAY_G.xpt",
+      "sha256": "2c2ffafe0896de13658233576661eaf6addc81109aee2b28b2018b940e752079",
+      "bytes": 6486720,
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2011/DataFiles/PAXDAY_G.xpt"
+    },
+    {
+      "file": "DEMO_H.xpt",
+      "sha256": "f8f0cbb3085a323d4cde22349b164878fea1e64dbc404e65b5815c7816b547d7",
+      "bytes": 3833200,
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2013/DataFiles/DEMO_H.xpt"
+    },
+    {
+      "file": "PAXDAY_H.xpt",
+      "sha256": "a2938ac350d077091207de706c848461e282984747c83c1f07070f9a04a849f6",
+      "bytes": 7318800,
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2013/DataFiles/PAXDAY_H.xpt"
+    }
+  ]
+}

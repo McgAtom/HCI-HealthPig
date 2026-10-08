@@ -1,0 +1,57 @@
+{
+  "deployed": "logistic_regression",
+  "threshold": 0.5,
+  "metrics": {
+    "accuracy": 0.8603504122497055,
+    "balanced_accuracy": 0.842538759604351,
+    "precision": 0.5078199808490265,
+    "recall": 0.8175745118191161,
+    "f1_positive": 0.6265012797794841,
+    "macro_f1": 0.7703107150402695,
+    "confusion_matrix": [
+      [
+        10096,
+        1542
+      ],
+      [
+        355,
+        1591
+      ]
+    ],
+    "fpr": 0.13249699261041417,
+    "fnr": 0.18242548818088386,
+    "predicted_positive_rate": 0.23063898704358068,
+    "roc_auc": 0.9143123573465877,
+    "brier": 0.11093604605836659
+  },
+  "majority_metrics": {
+    "accuracy": 0.8567432273262662,
+    "balanced_accuracy": 0.5,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1_positive": 0.0,
+    "macro_f1": 0.46142256759971456,
+    "confusion_matrix": [
+      [
+        11638,
+        0
+      ],
+      [
+        1946,
+        0
+      ]
+    ],
+    "fpr": 0.0,
+    "fnr": 1.0,
+    "predicted_positive_rate": 0.0,
+    "roc_auc": 0.5,
+    "brier": 0.1432567726737338
+  },
+  "accuracy_cluster_bootstrap_95ci": [
+    0.8377465363566625,
+    0.8816225143209008
+  ],
+  "deployment_decision_after_test_seen": true,
+  "parameters_frozen_before_test": true,
+  "watch_accuracy_measured": false
+}

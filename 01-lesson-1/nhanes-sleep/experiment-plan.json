@@ -1,0 +1,23 @@
+{
+  "version": "sleep-v1",
+  "frozen_before_training": "2026-10-08",
+  "target": "Next calendar day valid accelerometer-algorithm sleep wear minutes <420; not main-night sleep, diagnosis, current health or psychological state",
+  "source": "CDC NHANES 2011-2012 and 2013-2014 PAXDAY plus DEMO",
+  "population": "Age>=18; adults only; age80 is top-coded",
+  "quality": {"day_min": 2, "day_max": 8, "valid_minutes_min": 1200, "unknown_minutes_max": 60, "nonwear_minutes_max": 120, "sleep_minutes_range": [0,1440]},
+  "features": ["sleep_last", "sleep_mean", "sleep_std", "sleep_delta", "history_days", "next_day_sin", "next_day_cos"],
+  "history": "Up to three consecutive completed QC-passing days ending at day d; target d+1 must pass same QC. At least one history day. Never future sleep, activity, demographics, participant id or cycle as predictor.",
+  "split": {"seed": 20261008, "train_fraction": 0.6, "validation_fraction": 0.2, "test_fraction": 0.2, "stratify": "published sex only", "unit": "participant SEQN; all records of a person in same partition"},
+  "models": {
+    "logistic_regression": {"C": [0.1,1.0,10.0], "class_weight": [null,"balanced"], "max_iter": 2000},
+    "random_forest": {"n_estimators": 120, "max_depth": [4,8], "min_samples_leaf": [10,30], "class_weight": [null,"balanced"], "random_state": 20261008}
+  },
+  "threshold_grid": [0.3,0.4,0.5,0.6,0.7],
+  "selection": "Highest validation macro F1, then balanced accuracy, then prefer logistic and decision threshold nearest0.5; no test metrics select model or hyperparameters",
+  "baselines": ["training_majority", "last_day_label_persistence"],
+  "fairness": "RIAGENDR1=Male,2=Female; age groups18-29,30-44,45-59,60+; known metadata only, excluded predictor. Share frozen IDs and target with assignment2.",
+  "test_policy": "After validation selection freeze one configuration per learned family; report both and both simple baselines once on same test. Subsequent fairness experiment is predefined comparison, not further selection on test.",
+  "uncertainty": "Model output is uncalibrated score. Validation reliability and test Brier reported; do not present calibrated probability or certainty. Near threshold display uncertainty as explicit heuristic.",
+  "deployment": "Prototype manual sleep-history input and validation-record replay. HealthKit-to-ActiGraph transfer and device capture not validated. No claim of current health inference.",
+  "bootstrap": {"unit": "participant", "replicates": 300, "seed": 20261008, "metric": "accuracy and paired accuracy gain over persistence"}
+}

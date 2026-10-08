@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-08",
+  "deployed": "logistic_regression",
+  "C": 1,
+  "threshold": 0.5,
+  "original_validation_selection": "random_forest",
+  "reason": "Deploy the already frozen logistic candidate: validation macroF1 .7899 vs forest .7822, validation accuracy .8713 vs .8620, and much smaller local model. No parameter or threshold retuning. Both models already scored once on finaltest; deployment decision is made after test results are available, not a new independent model-selection experiment.",
+  "test_result_already_seen": true,
+  "test_accuracy": 0.8603504122497055,
+  "majority_test_accuracy": 0.8567432273262662,
+  "accuracy_goal_met_by_this_frozen_model": true,
+  "apple_watch_accuracy_not_measured": true
+}

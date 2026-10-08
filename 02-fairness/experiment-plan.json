@@ -1,0 +1,28 @@
+{
+  "version": "fairness-v1",
+  "frozen_on": "2026-10-08",
+  "source_root": "../01-lesson-1/nhanes-sleep",
+  "source_sha256": {
+    "experiment-plan.json": "55b3031d4b76acc211e478f70e32ce37e82d12b829fa7746758c429824edc9b0",
+    "data/shared-sleep-data.csv": "b46d9d5e9c40bd8e1255df7808f04ea7ed3d2bdd4547c02cadcae574397a23e9",
+    "data/frozen-splits.json": "52b1fb262f64be4002efd6a71efe1d15b4116034767fc31fe83b3516d71b3f7b",
+    "models/selection.json": "f64e89813069a62ba1e7d2161ef86d44a3857fe1ca090902ba431fcbf89196a0",
+    "models/random_forest.joblib": "3d6ddf1ae38ed6ccb1554ec7fcae7d080eb3bda26843a766d0e044cc65f502d8"
+  },
+  "primary_attribute": "sex",
+  "audit_attributes": ["sex", "age_group", "intersection"],
+  "age_boundaries": [18, 30, 45, 60],
+  "seed": 20261008,
+  "difference_bounds": [0.01, 0.03, 0.06, 0.10],
+  "eps": 0.01,
+  "max_iter": 50,
+  "oracle": "Same RF tree count/depth/leaf/random seed as assignment1; class_weight=None because EG supplies cost-sensitive sample_weight. Include unconstrained oracle reference to disclose this difference.",
+  "selection": "Among EG candidates with validation balanced accuracy AND macro F1 each no more than 0.02 below assignment1 baseline, choose smallest validation sex EO difference; ties higher macro F1, then tighter bound. If none qualify, highest balanced accuracy then smallest EO. Attempted mitigation is reported even if it fails; recommend only if validation EO improves and performance budget passes.",
+  "performance_loss_budget": 0.02,
+  "test_policy": "Assignment1 test was already disclosed. Freeze selection.json before predicting any fairness test labels. No feature, split, age boundary, threshold or constraint changes based on test outcomes.",
+  "prediction_policy": "Official EG randomized binary predictions use seed20261008 in row order of frozen CSV. Ten predeclared seeds20261008..20261017 diagnose variability only, never select by test.",
+  "bootstrap": {"replicates": 500, "unit": "participant", "stratify": "sex x age group", "paired": true, "seed": 20261008},
+  "small_support_warning": {"subjects": 30, "positive_or_negative_records": 30},
+  "interpretation": "Positive is next calendar day accelerometer-algorithm sleep wear minutes<420 including naps. No diagnosis. US adults; age80 top-coded; no survey weighting. Group differences are descriptive, not causal discrimination proof.",
+  "human_testing_completed": false
+}
