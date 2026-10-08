@@ -15,6 +15,8 @@
 
 顶部运行目标选择实际Apple Watch；`Any watchOS Device`只能构建，不能启动。若Xcode提示解锁设备，在手表上解锁后继续运行。Mac本地预览需要另行安装watchOS模拟器运行时。
 
+共享HealthPig方案的普通Run不等待调试器，适合安装和演示。若需断点，在Product → Scheme → Edit Scheme → Run → Info勾选“Debug executable”；“Waiting to attach”表示调试连接尚未完成。
+
 应用已包含实际训练的轻量模型，无须先下载训练数据。HealthKit展示已有心率、睡眠和步数；这些记录不参与本次动作分类。健康数据只在设备本地处理。
 
 ## 查看公平性页面

@@ -22,6 +22,7 @@
     "01-lesson-1/watch-pig-live/HealthPig-Info.plist",
     "01-lesson-1/watch-pig-live/HealthPig.entitlements",
     "01-lesson-1/watch-pig-live/HealthPig.xcodeproj/project.pbxproj",
+    "01-lesson-1/watch-pig-live/HealthPig.xcodeproj/xcshareddata/xcschemes/HealthPig.xcscheme",
     "01-lesson-1/watch-pig-live/Resources/motion-model.json",
     "01-lesson-1/watch-pig-live/Sources/HealthPigApp.swift",
     "01-lesson-1/watch-pig-live/Sources/HealthReader.swift",
