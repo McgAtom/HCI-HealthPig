@@ -72,8 +72,12 @@ def main():
         if path.is_symlink() or not path.resolve().is_relative_to(ROOT.resolve()): raise ValueError('Unsafe path')
         check(relative,path.read_bytes(),allowed)
     if (ROOT/'.git').exists():
-        for relative in git('ls-files','-z').split('\0'):
-            if relative: check(relative,subprocess.check_output(['git','show',':'+relative],cwd=ROOT),allowed)
+        tracked=set(filter(None,git('ls-files','-z').split('\0')))
+        if not args.working_tree:
+            missing=allowed-tracked
+            if missing: raise ValueError('Allowlisted files missing from Git index: '+', '.join(sorted(missing)))
+        for relative in sorted(tracked):
+            check(relative,subprocess.check_output(['git','show',':'+relative],cwd=ROOT),allowed)
         if args.history:
             seen=set()
             for commit in git('rev-list','--all').splitlines():

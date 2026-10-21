@@ -25,6 +25,9 @@
 **/evidence/
 **/user-study/
 **/tests/
+# This reviewed source is required by the public core-check script.
+!apps/healthpig-native/Tests/
+!apps/healthpig-native/Tests/CoreChecks.swift
 **/history/
 **/DerivedData*/
 **/xcuserdata/
