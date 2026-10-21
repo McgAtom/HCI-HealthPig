@@ -7,8 +7,11 @@ import pandas as pd
 from features import NAMES, extract_batch
 
 ROOT=Path(__file__).resolve().parent
-ARCHIVE=ROOT.parent/'stress-study/data/raw/capture24/capture24.zip'
-DOC=ROOT.parent/'stress-study/data/source-docs/capture24'
+DATASETS=ROOT.parent/'stress-study'
+# The standalone assignment-one code bundle retains its original local layout.
+if not DATASETS.is_dir(): DATASETS=ROOT.parent/'stress-study'
+ARCHIVE=DATASETS/'data/raw/capture24/capture24.zip'
+DOC=DATASETS/'data/source-docs/capture24'
 
 def worker(pid):
     start=time.monotonic()

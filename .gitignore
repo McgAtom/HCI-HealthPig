@@ -8,6 +8,8 @@
 !*.entitlements
 !*.pbxproj
 !*.xcscheme
+!*.png
+!*.sh
 !*.json
 !*.txt
 !*.html

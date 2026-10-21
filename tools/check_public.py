@@ -4,6 +4,8 @@ import argparse
 import json
 import re
 import subprocess
+import struct
+import zlib
 
 ROOT = Path(__file__).resolve().parents[1]
 PATTERNS = {
@@ -21,11 +23,28 @@ def git(*args):
 def check(path, data, allowed):
     if path not in allowed: raise ValueError('File outside public allowlist: '+path)
     if len(data)>1_000_000: raise ValueError('Unexpected large file: '+path)
+    if path.endswith('.png'):
+        if not path.startswith('apps/healthpig-native/Resources/PigAssets.xcassets/'):
+            raise ValueError('Artwork outside reviewed resource path: '+path)
+        if data[:8] != b'\x89PNG\r\n\x1a\n': raise ValueError('Invalid PNG: '+path)
+        position=8; kinds=[]
+        while position<len(data):
+            size=int.from_bytes(data[position:position+4],'big'); kind=data[position+4:position+8]
+            if kind not in {b'IHDR',b'PLTE',b'IDAT',b'IEND',b'tRNS',b'sRGB',b'gAMA',b'cHRM'}: raise ValueError('Unreviewed PNG metadata: '+path)
+            chunk=data[position+4:position+8+size]
+            crc=int.from_bytes(data[position+8+size:position+12+size],'big')
+            if zlib.crc32(chunk)!=crc: raise ValueError('Invalid PNG checksum: '+path)
+            if kind==b'IHDR':
+                width,height=struct.unpack('>II',data[position+8:position+16])
+                if not (0<width<=2048 and 0<height<=2048): raise ValueError('Artwork dimensions: '+path)
+            kinds.append(kind); position+=12+size
+        if position!=len(data) or not kinds or kinds[-1]!=b'IEND': raise ValueError('Incomplete PNG: '+path)
+        return
     text=data.decode('utf-8')
     for label,pattern in PATTERNS.items():
         if re.search(pattern,text): raise ValueError(f'{label} detected: {path}')
     if path.endswith('project.pbxproj'):
-        if any(value.strip()!='org.example.HealthPig' for value in re.findall(r'PRODUCT_BUNDLE_IDENTIFIER\s*=([^;]+);',text)):
+        if any(not re.fullmatch(r'org\.example\.HealthPig(?:\.Native(?:\.(?:watchkitapp|PhoneUITests|WatchUITests))?)?',value.strip()) for value in re.findall(r'PRODUCT_BUNDLE_IDENTIFIER\s*=([^;]+);',text)):
             raise ValueError('Personal bundle identifier: '+path)
         if any(value.strip()!='""' for value in re.findall(r'DEVELOPMENT_TEAM\s*=([^;]+);',text)):
             raise ValueError('Signing team: '+path)
@@ -54,7 +73,7 @@ def main():
         check(relative,path.read_bytes(),allowed)
     if (ROOT/'.git').exists():
         for relative in git('ls-files','-z').split('\0'):
-            if relative: check(relative,git('show',':'+relative).encode(),allowed)
+            if relative: check(relative,subprocess.check_output(['git','show',':'+relative],cwd=ROOT),allowed)
         if args.history:
             seen=set()
             for commit in git('rev-list','--all').splitlines():

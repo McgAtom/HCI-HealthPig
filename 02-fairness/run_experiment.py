@@ -21,6 +21,9 @@ from fairlearn.reductions import ExponentiatedGradient, EqualizedOdds
 ROOT = Path(__file__).resolve().parent
 PLAN = json.loads((ROOT / 'experiment-plan.json').read_text())
 SOURCE = (ROOT / PLAN['source_root']).resolve()
+# Preserve the original frozen plan; only its workspace location has changed.
+if not SOURCE.is_dir() and PLAN['source_root'] == '../01-lesson-1/nhanes-sleep':
+    SOURCE = (ROOT / '../../research/nhanes-sleep').resolve()
 FEATURES = json.loads((SOURCE / 'experiment-plan.json').read_text())['features']
 
 def sha(path):

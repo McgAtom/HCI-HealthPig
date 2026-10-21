@@ -1,0 +1,173 @@
+{
+  "version": "v1",
+  "cards": [
+    {
+      "id": "pig-001",
+      "name": "莓莓猪",
+      "series": "点心铺",
+      "flavor": "今天也有一颗甜甜的小心情。",
+      "assetName": "pig-001"
+    },
+    {
+      "id": "pig-002",
+      "name": "包包猪",
+      "series": "点心铺",
+      "flavor": "热乎乎的勇气，刚刚出笼。",
+      "assetName": "pig-002"
+    },
+    {
+      "id": "pig-003",
+      "name": "抹茶卷卷猪",
+      "series": "点心铺",
+      "flavor": "慢慢卷，也能卷出可爱。",
+      "assetName": "pig-003"
+    },
+    {
+      "id": "pig-004",
+      "name": "桃桃汽水猪",
+      "series": "点心铺",
+      "flavor": "把平常的一天，冒成小气泡。",
+      "assetName": "pig-004"
+    },
+    {
+      "id": "pig-005",
+      "name": "焦糖布丁猪",
+      "series": "点心铺",
+      "flavor": "晃一晃，烦恼就滑走了。",
+      "assetName": "pig-005"
+    },
+    {
+      "id": "pig-006",
+      "name": "爆米花猪",
+      "series": "点心铺",
+      "flavor": "今天的小惊喜，噼里啪啦。",
+      "assetName": "pig-006"
+    },
+    {
+      "id": "pig-007",
+      "name": "蘑菇伞伞猪",
+      "series": "秘密花园",
+      "flavor": "偶尔躲进自己的小森林。",
+      "assetName": "pig-007"
+    },
+    {
+      "id": "pig-008",
+      "name": "荷叶漂漂猪",
+      "series": "秘密花园",
+      "flavor": "不着急，顺着今天的风。",
+      "assetName": "pig-008"
+    },
+    {
+      "id": "pig-009",
+      "name": "多肉团团猪",
+      "series": "秘密花园",
+      "flavor": "一点点长大，也很了不起。",
+      "assetName": "pig-009"
+    },
+    {
+      "id": "pig-010",
+      "name": "蒲公英飞飞猪",
+      "series": "秘密花园",
+      "flavor": "小小的我，也能去很远。",
+      "assetName": "pig-010"
+    },
+    {
+      "id": "pig-011",
+      "name": "向日葵暖暖猪",
+      "series": "秘密花园",
+      "flavor": "借你一点点，今天的阳光。",
+      "assetName": "pig-011"
+    },
+    {
+      "id": "pig-012",
+      "name": "苔藓慢慢猪",
+      "series": "秘密花园",
+      "flavor": "休息的时候，也在悄悄生长。",
+      "assetName": "pig-012"
+    },
+    {
+      "id": "pig-013",
+      "name": "云朵棉棉猪",
+      "series": "天气收藏",
+      "flavor": "今天轻一点，也没关系。",
+      "assetName": "pig-013"
+    },
+    {
+      "id": "pig-014",
+      "name": "雨天蹦蹦猪",
+      "series": "天气收藏",
+      "flavor": "踩一脚水花，快乐会响。",
+      "assetName": "pig-014"
+    },
+    {
+      "id": "pig-015",
+      "name": "落雪围巾猪",
+      "series": "天气收藏",
+      "flavor": "给努力的你，围上一点暖。",
+      "assetName": "pig-015"
+    },
+    {
+      "id": "pig-016",
+      "name": "晚霞风筝猪",
+      "series": "天气收藏",
+      "flavor": "把今天，放进温柔的晚霞。",
+      "assetName": "pig-016"
+    },
+    {
+      "id": "pig-017",
+      "name": "雷电充能猪",
+      "series": "天气收藏",
+      "flavor": "小小充个电，再出发。",
+      "assetName": "pig-017"
+    },
+    {
+      "id": "pig-018",
+      "name": "月亮晚安猪",
+      "series": "天气收藏",
+      "flavor": "今天辛苦啦，梦里继续可爱。",
+      "assetName": "pig-018"
+    },
+    {
+      "id": "pig-019",
+      "name": "土星环环猪",
+      "series": "奇遇宇宙",
+      "flavor": "绕个圈，也是在探索世界。",
+      "assetName": "pig-019"
+    },
+    {
+      "id": "pig-020",
+      "name": "星航员猪",
+      "series": "奇遇宇宙",
+      "flavor": "今天也要，着陆一个小愿望。",
+      "assetName": "pig-020"
+    },
+    {
+      "id": "pig-021",
+      "name": "魔法泡泡猪",
+      "series": "奇遇宇宙",
+      "flavor": "把普通日子，调成神奇口味。",
+      "assetName": "pig-021"
+    },
+    {
+      "id": "pig-022",
+      "name": "龙龙守护猪",
+      "series": "奇遇宇宙",
+      "flavor": "勇敢一点，我陪着你。",
+      "assetName": "pig-022"
+    },
+    {
+      "id": "pig-023",
+      "name": "纸船远航猪",
+      "series": "奇遇宇宙",
+      "flavor": "纸做的小船，也装得下远方。",
+      "assetName": "pig-023"
+    },
+    {
+      "id": "pig-024",
+      "name": "小小骑士猪",
+      "series": "奇遇宇宙",
+      "flavor": "温柔，也是一种很厉害的力量。",
+      "assetName": "pig-024"
+    }
+  ]
+}

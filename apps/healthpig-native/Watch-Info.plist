@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDisplayName</key>
+	<string>走走猪猪</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>经你授权，读取已有步数、睡眠、心率及今日活动圆环，显示记录与趋势；三个圆环全闭合可解锁当天猪猪抽卡。</string>
+	<key>NSMotionUsageDescription</key>
+	<string>在手表上读取约10秒加速度，仅区分步行与坐站，不用于医疗判断。</string>
+	<key>WKApplication</key>
+	<true/>
+	<key>WKBackgroundModes</key>
+	<array>
+		<string>self-care</string>
+	</array>
+	<key>WKCompanionAppBundleIdentifier</key>
+	<string>org.example.HealthPig.Native</string>
+	<key>WKRunsIndependentlyOfCompanionApp</key>
+	<true/>
+</dict>
+</plist>
