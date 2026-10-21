@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 
 final class PhoneFlowTests: XCTestCase {
     func testNativeTabsAndCollection() throws {
@@ -180,6 +181,127 @@ final class PhoneFlowTests: XCTestCase {
         if #available(iOS 17.0, *) {
             try app.performAccessibilityAudit(for: [.contrast, .sufficientElementDescription])
         }
+    }
+
+    private func evidence(_ app: XCUIApplication, _ name: String) {
+        let shot = XCTAttachment(screenshot: app.screenshot())
+        shot.name = name; shot.lifetime = .keepAlways; add(shot)
+        let tree = XCTAttachment(string: app.debugDescription)
+        tree.name = name + "-accessibility-tree"; tree.lifetime = .keepAlways; add(tree)
+    }
+
+    private func openInput(_ app: XCUIApplication, captureMore: Bool = false) {
+        app.launch()
+        XCTAssertTrue(app.tabBars.buttons["更多"].waitForExistence(timeout: 20))
+        app.tabBars.buttons["更多"].tap()
+        if captureMore {
+            XCTAssertTrue(app.buttons["demo.entry"].isHittable)
+            XCTAssertTrue(app.buttons["accessibility.help"].isHittable)
+            evidence(app, "a11y-phone-more")
+        }
+        app.buttons["demo.entry"].tap(); app.buttons["demo.edit"].tap()
+        XCTAssertTrue(app.buttons["input.apply"].waitForExistence(timeout: 10))
+    }
+
+    func testAccessibilityInputAudit() throws {
+        let app = XCUIApplication(); openInput(app, captureMore: true)
+        evidence(app, "a11y-input")
+        try app.performAccessibilityAudit(for: [.sufficientElementDescription, .hitRegion, .textClipped])
+    }
+
+    func testInputContrastAudit() throws {
+        let app = XCUIApplication(); openInput(app)
+        // Run contrast independently of the text-resizing audit. Earlier combined checks
+        // produced warnings; retain those results and verify actual screenshot color pairs too.
+        try app.performAccessibilityAudit(for: [.contrast])
+        evidence(app, "a11y-input-contrast-review")
+    }
+
+    func testKeyboardEditingRecoveryAndReanalysis() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication(); openInput(app)
+        let field = app.descendants(matching: .any).matching(identifier: "input.single-value").firstMatch
+        XCTAssertTrue(field.exists); field.tap(); field.typeText("--")
+        evidence(app, "a11y-keyboard-typed")
+        field.typeText("\n")
+        let error = app.descendants(matching: .any).matching(identifier: "input.error").firstMatch
+        XCTAssertTrue(error.waitForExistence(timeout: 5))
+        evidence(app, "a11y-keyboard-input-error")
+        XCTAssertTrue((field.value as? String ?? "").contains("--"), "Keep the invalid value for correction")
+        let restore = app.buttons["input.restore"]
+        for _ in 0..<5 { if restore.isHittable { break }; app.swipeUp() }
+        restore.tap()
+        app.buttons["input.apply"].tap()
+        XCTAssertTrue(app.buttons["demo.analyze"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["demo.result"].exists)
+        app.buttons["demo.analyze"].tap()
+        XCTAssertTrue(app.staticTexts["demo.result"].waitForExistence(timeout: 5))
+        evidence(app, "a11y-keyboard-reanalysis")
+        try app.performAccessibilityAudit(for: [.hitRegion, .sufficientElementDescription, .textClipped])
+        app.buttons["demo.edit"].tap()
+        let again = app.descendants(matching: .any).matching(identifier: "input.single-value").firstMatch
+        again.tap(); app.buttons["input.dismiss-keyboard"].tap(); app.buttons["input.cancel"].tap()
+        XCTAssertTrue(app.buttons["demo.analyze"].waitForExistence(timeout: 5))
+        evidence(app, "a11y-keyboard-cancel")
+    }
+
+    func testAccessibilityHealthEmptyAndResultAudit() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication(); app.launch()
+        XCTAssertTrue(app.buttons["phone.review"].waitForExistence(timeout: 20))
+        app.buttons["phone.review"].tap()
+        evidence(app, "a11y-health-empty")
+        try app.performAccessibilityAudit(for: [.contrast, .sufficientElementDescription, .hitRegion, .textClipped])
+        app.terminate(); app.launch(); app.tabBars.buttons["更多"].tap(); app.buttons["demo.entry"].tap()
+        app.buttons["demo.analyze"].tap()
+        XCTAssertTrue(app.staticTexts["demo.result"].waitForExistence(timeout: 5))
+        evidence(app, "a11y-model-result")
+        try app.performAccessibilityAudit(for: [.contrast, .sufficientElementDescription, .hitRegion, .textClipped])
+    }
+
+    func testSystemLargeTextInputAndRecovery() throws {
+        // Set the simulator's real content_size before running; no Debug size injection.
+        try XCTSkipUnless(UIApplication.shared.preferredContentSizeCategory.isAccessibilityCategory, "Requires a system accessibility text size")
+        continueAfterFailure = false
+        let app = XCUIApplication(); openInput(app)
+        let field = app.descendants(matching: .any).matching(identifier: "input.single-value").firstMatch
+        XCTAssertTrue(field.exists)
+        evidence(app, "a11y-system-large-input-top")
+        for _ in 0..<7 { if field.isHittable && field.frame.maxY < app.frame.maxY - 30 { break }; app.swipeUp() }
+        evidence(app, "a11y-system-large-input")
+        try app.performAccessibilityAudit(for: [.textClipped, .sufficientElementDescription])
+        let apply = app.buttons["input.apply"]
+        for _ in 0..<7 { if apply.isHittable { break }; app.swipeUp() }
+        XCTAssertTrue(apply.isHittable); XCTAssertGreaterThanOrEqual(apply.frame.height, 44)
+        apply.tap()
+        XCTAssertTrue(app.buttons["demo.analyze"].waitForExistence(timeout: 5))
+        for _ in 0..<7 { if app.buttons["demo.analyze"].isHittable { break }; app.swipeUp() }
+        app.buttons["demo.analyze"].tap()
+        let result = app.staticTexts["demo.result"]
+        for _ in 0..<7 { if result.isHittable { break }; app.swipeUp() }
+        XCTAssertTrue(result.exists); evidence(app, "a11y-system-large-result")
+    }
+
+    func testSystemReducedMotionCompanionResponse() throws {
+        // Enable Reduce Motion in Device Hub's actual simulator settings before running.
+        try XCTSkipUnless(UIAccessibility.isReduceMotionEnabled, "Requires the system Reduce Motion setting")
+        continueAfterFailure = false
+        let app = XCUIApplication(); app.launch()
+        XCTAssertTrue(app.tabBars.buttons["更多"].waitForExistence(timeout: 20)); app.tabBars.buttons["更多"].tap()
+        let entry = app.buttons["companion.demo"]
+        for _ in 0..<6 { if entry.isHittable { break }; app.swipeUp() }; entry.tap()
+        app.buttons["demo.analyze"].tap()
+        let response = app.descendants(matching: .any).matching(identifier: "companion.response").firstMatch
+        for _ in 0..<6 { if response.isHittable { break }; app.swipeUp() }
+        XCTAssertTrue(response.exists); XCTAssertTrue(response.label.contains("一起走"))
+        XCTAssertTrue((response.value as? String ?? "").contains("静态回应"))
+        evidence(app, "a11y-system-reduced-motion-response")
+        app.segmentedControls.buttons["坐／站示例"].tap()
+        XCTAssertFalse(response.exists); app.buttons["demo.analyze"].tap()
+        for _ in 0..<6 { if response.isHittable { break }; app.swipeUp() }
+        XCTAssertTrue(response.label.contains("停下来休息"))
+        XCTAssertTrue((response.value as? String ?? "").contains("静态回应"))
+        evidence(app, "a11y-system-reduced-motion-still")
     }
 
 }

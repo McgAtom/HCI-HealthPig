@@ -76,15 +76,26 @@ struct PigPrimaryButton: ButtonStyle {
 #if os(watchOS)
         configuration.label.font(.headline).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: .infinity).padding(.horizontal, 10).padding(.vertical, 10).frame(minHeight: 44)
-            .foregroundStyle(PigTheme.background)
+            .foregroundStyle(Color.black)
             .background(PigTheme.rose.opacity(configuration.isPressed ? 0.75 : 1), in: Capsule())
             .contentShape(Capsule())
 #else
         configuration.label.font(.headline).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity).padding(.horizontal, 12).padding(.vertical, 14).frame(minHeight: 44)
-            .foregroundStyle(PigTheme.background)
+            .foregroundStyle(Color.black)
             .background(PigTheme.rose.opacity(configuration.isPressed ? 0.75 : 1), in: Capsule())
             .contentShape(Capsule())
 #endif
+    }
+}
+
+struct PigSecondaryButton: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label.font(.body).multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity, minHeight: 44)
+            .padding(.horizontal, 12).padding(.vertical, 6)
+            .foregroundStyle(Color.white)
+            .background(PigTheme.panel, in: RoundedRectangle(cornerRadius: 16))
+            .overlay { RoundedRectangle(cornerRadius: 16).strokeBorder(PigTheme.rose, lineWidth: configuration.isPressed ? 2 : 1) }
     }
 }
 

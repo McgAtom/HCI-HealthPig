@@ -36,7 +36,7 @@ for p in shared+watch+phone+resources:
     kind='sourcecode.swift' if p.suffix=='.swift' else 'folder.assetcatalog' if p.suffix=='.xcassets' else 'text.json'
     file_refs[rel]=obj('file:'+rel,'PBXFileReference',lastKnownFileType=kind,path=rel,sourceTree='<group>')
 products={platform:obj(platform+'product','PBXFileReference',explicitFileType='wrapper.application',path='HealthPig'+platform+'.app',sourceTree='BUILT_PRODUCTS_DIR') for platform in ['Watch','Phone']}
-common={'SWIFT_VERSION':'5.0','CLANG_ENABLE_MODULES':'YES','CODE_SIGN_STYLE':'Automatic','DEVELOPMENT_TEAM':'','MARKETING_VERSION':'0.7.0','CURRENT_PROJECT_VERSION':'7','GENERATE_INFOPLIST_FILE':'YES','ENABLE_PREVIEWS':'YES','PRODUCT_NAME':'$(TARGET_NAME)','SWIFT_EMIT_LOC_STRINGS':'YES','ASSETCATALOG_COMPILER_APPICON_NAME':'AppIcon','ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS':'NO','ENABLE_USER_SCRIPT_SANDBOXING':'YES'}
+common={'SWIFT_VERSION':'5.0','CLANG_ENABLE_MODULES':'YES','CODE_SIGN_STYLE':'Automatic','DEVELOPMENT_TEAM':'','MARKETING_VERSION':'0.7.1','CURRENT_PROJECT_VERSION':'8','GENERATE_INFOPLIST_FILE':'YES','ENABLE_PREVIEWS':'YES','PRODUCT_NAME':'$(TARGET_NAME)','SWIFT_EMIT_LOC_STRINGS':'YES','ASSETCATALOG_COMPILER_APPICON_NAME':'AppIcon','ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS':'NO','ENABLE_USER_SCRIPT_SANDBOXING':'YES'}
 for platform, sources in [('Watch',shared+watch),('Phone',shared+phone)]:
     builds=[obj(platform+'build:'+p.relative_to(ROOT).as_posix(),'PBXBuildFile',fileRef=file_refs[p.relative_to(ROOT).as_posix()]) for p in sources]
     res=[obj(platform+'resource:'+p.name,'PBXBuildFile',fileRef=file_refs[p.relative_to(ROOT).as_posix()]) for p in resources]

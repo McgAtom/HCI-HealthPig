@@ -4,7 +4,7 @@
 
 ## 当前原生双端入口
 
-[apps/healthpig-native/](apps/healthpig-native/) 是当前watchOS／iOS第7版，支持养猪陪伴、系统三环资格、收藏与同步、健康记录、公开模型输入编辑及独立公平性审核。用Xcode打开其中工程，或按该目录README启动模拟器；不需要先下载训练数据。
+[apps/healthpig-native/](apps/healthpig-native/) 是当前watchOS／iOS第7.1版，支持养猪陪伴、系统三环资格、收藏与同步、健康记录、公开模型输入编辑及独立公平性审核。用Xcode打开其中工程，或按该目录README启动模拟器；不需要先下载训练数据。
 
 历史目录保留原始模型实验与早期手表代码。公开Git记录实际导出时间，不用补造的提交日期代替早期本地迭代证据。
 

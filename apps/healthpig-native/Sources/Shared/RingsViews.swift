@@ -94,6 +94,7 @@ struct PigResponseScene: View {
             }.frame(height: size).accessibilityHidden(true)
             Label(compact ? (verdict == .walking ? "一起走" : verdict == .still ? "休息" : verdict == .uncertain ? "等等" : "待出发") : (verdict == .walking ? "猪猪一起走" : verdict == .still ? "猪猪停下来休息" : verdict == .uncertain ? "猪猪还拿不准，先等等" : "猪猪等你出发"), systemImage: verdict.symbol)
                 .font(.subheadline.weight(.semibold)).foregroundStyle(PigTheme.cream).accessibilityIdentifier("companion.response")
+                .accessibilityValue(reduceMotion ? "静态回应，减少动态效果已开启" : "文字回应")
         }
     }
     private var size: CGFloat {

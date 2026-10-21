@@ -86,38 +86,33 @@ struct PhoneMoreView: View {
     @State private var clearFeedback = false
     var body: some View {
         List {
-            Section("陪伴") {
-                NavigationLink("手表陪伴玩法") { CompanionGuideView() }
+            Section("常用") {
+                NavigationLink { HealthRecordView(health: health) } label: { Label("数据与授权", systemImage: "heart.text.clipboard") }
+                NavigationLink { DemoAnalysisView() } label: { Label("模型体验", systemImage: "play.rectangle") }.accessibilityIdentifier("demo.entry")
+                NavigationLink { AccessibilityHelpView() } label: { Label("操作帮助", systemImage: "accessibility") }.accessibilityIdentifier("accessibility.help")
+                if let reading = store.ledger.reading { NavigationLink("最近动作结果") { ReadingResultView(store: store, reading: reading) } }
             }
-            Section("数据与模型") {
-                NavigationLink { HealthRecordView(health: health) } label: { Label("健康数据与授权", systemImage: "heart.text.clipboard") }
-                NavigationLink { ModelExplanationView() } label: { Label("模型说明与适用范围", systemImage: "info.circle") }
-                NavigationLink { DemoAnalysisView() } label: { Label("公开样本演示", systemImage: "play.rectangle") }.accessibilityIdentifier("demo.entry")
-                NavigationLink { DemoAnalysisView(companionCard: store.companion) } label: { Label("猪猪回应演示", systemImage: "figure.walk") }.accessibilityIdentifier("companion.demo")
+            Section("玩法与依据") {
+                NavigationLink("手表陪伴玩法") { CompanionGuideView() }
+                NavigationLink { ModelExplanationView() } label: { Label("模型适用范围", systemImage: "info.circle") }
+                NavigationLink { DemoAnalysisView(companionCard: store.companion) } label: { Label("猪猪回应示例", systemImage: "figure.walk") }.accessibilityIdentifier("companion.demo")
                 NavigationLink { RingsRuleDemoView() } label: { Label("圆环规则示例", systemImage: "flame") }.accessibilityIdentifier("rings.demo")
-                if let reading = store.ledger.reading { NavigationLink("最近手表动作实验") { ReadingResultView(store: store, reading: reading) } }
-                Text("模型只识别短时步行／坐站，不是健康评分。").font(.caption)
             }
             Section("管理与审核人员") {
-                NavigationLink { AuditCatalogView() } label: { Label("独立公平性审核", systemImage: "person.2") }.accessibilityIdentifier("audit.entry")
-                Text("分组样本、漏判、误判与改进前后对比。").font(.caption)
+                NavigationLink { AuditCatalogView() } label: { Label("公平性审核", systemImage: "person.2") }.accessibilityIdentifier("audit.entry")
             }
             Section("手表与手机") {
                 Label(bridge.status, systemImage: "arrow.triangle.2.circlepath").accessibilityIdentifier("sync.status")
                 if let date = bridge.lastReceivedAt { Text("最近接收 \(date.formatted(date: .abbreviated, time: .shortened))").font(.caption) }
                 Button("再次同步收藏与摘要") { bridge.publish() }.accessibilityIdentifier("sync.retry")
-                Text("断连可用本地收藏，连接后重试同步。").font(.caption)
             }
             Section("我的反馈") {
                 Text("本机已保存 \(store.feedback.count) 条反馈")
-                Text("可在对应动作结果页重新选择修改。反馈仅用于界面理解研究，不会直接训练模型。").font(.caption)
+                Text("在动作结果页可修改；不直接训练模型。").font(.caption)
                 Button("清除本机反馈", role: .destructive) { clearFeedback = true }.disabled(store.feedback.isEmpty)
             }
-            Section("帮助") {
-                NavigationLink { AccessibilityHelpView() } label: { Label("显示与操作帮助", systemImage: "accessibility") }.accessibilityIdentifier("accessibility.help")
-            }
             Section("关于") {
-                Text("走走猪猪 · 原生第 7 版")
+                Text("走走猪猪 · 原生第 7.1 版")
                 Text("HealthPig\n人机交互课程学习项目").font(.caption)
             }
         }.navigationTitle("更多")

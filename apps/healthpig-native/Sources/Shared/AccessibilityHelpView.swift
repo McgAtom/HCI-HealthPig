@@ -7,7 +7,7 @@ struct AccessibilityHelpView: View {
             StatusNote(title: "用读屏操作", message: "系统开启VoiceOver后，按顺序浏览按钮与状态。圆环同时提供数字和闭合文字，图表下有逐日记录。", symbol: "speaker.wave.2")
             StatusNote(title: "减少动画", message: "系统开启“减少动态效果”后，猪猪停止走动动画，文字回应继续显示。", symbol: "hand.raised")
 #if os(iOS)
-            StatusNote(title: "键盘操作", message: "开启系统完整键盘控制后，使用Tab移动焦点、空格激活按钮。输入页可用键盘提交并收起。", symbol: "keyboard")
+            StatusNote(title: "键盘操作", message: "开启系统完整键盘控制后，使用Tab移动焦点、空格激活按钮。逐项输入时Return提交、Escape取消；批量输入保留换行。也提供Command+Return应用或分析快捷键。", symbol: "keyboard")
 #else
             StatusNote(title: "表冠与触控", message: "转动表冠上下滚动；横向滑动切换首页、趋势和收藏。也可从页面中的文字入口进入任务。", symbol: "digitalcrown.horizontal.arrow.clockwise")
 #endif

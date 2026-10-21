@@ -11,12 +11,13 @@ struct DemoAnalysisView: View {
     @State private var failure = ""
     @State private var customFeatures: [Double]?
     @State private var analyzing = false
+    @AccessibilityFocusState private var resultFocused: Bool
     private var example: DemoExample? { document?.examples.first { $0.id == selected } }
     var body: some View {
         PigScreen {
             PigPanel {
                 Label("公开样本 · 演示模式", systemImage: "play.rectangle").font(.headline).foregroundStyle(PigTheme.cream)
-                Text("CAPTURE-24公开数据，可修改后重算；不是本人测量。").font(.caption).foregroundStyle(.secondary)
+                Text("CAPTURE-24示例，不是本人测量。").font(.caption).foregroundStyle(.secondary)
             }
             if let document, let example, let model {
                 Picker("选择演示输入", selection: $selected) {
@@ -28,34 +29,38 @@ struct DemoAnalysisView: View {
                 .pickerStyle(.segmented)
 #endif
                 .accessibilityIdentifier("demo.input")
-                NavigationLink("修改24项输入") {
+                NavigationLink {
                     FeatureEditorView(initial: customFeatures ?? example.features, names: document.featureNames, units: document.featureUnits) { values in
                         customFeatures = values; score = nil; answer = nil; failure = ""
                     }
-                }.accessibilityIdentifier("demo.edit")
+                } label: { Text("修改24项输入").frame(minHeight: 44) }.accessibilityIdentifier("demo.edit")
                 if customFeatures != nil {
                     Label("已修改 · 演示输入", systemImage: "pencil").font(.caption)
-                    Button("恢复选中示例") { customFeatures = nil; score = nil; answer = nil; failure = "" }.accessibilityIdentifier("demo.reset")
+                    Button { customFeatures = nil; score = nil; answer = nil; failure = "" } label: {
+                        Text("恢复选中示例").frame(maxWidth: .infinity, minHeight: 44)
+                    }.buttonStyle(PigSecondaryButton()).accessibilityIdentifier("demo.reset")
                 }
-                NavigationLink("查看输入与单位") {
+                NavigationLink {
                     PigScreen {
                     Text("10 秒、20 Hz 公开记录提取的 24 项特征。修改上方示例后可以重新分析。").font(.caption)
                     ForEach(Array(document.featureNames.enumerated()), id: \.offset) { index, name in
                         VStack(alignment: .leading, spacing: 3) {
-                            Text(name).font(.caption).foregroundStyle(.secondary)
+                            Text(FeatureLabels.title(name)).font(.subheadline)
+                            Text(name).font(.caption.monospaced()).foregroundStyle(.secondary)
                             Text("\((customFeatures ?? example.features)[index], specifier: "%.4f") \(document.featureUnits[index])").font(.caption.monospacedDigit())
                         }
                     }
                     }.navigationTitle("演示输入")
-                }.font(.caption)
+                } label: { Text("查看输入与单位").frame(minHeight: 44) }.font(.caption)
                 Button(analyzing ? "分析中…" : score == nil ? "分析演示样本" : "重新分析此样本") {
-                    score = nil; failure = ""; answer = nil; analyzing = true
+                    resultFocused = false; score = nil; failure = ""; answer = nil; analyzing = true
                     Task { @MainActor in
                         await Task.yield()
                         let output = model.score(customFeatures ?? example.features)
                         if output.isFinite { score = output }
                         else { failure = "输入超出模型可计算范围。请恢复示例后重试。" }
                         analyzing = false
+                        await Task.yield(); resultFocused = true
                     }
                 }.buttonStyle(PigPrimaryButton()).disabled(analyzing).accessibilityIdentifier("demo.analyze")
 #if os(iOS)
@@ -70,7 +75,7 @@ struct DemoAnalysisView: View {
                     }
                     PigPanel {
                         Label("演示结果", systemImage: verdict.symbol).font(.caption).foregroundStyle(PigTheme.mint)
-                        Text(verdict.title).font(.title2.bold()).accessibilityIdentifier("demo.result")
+                        Text(verdict.title).font(.title2.bold()).accessibilityIdentifier("demo.result").accessibilityFocused($resultFocused)
                         Text("只区分步行与坐／站，不评价身体健康。").font(.callout)
                         Text("分数 \(score, specifier: "%.3f") · 分界 \(model.threshold, specifier: "%.3f")").font(.caption)
                         Text("不是健康分或校准后的可信概率。").font(.caption).foregroundStyle(.secondary)
@@ -80,8 +85,8 @@ struct DemoAnalysisView: View {
                         Text("这个解释容易理解吗？").font(.caption)
                         ForEach(["容易理解", "需要更多说明"], id: \.self) { option in
                             Button { answer = option } label: {
-                                HStack { Text(option); Spacer(); if answer == option { Image(systemName: "checkmark.circle.fill") } }
-                            }.buttonStyle(.bordered)
+                                HStack { Text(option); Spacer(); if answer == option { Image(systemName: "checkmark.circle.fill") } }.frame(minHeight: 44)
+                            }.buttonStyle(.bordered).accessibilityValue(answer == option ? "已选中" : "未选中")
                         }
                         if answer != nil {
                             Label("演示选择已更新", systemImage: "checkmark.circle").font(.caption).accessibilityIdentifier("demo.feedback-saved")
@@ -89,13 +94,26 @@ struct DemoAnalysisView: View {
                         }
                     }
                 }
-                Text("来源：\(document.source) · Chan 等（2024）\n许可：\(document.license)\n选取两例仅为说明流程，不能据此推断准确率。").font(.caption).foregroundStyle(.secondary)
+                NavigationLink {
+                    PigScreen {
+                        Text("来源：\(document.source) · Chan 等（2024）\n许可：\(document.license)\n选取两例仅为说明流程，不能据此推断准确率。")
+                            .font(.caption).foregroundStyle(.secondary)
+                        NavigationLink { ModelExplanationView() } label: {
+                            Text("模型适用范围").frame(minHeight: 44)
+                        }
+                    }.navigationTitle("来源与范围")
+                } label: { Text("来源与模型范围").frame(minHeight: 44) }
             } else if failure.isEmpty { ProgressView("读取演示资源") }
             if !failure.isEmpty {
                 StatusNote(title: "演示暂不可用", message: failure, symbol: "exclamationmark.triangle")
-                Button("恢复示例并重试") { customFeatures = nil; score = nil; answer = nil; load() }.accessibilityIdentifier("demo.recover")
+                Button { customFeatures = nil; score = nil; answer = nil; load() } label: {
+                    Text("恢复示例并重试").frame(maxWidth: .infinity, minHeight: 44)
+                }.buttonStyle(PigSecondaryButton()).accessibilityIdentifier("demo.recover")
             }
         }.navigationTitle("公开样本演示")
+#if os(iOS)
+            .navigationBarTitleDisplayMode(.inline).toolbar(.hidden, for: .tabBar)
+#endif
             .task { load() }
             .onChange(of: selected) { _, _ in score = nil; answer = nil; customFeatures = nil; failure = "" }
     }

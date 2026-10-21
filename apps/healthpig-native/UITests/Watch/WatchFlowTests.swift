@@ -155,4 +155,28 @@ final class WatchFlowTests: XCTestCase {
         reveal(result); XCTAssertTrue(result.label.contains("已达到")); shot("22-watch-rings-completed-demo")
     }
 
+    func testCompanionFailureAccessibilityAudit() throws {
+        app.launch()
+        let action = app.buttons["watch.companion"]
+        XCTAssertTrue(action.waitForExistence(timeout: 15)); action.tap()
+        shot("a11y-watch-ready")
+        let start = app.buttons["companion.start"]; reveal(start); start.tap()
+        let failure = app.descendants(matching: .any).matching(identifier: "companion.no-result").firstMatch
+        reveal(failure); XCTAssertTrue(failure.exists)
+        shot("a11y-watch-failure")
+        let again = app.buttons["companion.start"]; reveal(again)
+        XCTAssertTrue(again.isHittable); XCTAssertGreaterThanOrEqual(again.frame.height, 44)
+        again.tap(); reveal(failure); XCTAssertTrue(failure.exists)
+        shot("a11y-watch-retried")
+        try app.performAccessibilityAudit(for: [.sufficientElementDescription, .textClipped])
+    }
+
+    func testWatchCompanionContrast() throws {
+        app.launch()
+        let action = app.buttons["watch.companion"]
+        XCTAssertTrue(action.waitForExistence(timeout: 15)); action.tap()
+        shot("a11y-watch-contrast")
+        try app.performAccessibilityAudit(for: [.contrast])
+    }
+
 }

@@ -11,11 +11,12 @@ struct WalkingCompanionView: View {
     @State private var ended = false
     @State private var generation = UUID()
     @State private var segmentGoal = 3
+    @AccessibilityFocusState private var outcomeFocused: Bool
     var body: some View {
         PigScreen {
-            if running || ended {
+            if running || (ended && !segments.readings.isEmpty) {
                 PigResponseScene(card: store.companion, verdict: segments.readings.last?.verdict ?? .waiting, compact: true)
-            } else {
+            } else if !ended {
                 HStack(spacing: 8) {
                     if let card = store.companion { PigArtwork(card: card, size: 64).frame(width: 68) }
                     Text("走走，陪猪猪").font(.headline)
@@ -25,14 +26,15 @@ struct WalkingCompanionView: View {
                 Button("结束") { stop() }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("companion.stop")
                 Text("第 \(segments.readings.count + 1) / \(segmentGoal) 段").font(.headline)
                 ProgressView(value: motion.progress).tint(PigTheme.mint)
+                    .accessibilityLabel("本段动作采集进度").accessibilityValue("\(Int(motion.progress * 100))%")
                 Text(motion.capturing ? "正在采集约 10 秒动作" : "准备下一片段…").font(.caption)
 
             } else if ended {
-                Text("本次陪伴结束").font(.headline)
                 if segments.readings.isEmpty {
                     StatusNote(title: "没有有效动作结果", message: motion.error.isEmpty ? "采集已停止。没有把未采到的时间记成静止。" : motion.error, symbol: "exclamationmark.triangle")
-                        .accessibilityIdentifier("companion.no-result")
+                        .accessibilityIdentifier("companion.no-result").accessibilityFocused($outcomeFocused)
                 } else {
+                    Text("本次陪伴结束").font(.headline)
                     Text("\(segments.readings.count) 个有效片段：步行 \(segments.walking)，坐／站 \(segments.still)，拿不准 \(segments.uncertain)。").font(.caption).accessibilityIdentifier("companion.summary")
 
                     ForEach(Array(segments.readings.enumerated()), id: \.element.id) { index, reading in
@@ -75,11 +77,13 @@ struct WalkingCompanionView: View {
     }
     private func start() {
         guard !running else { return }
+        outcomeFocused = false
         generation = UUID(); segments = CompanionSegments(); ended = false; running = true
         motion.error = ""; motion.start()
         if !motion.error.isEmpty { stop() }
     }
     private func stop() {
         generation = UUID(); running = false; ended = true; motion.cancel()
+        Task { @MainActor in await Task.yield(); outcomeFocused = true }
     }
 }
