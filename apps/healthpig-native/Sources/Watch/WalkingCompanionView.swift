@@ -1,89 +1,81 @@
 import SwiftUI
 import WatchKit
 
-// Short, foreground-only sessions reuse the frozen ten-second pipeline unchanged.
+// Wrist-first: entering from the deliberate "养猪" action starts one capture.
 struct WalkingCompanionView: View {
     @ObservedObject var store: PigStore
     @StateObject private var motion = LiveMotion()
     @Environment(\.scenePhase) private var scenePhase
-    @State private var segments = CompanionSegments()
-    @State private var running = false
-    @State private var ended = false
-    @State private var generation = UUID()
-    @State private var segmentGoal = 3
+    @State private var didEnter = false
+    @State private var reading: WatchReading?
+    @State private var demoVerdict: MotionVerdict?
     @AccessibilityFocusState private var outcomeFocused: Bool
+
     var body: some View {
-        PigScreen {
-            if running || (ended && !segments.readings.isEmpty) {
-                PigResponseScene(card: store.companion, verdict: segments.readings.last?.verdict ?? .waiting, compact: true)
-            } else if !ended {
-                HStack(spacing: 8) {
-                    if let card = store.companion { PigArtwork(card: card, size: 64).frame(width: 68) }
-                    Text("走走，陪猪猪").font(.headline)
-                }
-            }
-            if running {
-                Button("结束") { stop() }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("companion.stop")
-                Text("第 \(segments.readings.count + 1) / \(segmentGoal) 段").font(.headline)
-                ProgressView(value: motion.progress).tint(PigTheme.mint)
-                    .accessibilityLabel("本段动作采集进度").accessibilityValue("\(Int(motion.progress * 100))%")
-                Text(motion.capturing ? "正在采集约 10 秒动作" : "准备下一片段…").font(.caption)
-
-            } else if ended {
-                if segments.readings.isEmpty {
-                    StatusNote(title: "没有有效动作结果", message: motion.error.isEmpty ? "采集已停止。没有把未采到的时间记成静止。" : motion.error, symbol: "exclamationmark.triangle")
-                        .accessibilityIdentifier("companion.no-result").accessibilityFocused($outcomeFocused)
+        WatchFrame {
+            VStack(spacing: 8) {
+                if motion.capturing || !didEnter {
+                    Image(systemName: "waveform.path").font(.title2).foregroundStyle(PigTheme.mint)
+                    Text("陪走中").font(.headline)
+                    ProgressView(value: motion.progress).tint(PigTheme.mint)
+                        .accessibilityLabel("动作采集").accessibilityValue("\(Int(motion.progress * 100))%")
+                    Button("结束") { motion.cancel() }
+                        .buttonStyle(PigPrimaryButton()).accessibilityIdentifier("companion.stop")
+                } else if let verdict = demoVerdict ?? reading?.verdict {
+                    if demoVerdict != nil {
+                        Label("示例", systemImage: "play.rectangle").font(.footnote)
+                    }
+                    PigResponseScene(card: store.companion, verdict: verdict, compact: true)
+                        .accessibilityFocused($outcomeFocused)
+                    retry
                 } else {
-                    Text("本次陪伴结束").font(.headline)
-                    Text("\(segments.readings.count) 个有效片段：步行 \(segments.walking)，坐／站 \(segments.still)，拿不准 \(segments.uncertain)。").font(.caption).accessibilityIdentifier("companion.summary")
-
-                    ForEach(Array(segments.readings.enumerated()), id: \.element.id) { index, reading in
-                        NavigationLink("第 \(index + 1) 段 · \(reading.verdict.title)") { PigScreen { ReadingResultView(store: store, reading: reading) }.navigationTitle("片段与反馈") }
+                    Image(systemName: "exclamationmark.circle").font(.title2).foregroundStyle(PigTheme.cream)
+                    Text(motion.error.isEmpty ? "已结束" : "未采到动作")
+                        .font(.headline).accessibilityValue(motion.error)
+                        .accessibilityIdentifier("companion.no-result").accessibilityFocused($outcomeFocused)
+                    retry
+                    if !motion.error.isEmpty {
+                        Button("看示例") { showDemo() }.buttonStyle(.bordered)
+                            .accessibilityIdentifier("companion.demo")
                     }
                 }
-                Button("再来") { start() }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("companion.start")
-            } else {
-                Button("出发") { start() }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("companion.start")
-                Picker("陪伴长度", selection: $segmentGoal) {
-                    Text("试一试 · 1段").tag(1)
-                    Text("走一会 · 3段").tag(3)
-                }.pickerStyle(.navigationLink).accessibilityIdentifier("companion.length")
-                Text("每段约10秒，离开即停止。").font(.caption).foregroundStyle(.secondary)
             }
-            NavigationLink("样本演示") { DemoAnalysisView(companionCard: store.companion) }.font(.caption).accessibilityIdentifier("companion.demo")
-
-            NavigationLink("玩法与模型") { CompanionGuideView() }.font(.caption)
-            StoreErrorView(store: store)
         }.navigationTitle("养猪")
-            .onChange(of: motion.measuredAt) { _, date in
-                guard running, let date, let score = motion.score, let hz = motion.actualHz else { return }
-                let reading = WatchReading(id: UUID(), date: date, verdict: motion.verdict, score: score,
-                    threshold: motion.threshold, sampleCount: motion.sampleCount, actualHz: hz)
-                guard segments.append(reading) else { stop(); return }
-                store.record(reading)
-                WKInterfaceDevice.current().play(.click)
-                if segments.readings.count == segmentGoal { stop(); return }
-                let expected = generation
-                Task { @MainActor in
-                    try? await Task.sleep(for: .seconds(1))
-                    guard running, generation == expected, scenePhase == .active else { return }
-                    motion.start()
-                    if !motion.error.isEmpty { stop() }
-                }
+            .task {
+                guard !didEnter else { return }
+                didEnter = true
+                start()
             }
-            .onChange(of: motion.error) { _, error in if running && !error.isEmpty { stop() } }
-            .onChange(of: scenePhase) { _, phase in if phase != .active && running { stop() } }
-            .onDisappear { if running { stop() } }
+            .onChange(of: motion.measuredAt) { _, date in
+                guard let date, let score = motion.score, let hz = motion.actualHz else { return }
+                let result = WatchReading(id: UUID(), date: date, verdict: motion.verdict, score: score,
+                    threshold: motion.threshold, sampleCount: motion.sampleCount, actualHz: hz)
+                reading = result; store.record(result); WKInterfaceDevice.current().play(.click)
+                outcomeFocused = true
+            }
+            .onChange(of: motion.error) { _, error in if !error.isEmpty { outcomeFocused = true } }
+            .onChange(of: scenePhase) { _, phase in if phase != .active && motion.capturing { motion.cancel() } }
+            .onDisappear { if motion.capturing { motion.cancel() } }
+    }
+
+    private var retry: some View {
+        Button("再来") { start() }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("companion.start")
     }
     private func start() {
-        guard !running else { return }
         outcomeFocused = false
-        generation = UUID(); segments = CompanionSegments(); ended = false; running = true
-        motion.error = ""; motion.start()
-        if !motion.error.isEmpty { stop() }
+        demoVerdict = nil; reading = nil; motion.error = ""
+        motion.start()
     }
-    private func stop() {
-        generation = UUID(); running = false; ended = true; motion.cancel()
-        Task { @MainActor in await Task.yield(); outcomeFocused = true }
+    private func showDemo() {
+        let bundle = Bundle.main
+        guard let modelURL = bundle.url(forResource: "motion-model", withExtension: "json"),
+              let demoURL = bundle.url(forResource: "demo-examples", withExtension: "json"),
+              let modelBytes = try? Data(contentsOf: modelURL),
+              let demoBytes = try? Data(contentsOf: demoURL),
+              let model = try? JSONDecoder().decode(MotionModel.self, from: modelBytes),
+              let demos = try? JSONDecoder().decode(DemoExamples.self, from: demoBytes).validated(),
+              let example = demos.examples.first else { return }
+        demoVerdict = MotionVerdict.decide(score: model.score(example.features), threshold: model.threshold)
+        outcomeFocused = true
     }
 }

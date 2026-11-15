@@ -25,29 +25,20 @@ struct WatchRootView: View {
     @ObservedObject var store: PigStore
     @ObservedObject var bridge: CompanionBridge
     @StateObject private var health = HealthReader.shared
-    @StateObject private var motion = LiveMotion()
     @Environment(\.scenePhase) private var scenePhase
-    @State private var tab = ProcessInfo.processInfo.arguments.contains("--show-collection") ? 2 : ProcessInfo.processInfo.arguments.contains("--show-trends") ? 1 : 0
+
     var body: some View {
         NavigationStack {
-            TabView(selection: $tab) {
-                WatchTodayView(store: store, health: health, motion: motion).tag(0)
-                TrendHomeView(health: health).tag(1)
-                PigCollectionView(store: store).tag(2)
-            }
-            .tabViewStyle(.page(indexDisplayMode: .automatic))
-            .safeAreaPadding(.bottom, 8)
-            .navigationTitle(tab == 0 ? "走走猪猪" : tab == 1 ? "近期趋势" : "猪猪收藏")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink { WatchMoreView(store: store, bridge: bridge, health: health) } label: {
-                        Image(systemName: "ellipsis").foregroundStyle(PigTheme.background)
-                    }.accessibilityLabel("更多与设置").accessibilityIdentifier("more.entry")
+            WatchTodayView(store: store, health: health)
+                .navigationTitle("走走猪猪")
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        NavigationLink { WatchStatusView(health: health, bridge: bridge) } label: {
+                            Image(systemName: "ellipsis").foregroundStyle(PigTheme.background)
+                        }.accessibilityLabel("今日状态").accessibilityIdentifier("watch.status")
+                    }
                 }
-            }
-        }
-        .onChange(of: scenePhase) { _, value in
-            if value == .background, motion.capturing { motion.cancel() }
+        }.onChange(of: scenePhase) { _, value in
             if value == .active {
                 store.refreshDay()
                 Task { await health.refreshAutomaticallyIfEnabled() }
@@ -56,117 +47,122 @@ struct WatchRootView: View {
     }
 }
 
+struct WatchFrame<Content: View>: View {
+    @Environment(\.dynamicTypeSize) private var textSize
+    @ViewBuilder let content: Content
+    var body: some View {
+        Group {
+            if textSize >= .xxxLarge {
+                ViewThatFits(in: .vertical) {
+                    content.fixedSize(horizontal: false, vertical: true)
+                    ScrollView { content }
+                }
+            } else {
+                content
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .padding(.horizontal, 12).padding(.bottom, 10)
+        .background(PigTheme.background)
+    }
+}
+
 struct WatchTodayView: View {
     @ObservedObject var store: PigStore
     @ObservedObject var health: HealthReader
-    @ObservedObject var motion: LiveMotion
+
     var body: some View {
-        PigScreen {
-            HStack(spacing: 8) {
+        WatchFrame {
+            VStack(spacing: 6) {
+                NavigationLink { WalkingCompanionView(store: store) } label: {
+                    Label("养猪", systemImage: "figure.walk")
+                }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("watch.companion")
                 if let card = store.companion {
-                    PigArtwork(card: card, size: 64).frame(width: 68)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(card.name).font(.subheadline.weight(.semibold)).foregroundStyle(PigTheme.cream).lineLimit(2)
-                        if store.ledger.selection == nil { Text("初始").font(.caption2).foregroundStyle(.secondary) }
+                    HStack(spacing: 8) {
+                        PigArtwork(card: card, size: 47).frame(width: 49).accessibilityHidden(true)
+                        Text(card.name).font(.subheadline.weight(.semibold)).foregroundStyle(PigTheme.cream)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
-            }.frame(maxWidth: .infinity)
-            NavigationLink { WalkingCompanionView(store: store) } label: {
-                Label("养猪", systemImage: "figure.walk")
-            }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("watch.companion")
-            Text("满三环，抽猪猪").font(.caption2).foregroundStyle(.secondary)
-            NavigationLink { ActivityRingsView(health: health) } label: {
-                Label(health.rings?.canUnlock() == true ? "满能量" : "能量", systemImage: "flame")
-            }.font(.caption).accessibilityIdentifier("watch.rings")
-            NavigationLink { DailyRevealView(store: store) } label: {
-                Label(store.todayClaim() == nil ? "抽猪" : "已抽", systemImage: store.todayClaim() == nil ? "gift" : "checkmark.circle")
-            }.font(.caption).buttonStyle(.bordered).accessibilityIdentifier("daily.entry")
-            PigPanel {
-                HealthMetric(label: "今日已记录", value: health.steps.map { "\(Int($0))" } ?? "暂无步数", unit: health.steps == nil ? "" : "步", symbol: "shoeprints.fill")
-                if let date = health.refreshedAt { Text("读取于 \(date.formatted(date: .omitted, time: .shortened))").font(.caption2).foregroundStyle(.secondary) }
-                else { NavigationLink("读取健康记录") { HealthRecordView(health: health) }.font(.caption) }
-            }
-            NavigationLink { TodayReviewView(health: health) } label: { Label("记录", systemImage: "heart.text.clipboard") }
-                .font(.caption).accessibilityIdentifier("watch.review")
-            NavigationLink { WatchCaptureView(store: store, motion: motion) } label: {
-                Label("模型", systemImage: "waveform.path")
-            }.font(.caption).accessibilityIdentifier("watch.capture")
-
-            StoreErrorView(store: store)
+                HStack(spacing: 6) {
+                    NavigationLink { WatchDailyView(store: store, health: health) } label: {
+                        WatchCompactButton(title: store.todayClaim() == nil ? "抽猪" : "已抽", symbol: "gift.fill")
+                    }.buttonStyle(.plain).accessibilityIdentifier("daily.entry")
+                    NavigationLink { WatchQuickMoodView(companion: store.companion) } label: {
+                        WatchCompactButton(title: "心情", symbol: "face.smiling.inverse")
+                    }.buttonStyle(.plain).accessibilityIdentifier("watch.mood")
+                }
+            }.padding(.top, 20)
         }
     }
 }
 
-struct WatchCaptureView: View {
-    @ObservedObject var store: PigStore
-    @ObservedObject var motion: LiveMotion
-    @State private var reading: WatchReading?
+struct WatchCompactButton: View {
+    let title, symbol: String
     var body: some View {
-        PigScreen {
-            if motion.capturing {
-                VStack(spacing: 12) {
-                    Image(systemName: "waveform.path").font(.largeTitle).foregroundStyle(PigTheme.mint)
-                    Text(motion.progress == 0 ? "正在准备" : "正在采集").font(.headline)
-                    Text("\(max(0, Int(ceil(10.5 * (1 - motion.progress)))))").font(.system(size: 48, weight: .semibold, design: .rounded)).monospacedDigit()
-                        .accessibilityLabel("约剩余\(max(0, Int(ceil(10.5 * (1 - motion.progress)))))秒")
-                    ProgressView(value: motion.progress).tint(PigTheme.mint)
-                    Text("保持正常步行或坐／站\n可以放下手腕").font(.caption).multilineTextAlignment(.center)
-                    Text("已读取 \(motion.sampleCount) 个真实样本").font(.caption2).foregroundStyle(.secondary)
-                    Button("取消采集", role: .cancel) { motion.cancel() }
-                }.frame(maxWidth: .infinity)
-            } else if !motion.error.isEmpty {
-                StatusNote(title: "这次未能完成", message: motion.error, symbol: "exclamationmark.triangle")
-                Button("重新采集") { reading = nil; motion.start() }.buttonStyle(PigPrimaryButton())
-                NavigationLink("查看采集方法") { ModelExplanationView() }
-                NavigationLink("用公开样本体验流程") { DemoAnalysisView() }.accessibilityIdentifier("demo.entry")
-            } else if let reading {
-                ReadingResultView(store: store, reading: reading)
-                Button("再测一次") { self.reading = nil; motion.start() }.buttonStyle(PigPrimaryButton())
-            } else {
-                if let card = store.companion { PigArtwork(card: card, size: 100) }
-                Text("体验模型怎样识别动作").font(.headline)
-                Text("戴好手表，保持正常步行或安静坐／站约 10 秒。").font(.callout)
-                Text("只识别这段动作；离开即停止。").font(.caption).foregroundStyle(.secondary)
-                Button("开始 10 秒采集") { motion.start() }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("capture.start")
-                NavigationLink("方法与适用范围") { ModelExplanationView() }.font(.caption)
-                NavigationLink("公开样本演示") { DemoAnalysisView() }.font(.caption).accessibilityIdentifier("demo.entry")
-            }
-            StoreErrorView(store: store)
-        }.navigationTitle(motion.capturing ? "采集中" : "动作快照")
-            .onChange(of: motion.measuredAt) { _, date in
-                guard let date, let score = motion.score, let hz = motion.actualHz else { return }
-                let result = WatchReading(id: UUID(), date: date, verdict: motion.verdict, score: score,
-                                          threshold: motion.threshold, sampleCount: motion.sampleCount, actualHz: hz)
-                reading = result; store.record(result)
-                WKInterfaceDevice.current().play(.success)
-            }
-            .onDisappear { if motion.capturing { motion.cancel() } }
+        VStack(spacing: 2) {
+            Image(systemName: symbol).font(.subheadline.weight(.semibold))
+            Text(title).font(.footnote.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
+        }.frame(maxWidth: .infinity, minHeight: 44).padding(.horizontal, 3)
+            .foregroundStyle(PigTheme.rose)
+            .background(PigTheme.panel, in: RoundedRectangle(cornerRadius: 14))
+            .contentShape(Rectangle())
+            .accessibilityElement(children: .ignore).accessibilityLabel(title)
     }
 }
 
-struct WatchMoreView: View {
+private struct WatchDailyView: View {
     @ObservedObject var store: PigStore
-    @ObservedObject var bridge: CompanionBridge
     @ObservedObject var health: HealthReader
     var body: some View {
-        List {
-            NavigationLink { HealthRecordView(health: health) } label: { Label("数据与授权", systemImage: "heart.text.clipboard") }
-            NavigationLink { AccessibilityHelpView() } label: { Label("操作帮助", systemImage: "accessibility") }.accessibilityIdentifier("accessibility.help")
-            NavigationLink { ModelInsightsView() } label: { Label("模型判断", systemImage: "chart.bar.xaxis") }.accessibilityIdentifier("watch.insights")
-            NavigationLink { ModelExplanationView() } label: { Label("模型与说明", systemImage: "info.circle") }
-            NavigationLink { AuditCatalogView() } label: { Label("独立模型审核", systemImage: "person.2") }
-            if let reading = store.ledger.reading {
-                NavigationLink("最近动作结果") { ReadingResultView(store: store, reading: reading) }
+        WatchFrame {
+            VStack(spacing: 7) {
+                if let claim = store.todayClaim(), let card = store.catalog?.card(claim.cardID) {
+                    PigArtwork(card: card, size: 63)
+                    Text(card.name).font(.headline)
+                    let worn = store.ledger.selection?.cardID == card.id
+                    Button(worn ? "陪伴中" : "佩戴") { store.wear(card) }
+                        .buttonStyle(PigPrimaryButton()).disabled(worn).accessibilityIdentifier("daily.wear")
+                } else {
+                    let rings = health.rings.flatMap { $0.day == DailyPig.dayKey(.now) ? $0 : nil }
+                    let ready = rings?.canUnlock() == true
+                    Image(systemName: ready ? "gift.fill" : "lock.fill").font(.title2).foregroundStyle(PigTheme.rose)
+                    Text(rings?.paused == true ? "圆环已暂停" : rings.map { "\($0.closedCount) / 3 环" } ?? "圆环待同步")
+                        .font(.headline).accessibilityIdentifier("daily.status")
+                    let optedIn = health.automaticUpdates || health.ringsReadOptIn
+                    Button(health.ringsLoading ? "读取中…" : ready ? "抽猪" : optedIn ? "刷新圆环" : "读取圆环") {
+                        Task {
+                            if optedIn { await health.refreshRings() } else { await health.requestRingsRead() }
+                            if ready { _ = store.claimToday(rings: health.rings) }
+                        }
+                    }.buttonStyle(PigPrimaryButton()).disabled(health.ringsLoading || (ready && !store.ready))
+                        .accessibilityIdentifier(ready ? "daily.reveal" : "daily.refresh")
+                }
+                StoreErrorView(store: store)
             }
-            Section("与 iPhone 配套") {
-                Text(bridge.status).font(.caption).accessibilityIdentifier("sync.status")
-                Button("再次同步") { bridge.publish() }.accessibilityIdentifier("sync.retry")
-                Text("只同步收藏、佩戴和最近动作摘要。健康记录由两端各自读取。").font(.caption2).foregroundStyle(.secondary)
-            }
-            Section("本机反馈") {
-                Text("已记录 \(store.feedback.count) 条，可在结果页修改。").font(.caption2)
-            }
-            Text("原生界面第 7 版 · 课程实验").font(.caption2).foregroundStyle(.secondary)
-        }.navigationTitle("更多")
+        }.navigationTitle("抽猪")
+            .task { if health.automaticUpdates || health.ringsReadOptIn { await health.refreshRings() } }
+    }
+}
+
+private struct WatchStatusView: View {
+    @ObservedObject var health: HealthReader
+    @ObservedObject var bridge: CompanionBridge
+
+    var body: some View {
+        WatchFrame {
+            VStack(alignment: .leading, spacing: 6) {
+                let rings = health.rings.flatMap { $0.day == DailyPig.dayKey(.now) ? $0 : nil }
+                Label(rings.map { "运动 \(Int($0.exercise.value)) 分钟" } ?? "运动 —", systemImage: "figure.walk")
+                Label(rings.map { "站立 \(Int($0.stand.value)) / \(Int($0.stand.goal)) 小时" } ?? "站立 —",
+                      systemImage: "figure.stand")
+                let synced = bridge.status == "对端已保存本次同步" || bridge.status == "已接收并保存在本机"
+                Button { bridge.publish() } label: {
+                    Label(synced ? "已同步" : "同步收藏", systemImage: synced ? "checkmark" : "arrow.triangle.2.circlepath")
+                }.buttonStyle(.bordered).accessibilityValue(bridge.status)
+                Label("详情在手机", systemImage: "iphone").font(.footnote).foregroundStyle(.secondary)
+            }.font(.subheadline).frame(maxWidth: .infinity, alignment: .leading)
+        }.navigationTitle("今日")
+            .task { if health.automaticUpdates || health.ringsReadOptIn { await health.refreshRings() } }
     }
 }

@@ -37,6 +37,7 @@ struct PhoneTodayView: View {
     @ObservedObject var store: PigStore
     @ObservedObject var health: HealthReader
     var openInsights: (() -> Void)? = nil
+    @Environment(\.dynamicTypeSize) private var textSize
 
     var body: some View {
         PigScreen {
@@ -59,16 +60,16 @@ struct PhoneTodayView: View {
                                                  startPoint: .topLeading, endPoint: .bottomTrailing))
                     }
             }
-            if let openInsights {
-                Button(action: openInsights) {
-                    HStack(spacing: 10) {
-                        Image(systemName: "chart.bar.xaxis").font(.title3)
-                        Text("模型判断").font(.headline)
-                        Spacer()
-                        Image(systemName: "chevron.right").font(.caption.weight(.semibold))
-                    }.padding(12).frame(minHeight: 46)
-                        .background(PigTheme.panel, in: RoundedRectangle(cornerRadius: 16))
-                }.buttonStyle(.plain).accessibilityIdentifier("phone.model-insights")
+            let layout = textSize.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 8)) : AnyLayout(HStackLayout(spacing: 8))
+            layout {
+                NavigationLink { WellnessHubView(health: health, companion: store.companion) } label: {
+                    WellnessTile("健康", symbol: "heart.text.clipboard", tint: PigTheme.rose)
+                }.buttonStyle(.plain).accessibilityIdentifier("phone.wellness")
+                if let openInsights {
+                    Button(action: openInsights) {
+                        WellnessTile("模型判断", symbol: "chart.bar.xaxis", tint: Color(red: 0.77, green: 0.77, blue: 1))
+                    }.buttonStyle(.plain).accessibilityIdentifier("phone.model-insights")
+                }
             }
             NavigationLink { ActivityRingsView(health: health) } label: {
                 PigPanel {
@@ -126,7 +127,7 @@ struct PhoneMoreView: View {
                 Button("清除本机反馈", role: .destructive) { clearFeedback = true }.disabled(store.feedback.isEmpty)
             }
             Section("关于") {
-                Text("走走猪猪 · 原生第 8 版")
+                Text("走走猪猪 · 原生第 8.2 版")
                 Text("HealthPig\n人机交互课程学习项目").font(.caption)
             }
         }.navigationTitle("更多")

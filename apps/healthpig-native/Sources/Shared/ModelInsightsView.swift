@@ -13,33 +13,22 @@ struct ModelInsightsView: View {
     var body: some View {
         PigScreen {
             if let report {
-#if os(iOS)
-                header(report)
-#endif
-                Label("整批依赖 · 不是个人病因", systemImage: "info.circle")
-                    .font(.footnote.weight(.medium)).foregroundStyle(PigTheme.cream)
-                    .accessibilityIdentifier("insights.not-causal")
-                VStack(alignment: .leading, spacing: 7) {
-                    HStack(alignment: .firstTextBaseline) {
-                        Text("打乱哪项影响最大？").font(.headline)
-                        Spacer(minLength: 0)
-#if os(iOS)
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Label("打乱输入", systemImage: "shuffle").font(.headline)
+                        Spacer(minLength: 4)
                         Button { showMethod = true } label: {
                             Image(systemName: "info.circle").font(.title3)
                                 .frame(minWidth: 44, minHeight: 44)
-                        }.accessibilityLabel("实验方法与图例")
-#endif
+                        }.buttonStyle(.plain).foregroundStyle(insightAccent)
+                            .accessibilityLabel("图例与实验方法")
                     }
-                    Text(PigText.compact("分数下降 · 百分点", full: "平衡准确率下降 · 百分点"))
-                        .font(.caption).foregroundStyle(.secondary)
+                    Label("表现下降 · 百分点", systemImage: "arrow.down.right")
+                        .font(.subheadline.weight(.medium)).foregroundStyle(insightAccent)
                     scale(report)
                     ForEach(allFeatures ? report.features : report.highlights) { feature in
                         featureRow(feature, report: report)
                     }
-                    HStack(spacing: 7) {
-                        Image(systemName: "line.horizontal")
-                        Text("细线：\(report.repeats) 次最小–最大")
-                    }.font(.caption2).foregroundStyle(.secondary)
                     Button {
                         allFeatures.toggle()
                     } label: {
@@ -49,10 +38,9 @@ struct ModelInsightsView: View {
                     }.buttonStyle(.plain).foregroundStyle(insightAccent)
                     .accessibilityIdentifier("insights.all-features")
                 }.padding(14).background(PigTheme.panel, in: RoundedRectangle(cornerRadius: 22))
-#if os(watchOS)
-                header(report)
-                Button("实验方法") { showMethod = true }.font(.footnote)
-#endif
+                Label("只看动作，不判病因", systemImage: "figure.walk")
+                    .font(.subheadline).foregroundStyle(PigTheme.cream)
+                    .accessibilityIdentifier("insights.not-causal")
             } else {
                 StatusNote(title: "判断资料不可用", message: "重新读取实验结果", symbol: "exclamationmark.triangle")
                 Button("重新读取") { report = ModelInsights.load() }.buttonStyle(PigPrimaryButton())
@@ -73,39 +61,6 @@ struct ModelInsightsView: View {
 #endif
             }
         }
-    }
-
-    private func header(_ report: ModelInsights) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label("动作分类 · CAPTURE-24", systemImage: "waveform.path")
-                .font(.caption.weight(.semibold)).foregroundStyle(insightAccent)
-#if os(iOS)
-            Text("24 项腕部加速度特征").font(.title2.bold())
-#endif
-            ViewThatFits(in: .horizontal) {
-                HStack(spacing: 20) {
-                    metric("验证集基线", String(format: "%.2f%%", report.baseline))
-                    metric("验证窗口", report.windows.formatted())
-                }
-                VStack(alignment: .leading, spacing: 8) {
-                    metric("验证集基线", String(format: "%.2f%%", report.baseline))
-                    metric("验证窗口", report.windows.formatted())
-                }
-            }
-        }.frame(maxWidth: .infinity, alignment: .leading)
-            .padding(14)
-            .background {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(LinearGradient(colors: [insightAccent.opacity(0.21), PigTheme.panel],
-                                         startPoint: .topLeading, endPoint: .bottomTrailing))
-            }
-    }
-
-    private func metric(_ title: String, _ number: String) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(number).font(.title2.bold()).monospacedDigit()
-            Text(title).font(.caption2).foregroundStyle(.secondary)
-        }.accessibilityElement(children: .combine)
     }
 
     private func scale(_ report: ModelInsights) -> some View {
@@ -178,16 +133,12 @@ private struct InsightDetail: View {
                 Text(feature.meaning).font(.subheadline)
                 Label(feature.unit, systemImage: "ruler").font(.caption).foregroundStyle(insightAccent)
             }
-#if os(iOS)
-            Label(String(format: "打乱后平均%@ %.2f 个百分点",
-                         feature.mean < 0 ? "上升" : "下降", abs(feature.mean)),
-                         systemImage: "shuffle").font(.footnote.weight(.semibold))
-                .foregroundStyle(insightAccent)
-#endif
             PigPanel {
-                Text("验证集分布").font(.headline)
-                Text("\(report.windows.formatted()) 个窗口 · \(report.people) 人")
-                    .font(.caption).foregroundStyle(.secondary)
+                Label("验证集分布", systemImage: "chart.bar.xaxis").font(.headline)
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 12) { samplingBadges }
+                    VStack(alignment: .leading, spacing: 6) { samplingBadges }
+                }.font(.subheadline).foregroundStyle(insightAccent)
                 Chart(Array(feature.bins.enumerated()), id: \.offset) { _, bin in
                     RectangleMark(xStart: .value("下界", bin.lower), xEnd: .value("上界", bin.upper),
                                   yStart: .value("零", 0), yEnd: .value("窗口数", bin.count))
@@ -205,13 +156,11 @@ private struct InsightDetail: View {
             }
             if !report.cases.isEmpty {
                 PigPanel {
-                    Text("同为步行，两种结果").font(.headline)
+                    Label("预测对照", systemImage: "rectangle.split.2x1").font(.headline)
                     ViewThatFits(in: .horizontal) {
                         HStack(alignment: .top, spacing: 8) { exampleCards }
                         VStack(spacing: 8) { exampleCards }
                     }
-                    Label("样例对照 · 不解释单条预测原因", systemImage: "info.circle")
-                        .font(.caption2).foregroundStyle(.secondary)
                     Button { showAll.toggle() } label: {
                         Label(showAll ? "收起 24 项输入" : "这两段的 24 项输入",
                               systemImage: showAll ? "chevron.up" : "chevron.down")
@@ -236,6 +185,11 @@ private struct InsightDetail: View {
             .navigationBarTitleDisplayMode(.inline)
 #endif
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("完成") { dismiss() } } }
+    }
+
+    @ViewBuilder private var samplingBadges: some View {
+        Label(report.windows.formatted() + " 窗口", systemImage: "square.stack").monospacedDigit()
+        Label("\(report.people) 人", systemImage: "person.2").monospacedDigit()
     }
 
     private var histogramDomain: ClosedRange<Double> {
@@ -267,9 +221,12 @@ private struct InsightMethod: View {
     var body: some View {
         PigScreen {
             Label("打乱一列 → 重算 → 比基线", systemImage: "shuffle").font(.headline)
+            Label(String(format: "验证集基线 %.2f%%", report.baseline), systemImage: "scope").font(.headline)
+            Text("CAPTURE-24 · 24 项腕部加速度特征")
             Text("同一模型，同一验证集；每项打乱 \(report.repeats) 次。条形与圆点是平均下降，细线是重复结果的最小–最大，不是置信区间。").font(.subheadline)
             Text("零表示无变化，负值表示打乱后分数上升。输入有关联时，重要性可能被分摊或放大。").font(.subheadline)
             Text("平衡准确率是步行与坐／站召回率的平均。比较固定二分类阈值；应用另有「拿不准」提示。").font(.subheadline)
+            Text("排行表示整批数据的模型依赖；正误样例不能解释单条预测为何如此。")
             Label("只判断动作，不能用来判断个人患病原因。", systemImage: "info.circle")
                 .font(.footnote.weight(.semibold)).foregroundStyle(PigTheme.cream)
         }.navigationTitle("怎么看这张图")

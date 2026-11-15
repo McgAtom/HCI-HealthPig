@@ -25,7 +25,8 @@ final class ModelInsightsTests: XCTestCase {
         shot(app, "04-phone-ranking")
         largest.tap()
         XCTAssertTrue(app.staticTexts["验证集分布"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["12,993 个窗口 · 30 人"].exists)
+        XCTAssertTrue(app.staticTexts["12,993 窗口"].exists)
+        XCTAssertTrue(app.staticTexts["30 人"].exists)
         let expandable = app.descendants(matching: .any).matching(identifier: "insights.case-inputs").firstMatch
         if expandable.exists {
             XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "insights.case.correct").firstMatch.exists)

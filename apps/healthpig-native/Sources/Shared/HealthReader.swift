@@ -33,6 +33,12 @@ enum SleepIntervals {
 
 @MainActor final class HealthReader: ObservableObject {
     static let shared = HealthReader()
+    @Published private(set) var vitalRecords: [VitalMetric: [VitalRecord]] = [:]
+    @Published private(set) var vitalsLoading = false
+    @Published private(set) var vitalsError = false
+    @Published private(set) var vitalsEnabled = UserDefaults.standard.bool(forKey: "wellnessVitalsReadOptIn")
+    private var vitalsGeneration = 0
+    @Published private(set) var sleepStages: [SleepStageSlice] = []
     @Published var days: [SleepDay] = []
     @Published var activityDays: [ActivityDay] = []
     @Published var heartRate: Double?
@@ -40,6 +46,7 @@ enum SleepIntervals {
     @Published var steps: Double?
     @Published private(set) var rings: DailyRings?
     @Published private(set) var ringsLoading = false
+    @Published private(set) var ringsReadOptIn = UserDefaults.standard.bool(forKey: "watchRingsReadOptIn")
     @Published private(set) var ringsMessage = "授权后读取今日活动摘要；未读取不等于零。"
     @Published var loading = false
     @Published var message = "点授权，读取本机健康数据库"
@@ -109,7 +116,61 @@ enum SleepIntervals {
         }
     }
 
+    // A separate request keeps existing authorizations from silently expanding.
+    func authorizeVitals() async {
+        guard !vitalsLoading, HKHealthStore.isHealthDataAvailable() else { return }
+        vitalsLoading = true
+        let generation = vitalsGeneration
+        do {
+            try await store.requestAuthorization(toShare: [], read: Set(VitalMetric.allCases.map { $0.type as HKObjectType }))
+            guard generation == vitalsGeneration else { return }
+            vitalsEnabled = true
+            UserDefaults.standard.set(true, forKey: "wellnessVitalsReadOptIn")
+            vitalsLoading = false
+            await refreshVitals()
+        } catch {
+            if generation == vitalsGeneration { vitalsLoading = false; vitalsError = true }
+        }
+    }
+
+    func refreshVitals() async {
+        guard vitalsEnabled, !vitalsLoading, HKHealthStore.isHealthDataAvailable() else { return }
+        vitalsLoading = true; vitalsError = false
+        let generation = vitalsGeneration
+        let now = Date()
+        guard let from = Calendar.current.date(byAdding: .day, value: -6, to: Calendar.current.startOfDay(for: now)) else {
+            vitalsLoading = false; return
+        }
+        var updated: [VitalMetric: [VitalRecord]] = [:]
+        var queryFailed = false
+        for metric in VitalMetric.allCases {
+            guard generation == vitalsGeneration else { return }
+            do {
+                let values = try await samples(type: metric.type, start: from, end: now)
+                let latest = values.compactMap { sample -> VitalRecord? in
+                    guard let value = sample as? HKQuantitySample, (from...now).contains(value.endDate) else { return nil }
+                    let converted = metric.read(value.quantity)
+                    guard converted.isFinite, converted > 0, metric != .oxygen || converted <= 100 else { return nil }
+                    return VitalRecord(id: value.uuid, date: value.endDate, value: converted,
+                                       source: value.sourceRevision.source.name)
+                }
+                updated[metric] = VitalRecord.latestPerDay(latest)
+            } catch { queryFailed = true }
+        }
+        guard generation == vitalsGeneration else { return }
+        vitalRecords = updated; vitalsError = queryFailed; vitalsLoading = false
+    }
+
+    func stopVitals() {
+        vitalsGeneration += 1
+        vitalRecords = [:]; vitalsEnabled = false; vitalsLoading = false; vitalsError = false
+        UserDefaults.standard.removeObject(forKey: "wellnessVitalsReadOptIn")
+    }
+
     func stopAutomaticUpdatesAndClearCache() async {
+        stopVitals()
+        ringsReadOptIn = false
+        UserDefaults.standard.removeObject(forKey: "watchRingsReadOptIn")
         automaticUpdates = false
         UserDefaults.standard.set(false, forKey: "healthAutomaticUpdatesV2")
         refreshTask?.cancel()
@@ -120,7 +181,7 @@ enum SleepIntervals {
         }
         backgroundConfigured = false
         try? FileManager.default.removeItem(at: cacheURL)
-        days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil; rings = nil
+        sleepStages = []; days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil; rings = nil
         ringsMessage = "自动读取已关闭，可重新授权。"
         message = "自动读取已关闭，本机缓存已清除"
         backgroundMessage = "可再次授权开启；系统健康记录未被删除"
@@ -161,12 +222,13 @@ enum SleepIntervals {
 
     private func fetch() async throws {
         // Clear previous data before each query; never present stale data as refreshed.
-        days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil
+        sleepStages = []; days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil
         await refreshRings()
         let now = Date(), calendar = Calendar.current
         let today = calendar.startOfDay(for: now)
         guard let from = calendar.date(byAdding: .day, value: -7, to: today) else { return }
-        let sleepSamples = try await samples(type: sleepType, start: from, end: today)
+        let sleepSamples = try await samples(type: sleepType, start: from, end: now)
+        sleepStages = SleepStageSlice.overnight(sleepSamples.compactMap { $0 as? HKCategorySample }, now: now)
         let asleep = Set([HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue,
                           HKCategoryValueSleepAnalysis.asleepCore.rawValue,
                           HKCategoryValueSleepAnalysis.asleepDeep.rawValue,
@@ -240,6 +302,21 @@ enum SleepIntervals {
         }
     }
 
+    func requestRingsRead() async {
+        guard !ringsLoading, HKHealthStore.isHealthDataAvailable() else { return }
+        ringsLoading = true
+        do {
+            try await store.requestAuthorization(toShare: [], read: [HKObjectType.activitySummaryType()])
+            ringsReadOptIn = true
+            UserDefaults.standard.set(true, forKey: "watchRingsReadOptIn")
+            ringsLoading = false
+            await refreshRings()
+        } catch {
+            ringsLoading = false
+            ringsMessage = "活动摘要未能读取：\(error.localizedDescription)"
+        }
+    }
+
     func refreshRings() async {
         guard !ringsLoading else { return }
         rings = nil
@@ -260,7 +337,7 @@ enum SleepIntervals {
                 }
                 store.execute(query)
             }
-            guard automaticUpdates else { return }
+            guard automaticUpdates || ringsReadOptIn else { return }
             guard let summary, let date = calendar.date(from: summary.dateComponents(for: calendar)) else {
                 ringsMessage = "暂无可读活动摘要。请检查系统健身记录、同步与读取权限。"; return
             }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build, pair, install and launch the native apps on local simulators; never target physical devices."""
+"""Build, install and launch the native apps on an existing simulator pair."""
 from pathlib import Path
 import argparse
 import json
@@ -22,25 +22,23 @@ def simulator(platform, name, device_type):
                 if r['isAvailable'] and r['name'].startswith(platform + ' ')]
     if not runtimes:
         raise SystemExit(f'{platform}运行时尚未安装。在Xcode组件设置安装，或执行 xcodebuild -downloadPlatform {platform} -architectureVariant arm64。')
-    runtime = max(runtimes, key=lambda r: tuple(int(x) for x in r['version'].split('.')))
-    devices = read('xcrun', 'simctl', 'list', 'devices', 'available', '-j')['devices'].get(runtime['identifier'], [])
-    matching = [d for d in devices if d['name'] == name and d['deviceTypeIdentifier'] == device_type]
-    if matching:
-        return matching[0]['udid']
-    return subprocess.check_output(['xcrun', 'simctl', 'create', name, device_type, runtime['identifier']], text=True).strip()
+    devices = read('xcrun', 'simctl', 'list', 'devices', 'available', '-j')['devices']
+    matching = [d for runtime in runtimes for d in devices.get(runtime['identifier'], [])
+                if d['name'] == name and d['deviceTypeIdentifier'] == device_type]
+    if len(matching) != 1:
+        raise SystemExit(f'需要唯一的现有模拟器「{name}」；脚本不会创建模拟器。请在 Device Hub 核对。')
+    return matching[0]['udid']
 
 def main():
     parser = argparse.ArgumentParser(description='Launch native apps on local simulators.')
     parser.add_argument('--reopen-only', action='store_true', help='Reopen installed apps without rebuilding or reinstalling.')
     options = parser.parse_args()
-    watch = simulator('watchOS', 'HCI Watch 46mm', 'com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-10-46mm')
-    phone = simulator('iOS', 'HCI iPhone', 'com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro')
+    watch = simulator('watchOS', 'Apple Watch Series 12 (42mm)',
+                      'com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-12-42mm')
+    phone = simulator('iOS', 'iPhone Air', 'com.apple.CoreSimulator.SimDeviceType.iPhone-Air')
     pairs = list(read('xcrun', 'simctl', 'list', 'pairs', '-j')['pairs'].values())
-    linked = any(p['watch']['udid'] == watch and p['phone']['udid'] == phone for p in pairs)
-    if not linked:
-        if any(p['watch']['udid'] == watch or p['phone']['udid'] == phone for p in pairs):
-            raise SystemExit('HCI模拟器已与另一设备配对。请在Device Hub检查配对；脚本不会解除现有配对。')
-        run('xcrun', 'simctl', 'pair', watch, phone)
+    if not any(p['watch']['udid'] == watch and p['phone']['udid'] == phone for p in pairs):
+        raise SystemExit('没有找到既有的 42 mm 与 iPhone Air 配对；脚本不会创建或改变配对。')
     for uid in [phone, watch]:
         states = [d for group in read('xcrun', 'simctl', 'list', 'devices', '-j')['devices'].values() for d in group]
         if next(d['state'] for d in states if d['udid'] == uid) != 'Booted':
@@ -74,9 +72,9 @@ def main():
             break
         time.sleep(0.5)
     else:
-        raise SystemExit('手表进程已启动，但首页不可见，未报告启动成功。请在Device Hub选择“HCI Watch 46mm”，唤醒屏幕后重试 --reopen-only。')
-    print('\n两端已启动。Device Hub中选择“HCI iPhone”和“HCI Watch 46mm”查看。')
-    print('脚本保留已有收藏；真实传感器采集请另行安排，模拟器可使用“公开样本演示”。')
+        raise SystemExit('手表进程已启动，但首页不可见，未报告启动成功。请在Device Hub选择“Apple Watch Series 12 (42mm)”，唤醒屏幕后重试 --reopen-only。')
+    print('\n两端已启动。Device Hub中选择“iPhone Air”和“Apple Watch Series 12 (42mm)”查看。')
+    print('脚本保留已有收藏；模拟器采集不到动作时可点“看示例”。')
 
 if __name__ == '__main__':
     main()
