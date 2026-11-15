@@ -8,6 +8,7 @@ struct ModelInsightsView: View {
     @State private var selection: ModelInsights.Feature?
     @State private var allFeatures = false
     @State private var showMethod = false
+    @ScaledMetric(relativeTo: .caption2) private var axisHeight = 18.0
 
     var body: some View {
         PigScreen {
@@ -122,7 +123,7 @@ struct ModelInsightsView: View {
                     }
                 }
             }
-        }.frame(height: 18).accessibilityHidden(true)
+        }.frame(height: axisHeight).accessibilityHidden(true)
     }
 
     private func featureRow(_ feature: ModelInsights.Feature, report: ModelInsights) -> some View {
