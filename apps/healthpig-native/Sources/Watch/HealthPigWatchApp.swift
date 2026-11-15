@@ -152,6 +152,7 @@ struct WatchMoreView: View {
         List {
             NavigationLink { HealthRecordView(health: health) } label: { Label("数据与授权", systemImage: "heart.text.clipboard") }
             NavigationLink { AccessibilityHelpView() } label: { Label("操作帮助", systemImage: "accessibility") }.accessibilityIdentifier("accessibility.help")
+            NavigationLink { ModelInsightsView() } label: { Label("模型判断", systemImage: "chart.bar.xaxis") }.accessibilityIdentifier("watch.insights")
             NavigationLink { ModelExplanationView() } label: { Label("模型与说明", systemImage: "info.circle") }
             NavigationLink { AuditCatalogView() } label: { Label("独立模型审核", systemImage: "person.2") }
             if let reading = store.ledger.reading {

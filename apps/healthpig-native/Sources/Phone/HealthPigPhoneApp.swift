@@ -5,6 +5,7 @@ import SwiftUI
     @StateObject private var bridge: CompanionBridge
     @StateObject private var health = HealthReader.shared
     @Environment(\.scenePhase) private var scenePhase
+    @State private var tab = 0
     init() {
         let store = PigStore()
         _store = StateObject(wrappedValue: store)
@@ -12,15 +13,17 @@ import SwiftUI
     }
     var body: some Scene {
         WindowGroup {
-            TabView {
-                NavigationStack { PhoneTodayView(store: store, health: health) }
-                    .tabItem { Label("今日", systemImage: "sun.max") }
+            TabView(selection: $tab) {
+                NavigationStack { PhoneTodayView(store: store, health: health, openInsights: { tab = 3 }) }
+                    .tabItem { Label("今日", systemImage: "sun.max") }.tag(0)
                 NavigationStack { TrendHomeView(health: health) }
-                    .tabItem { Label("趋势", systemImage: "chart.xyaxis.line") }
+                    .tabItem { Label("趋势", systemImage: "chart.xyaxis.line") }.tag(1)
                 NavigationStack { PigCollectionView(store: store) }
-                    .tabItem { Label("猪猪", systemImage: "square.grid.2x2") }
+                    .tabItem { Label("猪猪", systemImage: "square.grid.2x2") }.tag(2)
+                NavigationStack { ModelInsightsView() }
+                    .tabItem { Label("判断", systemImage: "chart.bar.xaxis") }.tag(3)
                 NavigationStack { PhoneMoreView(store: store, bridge: bridge, health: health) }
-                    .tabItem { Label("更多", systemImage: "ellipsis.circle") }
+                    .tabItem { Label("更多", systemImage: "ellipsis.circle") }.tag(4)
             }.modifier(PigAccessibilityTestSize()).tint(PigTheme.rose).preferredColorScheme(.dark)
                 .task { health.beginAutomaticUpdatesIfEnabled() }
                 .onChange(of: scenePhase) { _, phase in
@@ -33,28 +36,39 @@ import SwiftUI
 struct PhoneTodayView: View {
     @ObservedObject var store: PigStore
     @ObservedObject var health: HealthReader
+    var openInsights: (() -> Void)? = nil
+
     var body: some View {
         PigScreen {
-            HStack {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(Date.now.formatted(.dateTime.month().day().weekday(.wide))).font(.caption).foregroundStyle(.secondary)
-                    Text("今天，一起养猪").font(.title.bold()).foregroundStyle(PigTheme.cream)
-                }
-                Spacer()
+            VStack(alignment: .leading, spacing: 4) {
+                Text(Date.now.formatted(.dateTime.month().day().weekday(.wide)))
+                    .font(.caption.weight(.medium)).foregroundStyle(.secondary)
+                Text("今天，一起养猪").font(.largeTitle.bold()).foregroundStyle(PigTheme.cream)
             }
             if let card = store.companion {
-                PigPanel {
-                    HStack(alignment: .center) {
-                        PigArtwork(card: card, size: 100).frame(width: 104)
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(card.name).font(.title2.bold())
-                            Text("今天也一起走走吧").font(.callout).foregroundStyle(.secondary)
-                        }
-                    }
+                VStack(spacing: 10) {
+                    PigArtwork(card: card, size: 148)
+                    Text(card.name).font(.title3.bold())
                     NavigationLink { DailyRevealView(store: store) } label: {
                         Label(store.todayClaim() == nil ? "抽今日猪猪" : "查看今日猪猪", systemImage: "gift")
                     }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("phone.daily-entry")
-                }
+                }.padding(14).frame(maxWidth: .infinity)
+                    .background {
+                        RoundedRectangle(cornerRadius: 25)
+                            .fill(LinearGradient(colors: [PigTheme.color(for: card.series).opacity(0.24), PigTheme.panel],
+                                                 startPoint: .topLeading, endPoint: .bottomTrailing))
+                    }
+            }
+            if let openInsights {
+                Button(action: openInsights) {
+                    HStack(spacing: 10) {
+                        Image(systemName: "chart.bar.xaxis").font(.title3)
+                        Text("模型判断").font(.headline)
+                        Spacer()
+                        Image(systemName: "chevron.right").font(.caption.weight(.semibold))
+                    }.padding(12).frame(minHeight: 46)
+                        .background(PigTheme.panel, in: RoundedRectangle(cornerRadius: 16))
+                }.buttonStyle(.plain).accessibilityIdentifier("phone.model-insights")
             }
             NavigationLink { ActivityRingsView(health: health) } label: {
                 PigPanel {
@@ -112,7 +126,7 @@ struct PhoneMoreView: View {
                 Button("清除本机反馈", role: .destructive) { clearFeedback = true }.disabled(store.feedback.isEmpty)
             }
             Section("关于") {
-                Text("走走猪猪 · 原生第 7.1 版")
+                Text("走走猪猪 · 原生第 8 版")
                 Text("HealthPig\n人机交互课程学习项目").font(.caption)
             }
         }.navigationTitle("更多")
