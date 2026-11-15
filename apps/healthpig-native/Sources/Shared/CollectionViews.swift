@@ -32,12 +32,14 @@ struct DailyRevealView: View {
                     }
                 }.buttonStyle(PigPrimaryButton()).disabled(!store.ready || health.ringsLoading || health.rings?.canUnlock() != true).accessibilityIdentifier("daily.reveal")
                 Text(health.rings?.canUnlock() == true ? "满能量，今天的惊喜等你揭晓。" : "三个环全闭合后可抽。暂无数据时，先读取圆环。").font(.caption).foregroundStyle(.secondary)
-                Button(health.ringsLoading ? "读取中…" : "重新读取圆环") { Task { await health.refreshRings() } }
+                Button(health.ringsLoading ? "读取中…" : health.readsRings ? "重新读取圆环" : "读取圆环") {
+                    Task { await health.requestRingsRead() }
+                }
                     .buttonStyle(.bordered).disabled(health.ringsLoading).accessibilityIdentifier("daily.refresh")
                 NavigationLink("抽卡规则") { DailyRulesView() }
             }
             StoreErrorView(store: store)
-        }.navigationTitle(PigText.compact("抽猪", full: "每日猪猪")).task { if health.automaticUpdates { await health.refreshRings() } }
+        }.navigationTitle(PigText.compact("抽猪", full: "每日猪猪")).task { if health.readsRings { await health.refreshRings() } }
             .onChange(of: store.currentDay) { _, _ in revealed = nil }
     }
     private var artworkSize: CGFloat {

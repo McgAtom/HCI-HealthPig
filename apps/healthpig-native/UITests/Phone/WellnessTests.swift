@@ -38,9 +38,17 @@ final class WellnessTests: XCTestCase {
         shot(app, "wellness-sleep-stages-demo")
         back("睡眠阶段", in: app)
         open("wellness.sleep-plan", in: app)
-        XCTAssertTrue(app.staticTexts["wellness.bedtime"].exists)
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "wellness.bedtime").firstMatch.exists)
+        let proposal = app.staticTexts["sleep.proposal"]
+        XCTAssertTrue(proposal.exists)
+        XCTAssertTrue(app.staticTexts["按你的目标 · 睡眠记录不足"].exists)
+        open("sleep.duration", in: app)
+        open("8 小时 15 分", in: app)
+        open("sleep.use-proposal", in: app)
+        XCTAssertFalse(app.buttons["sleep.use-proposal"].exists)
         let save = app.buttons["wellness.save-sleep"]
         XCTAssertTrue(save.exists)
+        if !save.isHittable { app.swipeUp() }
         if save.isEnabled { save.tap() }
         XCTAssertFalse(save.isEnabled)
         shot(app, "wellness-sleep-plan")

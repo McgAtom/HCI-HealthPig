@@ -20,10 +20,18 @@ struct DailyRings: Equatable {
     var paused = false
     var valid: Bool { DailyPig.ordinal(day) != nil && move.valid && exercise.valid && stand.valid }
     var closedCount: Int { [move, exercise, stand].filter(\.closed).count }
-    func canUnlock(now: Date = .now) -> Bool {
+    func isCurrent(now: Date = .now) -> Bool {
         valid && !paused && day == DailyPig.dayKey(now)
             && now.timeIntervalSince(readAt) >= 0 && now.timeIntervalSince(readAt) <= 300
-            && closedCount == 3
+    }
+    func energy(now: Date = .now) -> Int? {
+        guard isCurrent(now: now), let move = move.fraction, let exercise = exercise.fraction else { return nil }
+        if closedCount == 3 { return 100 }
+        // Standing is required to unlock the reward, but its progress alone does not charge energy.
+        return min(99, Int((move + exercise) / 2 * 100))
+    }
+    func canUnlock(now: Date = .now) -> Bool {
+        isCurrent(now: now) && closedCount == 3
     }
 }
 

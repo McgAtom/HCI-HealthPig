@@ -5,7 +5,7 @@ struct RingSummaryPanel: View {
     var simulated = false
     var body: some View {
         PigPanel {
-            Label(rings.canUnlock() ? "满能量 100 · 可以抽卡" : rings.paused ? "圆环已暂停" : "能量积攒中 · \(rings.closedCount) / 3 环闭合", systemImage: rings.canUnlock() ? "gift.fill" : "flame")
+            Label(rings.canUnlock() ? "满能量 100 · 可以抽卡" : rings.paused ? "圆环已暂停" : rings.energy().map { "能量 \($0) / 100" } ?? "圆环待刷新", systemImage: rings.canUnlock() ? "gift.fill" : "flame")
                 .font(.headline).accessibilityIdentifier("rings.summary")
             ZStack {
                 ForEach(0..<3) { index in
@@ -19,7 +19,7 @@ struct RingSummaryPanel: View {
             row("活动", rings.move, rings.moveUsesMinutes ? "分钟" : "千卡", .pink)
             row("锻炼", rings.exercise, "分钟", .green)
             row("站立／活动小时", rings.stand, "小时", .cyan)
-            Text(simulated ? "模拟目标与数值，仅说明三环规则。不是整体健康评分。" : "目标来自系统设置；三个环全部闭合才满能量。不是整体健康评分。").font(.caption).foregroundStyle(.secondary)
+            Text(simulated ? "示例数据 · 活动与锻炼积攒能量，三环闭合后满 100。" : "活动与锻炼积攒能量，三环闭合后满 100。").font(.caption).foregroundStyle(.secondary)
             Text("\(simulated ? "演示时刻" : "读取于") \(rings.readAt.formatted(date: .omitted, time: .shortened))").font(.caption2).foregroundStyle(.secondary)
         }
     }
@@ -49,11 +49,12 @@ struct ActivityRingsView: View {
             if let rings = health.rings, rings.day == DailyPig.dayKey(.now) { RingSummaryPanel(rings: rings) }
             else { StatusNote(title: "等待今日圆环数据", message: health.ringsMessage, symbol: "circle.dashed").accessibilityIdentifier("rings.unavailable") }
             if health.ringsLoading { ProgressView("正在读取活动摘要") }
-            Button("刷新今日圆环") { Task { await health.refreshRings() } }.buttonStyle(.bordered).disabled(health.ringsLoading)
+            Button(health.readsRings ? "刷新今日圆环" : "读取圆环") { Task { await health.requestRingsRead() } }
+                .buttonStyle(.bordered).disabled(health.ringsLoading)
             NavigationLink("授权与数据来源") { HealthRecordView(health: health) }
             NavigationLink("怎样解锁抽卡？") { DailyRulesView() }
             NavigationLink("圆环规则示例") { RingsRuleDemoView() }.accessibilityIdentifier("rings.demo")
-        }.navigationTitle("猪猪能量").task { if health.automaticUpdates { await health.refreshRings() } }
+        }.navigationTitle("猪猪能量").task { if health.readsRings { await health.refreshRings() } }
     }
 }
 

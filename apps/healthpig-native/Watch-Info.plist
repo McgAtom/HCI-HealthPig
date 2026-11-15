@@ -7,7 +7,7 @@
 	<key>NSHealthShareUsageDescription</key>
 	<string>经你选择读取步数、睡眠、心率、圆环或身体指标（静息心率、心率变异性、呼吸、血氧），用于显示记录和趋势。</string>
 	<key>NSMotionUsageDescription</key>
-	<string>在手表上读取约10秒加速度，仅区分步行与坐站，不用于医疗判断。</string>
+	<string>陪走时读取系统计步；使用测动作时读取约10秒加速度，用于猪猪的动作回应。</string>
 	<key>WKApplication</key>
 	<true/>
 	<key>WKBackgroundModes</key>

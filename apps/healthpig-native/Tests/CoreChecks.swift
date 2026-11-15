@@ -43,6 +43,37 @@ import Foundation
         check(!paused.canUnlock(now: date), "paused rings do not unlock")
         let partial = DailyRings(day: fullRings.day, readAt: date, move: fullRings.move, exercise: RingValue(value: 29.99, goal: 30), stand: fullRings.stand)
         check(!partial.canUnlock(now: date) && partial.closedCount == 2, "rounding cannot close incomplete ring")
+        check(partial.energy(now: date) == 99 && fullRings.energy(now: date) == 100, "only all rings can reach 100")
+        check(paused.energy(now: date) == nil && fullRings.energy(now: date.addingTimeInterval(301)) == nil, "paused or stale energy hidden")
+        let midway = DailyRings(day: fullRings.day, readAt: date, move: RingValue(value: 200, goal: 400),
+            exercise: RingValue(value: 15, goal: 30), stand: RingValue(value: 5, goal: 10))
+        check(midway.energy(now: date) == 50, "mean capped progress of move and exercise")
+        let standOnly = DailyRings(day: fullRings.day, readAt: date, move: RingValue(value: 0, goal: 400),
+            exercise: RingValue(value: 0, goal: 30), stand: fullRings.stand)
+        check(standOnly.energy(now: date) == 0 && !standOnly.canUnlock(now: date), "stand alone does not charge energy")
+        let missingStand = DailyRings(day: fullRings.day, readAt: date, move: fullRings.move,
+            exercise: fullRings.exercise, stand: RingValue(value: 9, goal: 10))
+        check(missingStand.energy(now: date) == 99 && !missingStand.canUnlock(now: date), "stand is required to reach 100")
+
+        var calendar = Calendar(identifier: .gregorian); calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let noon = calendar.date(from: DateComponents(year: 2026, month: 10, day: 25, hour: 12))!
+        var timeline: [SleepSchedule.Interval] = []
+        for offset in 0...4 {
+            let end = noon.addingTimeInterval(Double(-offset * 24 - 5) * 3600)
+            if offset < 3 {
+                timeline.append(.init(start: end.addingTimeInterval(-7 * 3600), end: end, source: "Watch"))
+                timeline.append(.init(start: end.addingTimeInterval(-1800), end: end, source: "Watch"))
+                timeline.append(.init(start: end.addingTimeInterval(7200), end: end.addingTimeInterval(9000), source: "Watch"))
+            }
+            if offset < 2 { timeline.append(.init(start: end.addingTimeInterval(-9 * 3600), end: end, source: "Phone")) }
+        }
+        let nights = SleepSchedule.recentNights(timeline, now: noon, calendar: calendar)
+        check(nights == [420, 420, 420], "deduplicates overlap, excludes naps, selects one source")
+        let plan = SleepSchedule(target: 480, nights: nights)
+        check(plan.duration == 510 && plan.typicalDuration == 420, "recent short nights add a bounded planning buffer")
+        check(SleepSchedule(target: 480, nights: [420, 420]).duration == 480, "fewer than three nights uses chosen goal")
+        check(SleepSchedule(target: 480, nights: [600, 570, 500]).duration == 480, "does not reduce user goal")
+        check(SleepSchedule.bedtime(wake: 420, duration: 510) == 1350, "bedtime wraps across midnight")
         check(!RingValue(value: 0, goal: 0).closed, "missing goal is unknown not completed")
         check(!RingValue(value: .nan, goal: 10).valid && !RingValue(value: -1, goal: 10).valid, "invalid ring values rejected")
         check(RingValue(value: 900, goal: 400).fraction == 1, "overachieving cannot compensate other rings")
@@ -107,6 +138,6 @@ import Foundation
         check(segments.append(still) && segments.walking == 1 && segments.still == 1, "only sampled windows counted by actual verdict")
         let old = WatchReading(id: UUID(), date: date, verdict: .walking, score: 0.9, threshold: 0.5, sampleCount: 210, actualHz: 20)
         check(!segments.append(old), "out of order segment not counted")
-        print("PASS · \(checks) checks: daily dates, 24-card cycle, offline merge, conflict resolution, persistent storage, failed writes, feedback edits, frozen model")
+        print("PASS · \(checks) checks: daily dates, ring energy, sleep scheduling, 24-card cycle, offline merge, persistent storage, feedback edits, frozen model")
     }
 }

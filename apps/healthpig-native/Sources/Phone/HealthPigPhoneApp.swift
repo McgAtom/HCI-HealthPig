@@ -29,6 +29,9 @@ import SwiftUI
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active { store.refreshDay(); Task { await health.refreshAutomaticallyIfEnabled() }; bridge.publish() }
                 }
+                .task(id: scenePhase) {
+                    if scenePhase == .active, health.ringsReadOptIn { await health.refreshRings() }
+                }
         }
     }
 }
@@ -74,7 +77,8 @@ struct PhoneTodayView: View {
             NavigationLink { ActivityRingsView(health: health) } label: {
                 PigPanel {
                     Label("猪猪能量", systemImage: "flame").font(.headline)
-                    Text(health.rings.map { $0.paused ? "圆环已暂停" : "\($0.closedCount) / 3 环闭合" } ?? "等待圆环数据").font(.title3.weight(.semibold))
+                    Text(health.rings?.energy().map { "\($0) / 100" } ?? (health.rings?.paused == true ? "圆环已暂停" : "等待读取"))
+                        .font(.title3.weight(.semibold)).monospacedDigit()
                     Text("三环全闭合，每天抽一只").font(.caption).foregroundStyle(.secondary)
                 }
             }.buttonStyle(.plain).accessibilityIdentifier("phone.rings")

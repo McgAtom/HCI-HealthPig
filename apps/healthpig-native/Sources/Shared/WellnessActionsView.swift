@@ -5,8 +5,8 @@ struct SleepWellnessView: View {
     @ObservedObject var health: HealthReader
     var body: some View {
         PigScreen {
-            NavigationLink { SleepPlanView() } label: {
-                WellnessTile("作息计划", symbol: "alarm.fill", tint: PigTheme.cream)
+            NavigationLink { SleepPlanView(health: health) } label: {
+                WellnessTile("今晚几点睡", symbol: "alarm.fill", tint: PigTheme.cream)
             }.buttonStyle(.plain).accessibilityIdentifier("wellness.sleep-plan")
             if health.sleepStages.isEmpty {
                 PigPanel {
@@ -90,12 +90,15 @@ private let sleepDefaults: UserDefaults = {
 }()
 
 struct SleepPlanView: View {
+    @ObservedObject var health: HealthReader
     @AppStorage("wellnessWakeMinutes", store: sleepDefaults) private var savedWake = -1
     @AppStorage("wellnessSleepMinutes", store: sleepDefaults) private var savedDuration = 480
+    @AppStorage("wellnessSleepTarget", store: sleepDefaults) private var savedTarget = 480
     @State private var wake = 450
     @State private var duration = 480
+    @State private var target = 480
 
-    private var bedtime: Int { (wake - duration + 1440) % 1440 }
+    private var bedtime: Int { SleepSchedule.bedtime(wake: wake, duration: duration) }
     private var wakeDate: Binding<Date> {
         Binding {
             Calendar.current.date(bySettingHour: wake / 60, minute: wake % 60, second: 0, of: .now) ?? .now
@@ -109,25 +112,51 @@ struct SleepPlanView: View {
         let mins = minutes % 60
         return "\(minutes / 60) 小时" + (mins == 0 ? "" : " \(mins) 分")
     }
+    private func durationPicker(_ title: String, icon: String, selection: Binding<Int>, id: String) -> some View {
+        LabeledContent {
+            Picker(title, selection: selection) {
+                ForEach(Array(stride(from: 240, through: 720, by: 15)), id: \.self) { minutes in
+                    Text(durationText(minutes)).tag(minutes)
+                }
+            }.labelsHidden()
+#if os(iOS)
+                .pickerStyle(.menu)
+#endif
+                .accessibilityIdentifier(id)
+        } label: { Label(title, systemImage: icon) }
+    }
     var body: some View {
         PigScreen {
+            let proposal = SleepSchedule(target: target, nights: health.recentNights)
             PigPanel {
-                Label("计划入睡", systemImage: "moon.stars.fill").font(.headline).foregroundStyle(Color(red: 0.77, green: 0.77, blue: 1))
-                Text(clock(bedtime)).font(.largeTitle.bold()).monospacedDigit()
+                Label("今晚建议", systemImage: "moon.stars.fill").font(.headline)
+                    .foregroundStyle(Color(red: 0.77, green: 0.77, blue: 1))
+                Text(clock(SleepSchedule.bedtime(wake: wake, duration: proposal.duration)))
+                    .font(.largeTitle.bold()).monospacedDigit().accessibilityIdentifier("sleep.proposal")
+                Label(durationText(proposal.duration), systemImage: "clock").font(.subheadline)
+                if let typical = proposal.typicalDuration {
+                    Text("近 \(proposal.nightCount) 晚通常睡 \(durationText(typical))").font(.caption).foregroundStyle(.secondary)
+                } else {
+                    Text("按你的目标 · 睡眠记录不足").font(.caption).foregroundStyle(.secondary)
+                }
+                if duration != proposal.duration {
+                    Button("用建议") { duration = proposal.duration }.buttonStyle(.bordered)
+                        .accessibilityIdentifier("sleep.use-proposal")
+                }
+            }
+            PigPanel {
+                LabeledContent("计划入睡", value: clock(bedtime)).font(.headline).monospacedDigit()
                     .accessibilityIdentifier("wellness.bedtime")
                 Divider()
                 DatePicker(selection: wakeDate, displayedComponents: .hourAndMinute) {
                     Label("起床", systemImage: "sun.max.fill")
                 }.accessibilityIdentifier("wellness.wake")
-                Picker(selection: $duration) {
-                    ForEach(Array(stride(from: 240, through: 720, by: 15)), id: \.self) { minutes in
-                        Text(durationText(minutes)).tag(minutes)
-                    }
-                } label: { Label("预留时长", systemImage: "clock") }
+                durationPicker("睡眠目标", icon: "target", selection: $target, id: "sleep.target")
+                durationPicker("预留时长", icon: "clock", selection: $duration, id: "sleep.duration")
             }
-            let saved = savedWake == wake && savedDuration == duration
+            let saved = savedWake == wake && savedDuration == duration && savedTarget == target
             Button {
-                savedWake = wake; savedDuration = duration
+                savedWake = wake; savedDuration = duration; savedTarget = target
             } label: {
                 Label(saved ? "已保存" : "保存", systemImage: saved ? "checkmark.circle.fill" : "checkmark")
             }.buttonStyle(PigPrimaryButton()).disabled(saved)
@@ -139,6 +168,7 @@ struct SleepPlanView: View {
             .onAppear {
                 if savedWake >= 0 && savedWake < 1440 { wake = savedWake }
                 if (240...720).contains(savedDuration), savedDuration.isMultiple(of: 15) { duration = savedDuration }
+                if (240...720).contains(savedTarget), savedTarget.isMultiple(of: 15) { target = savedTarget }
             }
     }
 }

@@ -7,49 +7,70 @@ struct WellnessHubView: View {
     @ObservedObject var health: HealthReader
     let companion: PigCard?
 
+    private var currentSteps: String? {
+        guard let date = health.refreshedAt, Calendar.current.isDateInToday(date), let steps = health.steps else { return nil }
+        return "\(steps.formatted(.number.precision(.fractionLength(0)))) 步"
+    }
+
+    private var currentPulse: String? {
+        guard let date = health.heartDate, Calendar.current.isDateInToday(date), let pulse = health.heartRate else { return nil }
+        return "心率 \(pulse.formatted(.number.precision(.fractionLength(0)))) 次／分"
+    }
+
+    private var recentSleep: String? {
+        guard let sleep = health.recentNights.first else { return nil }
+        return "最近一晚 \(sleep / 60) 小时 \(sleep % 60) 分"
+    }
+
     var body: some View {
         PigScreen {
+            NavigationLink { ActivityRingsView(health: health) } label: {
+                WellnessTile("活动与站立", symbol: "figure.stand", tint: PigTheme.mint,
+                             value: currentSteps ?? health.rings?.energy().map { "能量 \($0)" })
+            }.buttonStyle(.plain)
             NavigationLink { VitalDashboard(health: health) } label: {
-                WellnessTile("身体指标", symbol: "waveform.path.ecg", tint: PigTheme.rose)
+                WellnessTile("身体指标", symbol: "waveform.path.ecg", tint: PigTheme.rose, value: currentPulse)
             }.buttonStyle(.plain).accessibilityIdentifier("wellness.vitals")
             NavigationLink { SleepWellnessView(health: health) } label: {
-                WellnessTile("睡眠与作息", symbol: "moon.stars.fill", tint: lavender)
+                WellnessTile("睡眠与作息", symbol: "moon.stars.fill", tint: lavender, value: recentSleep)
             }.buttonStyle(.plain).accessibilityIdentifier("wellness.sleep")
             NavigationLink { MoodCheckInView(companion: companion) } label: {
                 WellnessTile("心情", symbol: "face.smiling.inverse", tint: PigTheme.cream)
             }.buttonStyle(.plain).accessibilityIdentifier("wellness.mood")
-            NavigationLink { ActivityRingsView(health: health) } label: {
-                WellnessTile("活动与站立", symbol: "figure.stand", tint: PigTheme.mint)
-            }.buttonStyle(.plain)
             NavigationLink { TrendHomeView(health: health) } label: {
-                WellnessTile("步数与睡眠", symbol: "chart.xyaxis.line", tint: lavender)
+                WellnessTile("健康趋势", symbol: "chart.xyaxis.line", tint: lavender)
             }.buttonStyle(.plain)
         }.navigationTitle("健康")
 #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .tabBar)
 #endif
+            .task { await health.refreshAutomaticallyIfEnabled() }
     }
 }
 
 struct WellnessTile: View {
     let title, symbol: String
     let tint: Color
+    let value: String?
 
-    init(_ title: String, symbol: String, tint: Color) {
-        self.title = title; self.symbol = symbol; self.tint = tint
+    init(_ title: String, symbol: String, tint: Color, value: String? = nil) {
+        self.title = title; self.symbol = symbol; self.tint = tint; self.value = value
     }
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: symbol).font(.title3.weight(.semibold))
                 .foregroundStyle(tint).frame(width: 32, height: 32)
                 .background(tint.opacity(0.13), in: RoundedRectangle(cornerRadius: 10))
-            Text(title).font(.headline)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.headline)
+                if let value { Text(value).font(.footnote.monospacedDigit()).foregroundStyle(.secondary) }
+            }
             Spacer(minLength: 4)
             Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
         }.padding(10).frame(minHeight: 46)
             .background(PigTheme.panel, in: RoundedRectangle(cornerRadius: 17))
-            .accessibilityLabel(title)
+            .accessibilityElement(children: .ignore).accessibilityLabel(title).accessibilityValue(value ?? "")
     }
 }
 

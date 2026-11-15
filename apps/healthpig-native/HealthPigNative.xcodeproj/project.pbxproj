@@ -131,6 +131,12 @@
 			"path" = "Sources/Shared/RingsViews.swift";
 			"sourceTree" = "<group>";
 		};
+		"701DB36BE734D25531F8EC26" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Sources/Shared/SleepSchedule.swift";
+			"sourceTree" = "<group>";
+		};
 		"FCF3B8AE9AB8691B8EF1493F" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -165,6 +171,12 @@
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
 			"path" = "Sources/Watch/LiveMotion.swift";
+			"sourceTree" = "<group>";
+		};
+		"406A2CEE499B030AB72603F7" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Sources/Watch/PigWalkView.swift";
 			"sourceTree" = "<group>";
 		};
 		"D11BBB67E0811DB51240E0AF" = {
@@ -329,6 +341,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "69381CAF8441A4B20E38A647";
 		};
+		"E6AD5A952C0E0CD4EA1E1BB1" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "701DB36BE734D25531F8EC26";
+		};
 		"F8C82C5FE166F1BDED93A2DC" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "FCF3B8AE9AB8691B8EF1493F";
@@ -352,6 +368,10 @@
 		"3AD113E129820232C3514698" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "06A24E28A429E85FFB6B6A78";
+		};
+		"F18E39BABC1526043A2FEF29" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "406A2CEE499B030AB72603F7";
 		};
 		"2082ACD56D55D9BBAF75D5B4" = {
 			"isa" = "PBXBuildFile";
@@ -414,12 +434,14 @@
 				"2D20D54EA88B95B4B8E69EED",
 				"03649D4BB5A784F76D54F6DC",
 				"2C556ABDDCDC59A019A2919B",
+				"E6AD5A952C0E0CD4EA1E1BB1",
 				"F8C82C5FE166F1BDED93A2DC",
 				"4DA5C4339AD6395D12FACAB8",
 				"4B0A1D938BD9366588C61019",
 				"32C48B18A08DA308D49A0019",
 				"0DB23BD1085C8D79F12F78C1",
 				"3AD113E129820232C3514698",
+				"F18E39BABC1526043A2FEF29",
 				"2082ACD56D55D9BBAF75D5B4",
 				"2BBD7B10EE0C2AF4F14D0438",
 			);
@@ -453,8 +475,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.2";
-				"CURRENT_PROJECT_VERSION" = "11";
+				"MARKETING_VERSION" = "0.8.3";
+				"CURRENT_PROJECT_VERSION" = "12";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -483,8 +505,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.2";
-				"CURRENT_PROJECT_VERSION" = "11";
+				"MARKETING_VERSION" = "0.8.3";
+				"CURRENT_PROJECT_VERSION" = "12";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -615,6 +637,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "69381CAF8441A4B20E38A647";
 		};
+		"2BD08D3917DDD2DEAFBE888C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "701DB36BE734D25531F8EC26";
+		};
 		"EB58C123C7FFA5D0819CE8CA" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "FCF3B8AE9AB8691B8EF1493F";
@@ -692,6 +718,7 @@
 				"FDF9FFA1FEADC1E3ABFE735A",
 				"531F585DE855E794774DFF58",
 				"642DB91A2F05E0A5D8AF422B",
+				"2BD08D3917DDD2DEAFBE888C",
 				"EB58C123C7FFA5D0819CE8CA",
 				"737B23C5D2C1F263C6843474",
 				"590DE7AE6DCE3FD622084A0E",
@@ -761,8 +788,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.2";
-				"CURRENT_PROJECT_VERSION" = "11";
+				"MARKETING_VERSION" = "0.8.3";
+				"CURRENT_PROJECT_VERSION" = "12";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -793,8 +820,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.2";
-				"CURRENT_PROJECT_VERSION" = "11";
+				"MARKETING_VERSION" = "0.8.3";
+				"CURRENT_PROJECT_VERSION" = "12";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -1149,6 +1176,7 @@
 				"5F839085456F0BF4384371B7",
 				"B46636AC74C98D32D380273B",
 				"69381CAF8441A4B20E38A647",
+				"701DB36BE734D25531F8EC26",
 				"FCF3B8AE9AB8691B8EF1493F",
 				"8437092DCE343EBC06574D8B",
 				"04B921A0B7E80FABB6E9FF89",
@@ -1162,6 +1190,7 @@
 			"children" = (
 				"385107832C11A6E311B90C21",
 				"06A24E28A429E85FFB6B6A78",
+				"406A2CEE499B030AB72603F7",
 				"D11BBB67E0811DB51240E0AF",
 				"DD756D58BBBE0ADC2EBEC85F",
 			);

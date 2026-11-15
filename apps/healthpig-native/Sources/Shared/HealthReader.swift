@@ -39,6 +39,7 @@ enum SleepIntervals {
     @Published private(set) var vitalsEnabled = UserDefaults.standard.bool(forKey: "wellnessVitalsReadOptIn")
     private var vitalsGeneration = 0
     @Published private(set) var sleepStages: [SleepStageSlice] = []
+    @Published private(set) var recentNights: [Int] = []
     @Published var days: [SleepDay] = []
     @Published var activityDays: [ActivityDay] = []
     @Published var heartRate: Double?
@@ -47,6 +48,9 @@ enum SleepIntervals {
     @Published private(set) var rings: DailyRings?
     @Published private(set) var ringsLoading = false
     @Published private(set) var ringsReadOptIn = UserDefaults.standard.bool(forKey: "watchRingsReadOptIn")
+    var readsRings: Bool { automaticUpdates || ringsReadOptIn }
+    private var ringsGeneration = 0
+    private var ringsTask: Task<Void, Never>?
     @Published private(set) var ringsMessage = "授权后读取今日活动摘要；未读取不等于零。"
     @Published var loading = false
     @Published var message = "点授权，读取本机健康数据库"
@@ -169,6 +173,8 @@ enum SleepIntervals {
 
     func stopAutomaticUpdatesAndClearCache() async {
         stopVitals()
+        ringsGeneration += 1
+        ringsTask?.cancel(); ringsTask = nil; ringsLoading = false; rings = nil
         ringsReadOptIn = false
         UserDefaults.standard.removeObject(forKey: "watchRingsReadOptIn")
         automaticUpdates = false
@@ -181,7 +187,7 @@ enum SleepIntervals {
         }
         backgroundConfigured = false
         try? FileManager.default.removeItem(at: cacheURL)
-        sleepStages = []; days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil; rings = nil
+        sleepStages = []; recentNights = []; days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil; rings = nil
         ringsMessage = "自动读取已关闭，可重新授权。"
         message = "自动读取已关闭，本机缓存已清除"
         backgroundMessage = "可再次授权开启；系统健康记录未被删除"
@@ -222,7 +228,7 @@ enum SleepIntervals {
 
     private func fetch() async throws {
         // Clear previous data before each query; never present stale data as refreshed.
-        sleepStages = []; days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil
+        sleepStages = []; recentNights = []; days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil
         await refreshRings()
         let now = Date(), calendar = Calendar.current
         let today = calendar.startOfDay(for: now)
@@ -235,6 +241,9 @@ enum SleepIntervals {
                           HKCategoryValueSleepAnalysis.asleepREM.rawValue])
         let valid = sleepSamples.compactMap { $0 as? HKCategorySample }
             .filter { asleep.contains($0.value) && $0.endDate > $0.startDate }
+        recentNights = SleepSchedule.recentNights(valid.map {
+            .init(start: $0.startDate, end: $0.endDate, source: $0.sourceRevision.source.bundleIdentifier)
+        }, now: now, calendar: calendar)
         for offset in -7..<0 {
             guard let start = calendar.date(byAdding: .day, value: offset, to: today),
                   let end = calendar.date(byAdding: .day, value: 1, to: start) else { continue }
@@ -303,28 +312,41 @@ enum SleepIntervals {
     }
 
     func requestRingsRead() async {
+        if readsRings { await refreshRings(); return }
         guard !ringsLoading, HKHealthStore.isHealthDataAvailable() else { return }
         ringsLoading = true
+        let generation = ringsGeneration
         do {
             try await store.requestAuthorization(toShare: [], read: [HKObjectType.activitySummaryType()])
+            guard ringsGeneration == generation else { return }
             ringsReadOptIn = true
             UserDefaults.standard.set(true, forKey: "watchRingsReadOptIn")
             ringsLoading = false
             await refreshRings()
         } catch {
+            guard ringsGeneration == generation else { return }
             ringsLoading = false
             ringsMessage = "活动摘要未能读取：\(error.localizedDescription)"
         }
     }
 
     func refreshRings() async {
-        guard !ringsLoading else { return }
-        rings = nil
+        if let ringsTask { await ringsTask.value; return }
+        guard readsRings, !ringsLoading else { return }
         guard HKHealthStore.isHealthDataAvailable() else {
-            ringsMessage = "当前设备没有可用健康数据库。可以先查看规则说明。"; return
+            rings = nil; ringsMessage = "当前设备没有可用健康数据库。"; return
         }
         ringsLoading = true
-        defer { ringsLoading = false }
+        let generation = ringsGeneration
+        let task = Task { await fetchRings(generation: generation) }
+        ringsTask = task
+        await task.value
+    }
+
+    private func fetchRings(generation: Int) async {
+        defer {
+            if ringsGeneration == generation { ringsLoading = false; ringsTask = nil }
+        }
         do {
             let now = Date(), calendar = DailyPig.calendar(.current)
             var components = calendar.dateComponents([.era, .year, .month, .day], from: now)
@@ -337,9 +359,9 @@ enum SleepIntervals {
                 }
                 store.execute(query)
             }
-            guard automaticUpdates || ringsReadOptIn else { return }
+            guard ringsGeneration == generation, readsRings else { return }
             guard let summary, let date = calendar.date(from: summary.dateComponents(for: calendar)) else {
-                ringsMessage = "暂无可读活动摘要。请检查系统健身记录、同步与读取权限。"; return
+                rings = nil; ringsMessage = "暂无可读活动摘要。请检查系统健身记录、同步与读取权限。"; return
             }
             let minutes = summary.activityMoveMode == .appleMoveTime
             var paused = false
@@ -350,10 +372,13 @@ enum SleepIntervals {
                 exercise: RingValue(value: summary.appleExerciseTime.doubleValue(for: .minute()), goal: summary.exerciseTimeGoal?.doubleValue(for: .minute()) ?? 0),
                 stand: RingValue(value: summary.appleStandHours.doubleValue(for: .count()), goal: summary.standHoursGoal?.doubleValue(for: .count()) ?? 0),
                 moveUsesMinutes: minutes, paused: paused)
-            guard result.valid else { ringsMessage = "活动摘要的目标不完整，暂不能确认抽卡资格。"; return }
+            guard result.valid else { rings = nil; ringsMessage = "活动摘要的目标不完整，暂不能确认抽卡资格。"; return }
             rings = result
             ringsMessage = paused ? "系统圆环已暂停，当前不判断满能量。" : "来自今日系统活动摘要；目标跟随系统设置。"
-        } catch { ringsMessage = "活动摘要未能读取：\(error.localizedDescription)" }
+        } catch {
+            guard ringsGeneration == generation else { return }
+            rings = nil; ringsMessage = "活动摘要未能读取：\(error.localizedDescription)"
+        }
     }
 }
 
