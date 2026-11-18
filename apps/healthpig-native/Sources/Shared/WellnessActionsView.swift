@@ -135,9 +135,9 @@ struct SleepPlanView: View {
                     .font(.largeTitle.bold()).monospacedDigit().accessibilityIdentifier("sleep.proposal")
                 Label(durationText(proposal.duration), systemImage: "clock").font(.subheadline)
                 if let typical = proposal.typicalDuration {
-                    Text("近 \(proposal.nightCount) 晚通常睡 \(durationText(typical))").font(.caption).foregroundStyle(.secondary)
+                    Text("近 \(proposal.nightCount) 晚通常睡 \(durationText(typical))").font(.subheadline).foregroundStyle(.secondary)
                 } else {
-                    Text("按你的目标 · 睡眠记录不足").font(.caption).foregroundStyle(.secondary)
+                    Text("按你的目标 · 睡眠记录不足").font(.subheadline).foregroundStyle(.secondary)
                 }
                 if duration != proposal.duration {
                     Button("用建议") { duration = proposal.duration }.buttonStyle(.bordered)

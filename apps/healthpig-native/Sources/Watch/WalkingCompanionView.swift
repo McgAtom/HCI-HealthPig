@@ -23,7 +23,7 @@ struct WalkingCompanionView: View {
                         .buttonStyle(PigPrimaryButton()).accessibilityIdentifier("companion.stop")
                 } else if let verdict = demoVerdict ?? reading?.verdict {
                     if demoVerdict != nil {
-                        Label("示例", systemImage: "play.rectangle").font(.footnote)
+                        Label("示例", systemImage: "play.rectangle").font(.subheadline)
                     }
                     PigResponseScene(card: store.companion, verdict: verdict, compact: true)
                         .accessibilityFocused($outcomeFocused)

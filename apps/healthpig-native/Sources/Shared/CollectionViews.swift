@@ -8,14 +8,12 @@ struct DailyRevealView: View {
     var body: some View {
         PigScreen {
             Label(store.todayClaim() == nil ? "三环闭合，解锁今日抽卡" : "今日已领取 · 明天再来", systemImage: store.todayClaim() == nil ? "gift" : "checkmark.circle")
-                .font(.caption).foregroundStyle(PigTheme.mint).accessibilityIdentifier("daily.status")
+                .font(.subheadline.weight(.semibold)).foregroundStyle(PigTheme.mint).accessibilityIdentifier("daily.status")
             if let card = revealed ?? store.todayClaim().flatMap({ store.catalog?.card($0.cardID) }) {
-                Text("今天遇见了").font(.subheadline).foregroundStyle(.secondary)
                 PigArtwork(card: card, size: artworkSize)
                 Text(card.name).font(.title2.bold()).foregroundStyle(PigTheme.cream)
-                Label(card.series, systemImage: "sparkles").font(.caption).foregroundStyle(PigTheme.color(for: card.series))
                 Text(card.flavor).font(.body)
-                Label("已存入收藏", systemImage: "checkmark.circle.fill").font(.caption).foregroundStyle(PigTheme.mint)
+                Label("已存入收藏", systemImage: "checkmark.circle.fill").font(.subheadline).foregroundStyle(PigTheme.mint)
                 Button(store.ledger.selection?.cardID == card.id ? PigText.compact("陪伴中", full: "正在陪伴你") : PigText.compact("佩戴", full: "让它陪伴我")) { store.wear(card) }
                     .accessibilityLabel(store.ledger.selection?.cardID == card.id ? "正在陪伴你" : "让它陪伴我")
                     .buttonStyle(PigPrimaryButton()).disabled(store.ledger.selection?.cardID == card.id).accessibilityIdentifier("daily.wear")
@@ -31,7 +29,6 @@ struct DailyRevealView: View {
                         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.3)) { revealed = card }
                     }
                 }.buttonStyle(PigPrimaryButton()).disabled(!store.ready || health.ringsLoading || health.rings?.canUnlock() != true).accessibilityIdentifier("daily.reveal")
-                Text(health.rings?.canUnlock() == true ? "满能量，今天的惊喜等你揭晓。" : "三个环全闭合后可抽。暂无数据时，先读取圆环。").font(.caption).foregroundStyle(.secondary)
                 RingRefreshAction(health: health, label: "重新读取圆环").accessibilityIdentifier("daily.refresh")
                 NavigationLink("抽卡规则") { DailyRulesView() }
             }
@@ -119,16 +116,13 @@ struct PigCollectionView: View {
                       NavigationLink { PigCardDetailView(store: store, card: card) } label: {
                         VStack(spacing: 5) {
                             PigArtwork(card: card, size: tileSize)
-                            Text(card.name).font(.caption.weight(.medium)).foregroundStyle(.primary).lineLimit(2)
-                            Label(store.ledger.ownedIDs.contains(card.id) ? "已收藏" : "未获得", systemImage: store.ledger.ownedIDs.contains(card.id) ? "checkmark.circle.fill" : "lock")
-                                .font(.caption2).foregroundStyle(store.ledger.ownedIDs.contains(card.id) ? PigTheme.mint : .secondary)
+                            Text(card.name).font(.subheadline.weight(.medium)).foregroundStyle(.primary).lineLimit(2)
                         }.padding(8).frame(maxWidth: .infinity).background(PigTheme.panel, in: RoundedRectangle(cornerRadius: 18))
                       }.buttonStyle(.plain).accessibilityIdentifier("card.\(card.id)")
                     } else {
                         VStack(spacing: 5) {
                             MysteryPigArtwork(size: tileSize)
-                            Text("待相遇").font(.caption.weight(.medium))
-                            Label("尚未获得", systemImage: "lock").font(.caption2).foregroundStyle(.secondary)
+                            Label("未获得", systemImage: "lock").font(.subheadline.weight(.medium))
                         }.padding(8).frame(maxWidth: .infinity).background(PigTheme.panel, in: RoundedRectangle(cornerRadius: 18))
                             .accessibilityElement(children: .ignore).accessibilityLabel("尚未获得的猪猪，领取后揭晓")
                             .accessibilityIdentifier("locked.\(card.id)")
@@ -198,7 +192,6 @@ struct CollectionFilterView: View {
                 ForEach(availableSeries, id: \.self) { Text($0).tag($0) }
             }.pickerStyle(.navigationLink)
             Toggle("只看已收藏", isOn: $onlyOwned).accessibilityIdentifier("collection.only-owned")
-            Text("选择后返回图鉴，条件会立即生效。").font(.caption).foregroundStyle(.secondary)
         }.navigationTitle("筛选收藏")
     }
 }

@@ -64,7 +64,7 @@ struct WellnessTile: View {
                 .background(tint.opacity(0.13), in: RoundedRectangle(cornerRadius: 10))
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).font(.headline)
-                if let value { Text(value).font(.footnote.monospacedDigit()).foregroundStyle(.secondary) }
+                if let value { Text(value).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary) }
             }
             Spacer(minLength: 4)
             Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.secondary)

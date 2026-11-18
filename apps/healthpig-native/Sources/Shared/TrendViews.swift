@@ -37,7 +37,6 @@ struct HealthTrendView: View {
     private func formatted(_ value: Double) -> String { sleep ? String(format: "%.1f 小时", value) : "\(Int(value)) 步" }
     var body: some View {
         PigScreen {
-            Text("最近 7 个已结束日期").font(.caption).foregroundStyle(.secondary)
             if health.loading { ProgressView("正在读取健康记录") }
             if !health.error.isEmpty {
                 StatusNote(title: "读取未完成", message: health.error, symbol: "exclamationmark.triangle")
@@ -45,9 +44,9 @@ struct HealthTrendView: View {
             }
             if let average = TrendSeries.mean(points) {
                 PigPanel {
-                    Label("记录日均值", systemImage: sleep ? "moon.zzz" : "figure.walk").font(.caption).foregroundStyle(color)
+                    Label("近 7 日 · 记录日均值", systemImage: sleep ? "moon.zzz" : "figure.walk").font(.subheadline).foregroundStyle(color)
                     Text(formatted(average)).font(.system(.title2, design: .rounded, weight: .semibold))
-                    Text("\(count) / 7 日有记录").font(.caption).foregroundStyle(.secondary)
+                    Text("\(count) / 7 日有记录").font(.subheadline).foregroundStyle(.secondary)
                     Chart(points) { point in
                         if let value = point.value {
                             BarMark(x: .value("日期", point.date, unit: .day), y: .value(unit, value))
@@ -64,7 +63,7 @@ struct HealthTrendView: View {
                 PigPanel {
                     StatusNote(title: sleep ? "暂时没有睡眠记录" : "还没有可读趋势", message: sleep ? "先检查授权与同步；尚未佩戴过夜时，可能没有睡眠记录。" : "没有记录的日期保持未知。先检查健康授权、已有记录和同步。", symbol: sleep ? "moon.zzz" : "chart.bar")
                     if sleep {
-                        Text("可以先查看活动，不必等待睡眠数据。").font(.caption).foregroundStyle(.secondary).accessibilityIdentifier("sleep.empty-next-step")
+                        Text("也可先查看活动").font(.subheadline).accessibilityIdentifier("sleep.empty-next-step")
                     }
                     NavigationLink("读取健康数据") { HealthRecordView(health: health) }
                 }
@@ -77,7 +76,7 @@ struct HealthTrendView: View {
                         Spacer()
                         if let value = point.value { Text(formatted(value)).monospacedDigit() }
                         else { Label("未知", systemImage: "minus.circle").foregroundStyle(.secondary) }
-                    }.font(.caption).accessibilityElement(children: .combine)
+                    }.font(.subheadline).accessibilityElement(children: .combine)
                 }
             }
             NavigationLink("统计范围与来源") { PigScreen { PigPanel {

@@ -19,8 +19,9 @@ struct RingSummaryPanel: View {
             row("活动", rings.move, rings.moveUsesMinutes ? "分钟" : "千卡", .pink)
             row("锻炼", rings.exercise, "分钟", .green)
             row("站立／活动小时", rings.stand, "小时", .cyan)
-            Text(simulated ? "示例数据 · 活动与锻炼积攒能量，三环闭合后满 100。" : "活动与锻炼积攒能量，三环闭合后满 100。").font(.caption).foregroundStyle(.secondary)
-            Text("\(simulated ? "演示时刻" : "读取于") \(rings.readAt.formatted(date: .omitted, time: .shortened))").font(.caption2).foregroundStyle(.secondary)
+            if !simulated {
+                Text("读取于 \(rings.readAt.formatted(date: .omitted, time: .shortened))").font(.subheadline).foregroundStyle(.secondary)
+            }
         }
     }
     private func row(_ title: String, _ value: RingValue, _ unit: String, _ color: Color) -> some View {
@@ -35,7 +36,7 @@ struct RingSummaryPanel: View {
                   Label(title, systemImage: value.closed ? "checkmark.circle.fill" : "circle").foregroundStyle(color)
                   Text("\(value.value, specifier: "%.0f") / \(value.goal, specifier: "%.0f") \(unit)")
               }
-            }.font(.caption)
+            }.font(.subheadline)
             ProgressView(value: value.fraction ?? 0).tint(color).accessibilityLabel("\(title)，\(value.closed ? "已闭合" : "未闭合")")
         }.accessibilityElement(children: .combine)
     }
@@ -45,7 +46,6 @@ struct ActivityRingsView: View {
     @ObservedObject var health: HealthReader = .shared
     var body: some View {
         PigScreen {
-            Text("活动，让猪猪充满能量").font(.headline)
             if let rings = health.rings, rings.day == DailyPig.dayKey(.now) { RingSummaryPanel(rings: rings) }
             else { StatusNote(title: "等待今日圆环数据", message: health.ringsMessage, symbol: "circle.dashed").accessibilityIdentifier("rings.unavailable") }
             if health.ringsLoading { ProgressView("正在读取活动摘要") }
@@ -80,13 +80,13 @@ struct RingsRuleDemoView: View {
     var body: some View {
         PigScreen {
             Label("规则演示 · 模拟数据", systemImage: "play.rectangle").font(.headline)
-            Text("不读取或写入健康记录，不解锁真实抽卡，不增加收藏。").font(.caption).foregroundStyle(.secondary)
+            Text("仅演示圆环规则。实际抽卡使用系统圆环。").font(.subheadline)
             Toggle("演示三个圆环全闭合", isOn: $completed).accessibilityIdentifier("rings.demo-complete")
             RingSummaryPanel(rings: DailyRings(day: DailyPig.dayKey(.now), readAt: .now,
                 move: RingValue(value: completed ? 400 : 260, goal: 400),
                 exercise: RingValue(value: completed ? 30 : 18, goal: 30),
                 stand: RingValue(value: completed ? 10 : 6, goal: 10)), simulated: true)
-            Label(completed ? "演示：已达到抽卡条件" : "演示：还未达到抽卡条件", systemImage: completed ? "gift" : "lock").font(.caption).accessibilityIdentifier("rings.demo-result")
+            Label(completed ? "演示：已达到抽卡条件" : "演示：还未达到抽卡条件", systemImage: completed ? "gift" : "lock").font(.subheadline).accessibilityIdentifier("rings.demo-result")
         }.navigationTitle("规则演示")
     }
 }

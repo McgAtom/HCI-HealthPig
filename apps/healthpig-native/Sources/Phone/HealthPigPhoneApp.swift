@@ -56,11 +56,7 @@ struct PhoneTodayView: View {
 
     var body: some View {
         PigScreen {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(Date.now.formatted(.dateTime.month().day().weekday(.wide)))
-                    .font(.caption.weight(.medium)).foregroundStyle(.secondary)
-                Text("今天，一起养猪").font(.largeTitle.bold()).foregroundStyle(PigTheme.cream)
-            }
+            Text("今天，一起养猪").font(.largeTitle.bold()).foregroundStyle(PigTheme.cream)
             if let card = store.companion {
                 VStack(spacing: 10) {
                     PigArtwork(card: card, size: 148)
@@ -91,7 +87,6 @@ struct PhoneTodayView: View {
                     Label("猪猪能量", systemImage: "flame").font(.headline)
                     Text(health.rings?.energy().map { "\($0) / 100" } ?? (health.rings?.paused == true ? "圆环已暂停" : "等待读取"))
                         .font(.title3.weight(.semibold)).monospacedDigit()
-                    Text("三环全闭合，每天抽一只").font(.caption).foregroundStyle(.secondary)
                 }
             }.buttonStyle(.plain).accessibilityIdentifier("phone.rings")
             NavigationLink { TodayReviewView(health: health) } label: { Label("健康记录", systemImage: "heart.text.clipboard") }
@@ -100,7 +95,6 @@ struct PhoneTodayView: View {
                 HealthMetric(label: "今日步数", value: health.steps.map { "\(Int($0))" } ?? "未知", unit: health.steps == nil ? "" : "步", symbol: "figure.walk")
                 Divider()
                 HealthMetric(label: "最近心率", value: health.heartRate.map { "\(Int($0))" } ?? "未知", unit: health.heartRate == nil ? "" : "次／分", symbol: "heart")
-                if let date = health.heartDate { Text("记录于 \(date.formatted(date: .abbreviated, time: .shortened))").font(.caption).foregroundStyle(.secondary) }
                 if health.steps == nil && health.heartRate == nil {
                     NavigationLink("读取健康记录") { HealthRecordView(health: health) }
                 }
@@ -134,17 +128,16 @@ struct PhoneMoreView: View {
             }
             Section("手表与手机") {
                 Label(bridge.status, systemImage: "arrow.triangle.2.circlepath").accessibilityIdentifier("sync.status")
-                if let date = bridge.lastReceivedAt { Text("最近接收 \(date.formatted(date: .abbreviated, time: .shortened))").font(.caption) }
+                if let date = bridge.lastReceivedAt { Text("最近接收 \(date.formatted(date: .abbreviated, time: .shortened))").font(.subheadline) }
                 Button("再次同步收藏与摘要") { bridge.publish() }.accessibilityIdentifier("sync.retry")
             }
             Section("我的反馈") {
                 Text("本机已保存 \(store.feedback.count) 条反馈")
-                Text("在动作结果页可修改；不直接训练模型。").font(.caption)
                 Button("清除本机反馈", role: .destructive) { clearFeedback = true }.disabled(store.feedback.isEmpty)
             }
             Section("关于") {
-                Text("走走猪猪 · 原生第 8.2 版")
-                Text("HealthPig\n人机交互课程学习项目").font(.caption)
+                let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
+                LabeledContent("走走猪猪", value: version)
             }
         }.navigationTitle("更多")
             .confirmationDialog("清除本机全部反馈？", isPresented: $clearFeedback, titleVisibility: .visible) {

@@ -128,7 +128,7 @@ struct PigWalkView: View {
                           systemImage: "checkmark.circle")
                         .font(.headline).accessibilityIdentifier("walk.finished")
                     if let energy = health.rings?.energy() {
-                        Label("今日能量 \(energy)", systemImage: "flame.fill").font(.footnote)
+                        Label("今日能量 \(energy)", systemImage: "flame.fill").font(.subheadline)
                     }
                     Button("再陪一次") { walk.start() }.buttonStyle(PigPrimaryButton())
                     modelLink.buttonStyle(.bordered)

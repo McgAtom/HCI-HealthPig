@@ -114,11 +114,11 @@ struct WatchCompactButton: View {
     var body: some View {
         VStack(spacing: 2) {
             if let value {
-                Text(value).font(.caption2.weight(.semibold)).monospacedDigit().accessibilityHidden(true)
+                Text(value).font(.subheadline.weight(.semibold)).monospacedDigit().accessibilityHidden(true)
             } else {
                 Image(systemName: symbol).font(.subheadline.weight(.semibold))
             }
-            Text(title).font(.footnote.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
+            Text(title).font(.subheadline.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
         }.frame(maxWidth: .infinity, minHeight: 44).padding(.horizontal, 3)
             .foregroundStyle(PigTheme.rose)
             .background(PigTheme.panel, in: RoundedRectangle(cornerRadius: 14))
@@ -146,8 +146,8 @@ private struct WatchDailyView: View {
                     let energy = rings?.energy()
                     Text(rings?.paused == true ? "圆环已暂停" : energy.map { "能量 \($0) / 100" } ?? "圆环待同步")
                         .font(.headline).accessibilityIdentifier("daily.status")
-                    if let rings, energy != nil { Text("\(rings.closedCount) / 3 环闭合").font(.footnote) }
-                    else if rings?.paused != true { Text("三环全闭合后可抽").font(.footnote) }
+                    if let rings, energy != nil { Text("\(rings.closedCount) / 3 环闭合").font(.subheadline) }
+                    else if rings?.paused != true { Text("三环全闭合后可抽").font(.subheadline) }
                     let optedIn = health.readsRings
                     Button(health.ringsLoading ? "读取中…" : ready ? "抽猪" : optedIn ? "刷新圆环" : "读取圆环") {
                         Task {
@@ -179,7 +179,7 @@ private struct WatchStatusView: View {
                 Button { bridge.publish() } label: {
                     Label(synced ? "已同步" : "同步收藏", systemImage: synced ? "checkmark" : "arrow.triangle.2.circlepath")
                 }.buttonStyle(.bordered).accessibilityValue(bridge.status)
-                Label("详情在手机", systemImage: "iphone").font(.footnote).foregroundStyle(.secondary)
+                Label("详情在手机", systemImage: "iphone").foregroundStyle(.secondary)
             }.font(.subheadline).frame(maxWidth: .infinity, alignment: .leading)
         }.navigationTitle("今日")
             .task { if health.readsRings { await health.refreshRings() } }

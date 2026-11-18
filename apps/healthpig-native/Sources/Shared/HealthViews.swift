@@ -15,8 +15,8 @@ struct PhoneHealthSetupView: View {
                     Label("睡眠时长与分期", systemImage: "moon.stars")
                     Label("心率、静息心率与心率变异性", systemImage: "waveform.path.ecg")
                     Label("呼吸频率与血氧", systemImage: "lungs")
-                    Text("你可以在一次系统授权中逐项选择。记录只读，用于本机趋势和作息。")
-                        .font(.subheadline).foregroundStyle(.secondary)
+                    Text("可逐项选择。只在本机读取，用于趋势和作息。")
+                        .font(.body)
                 }
                 Button(health.authorizing ? "正在打开系统授权…" : "选择共享的数据") {
                     Task { if await health.authorizeAndRefresh() { finish() } }
@@ -58,10 +58,9 @@ struct HealthRecordView: View {
                 Button(health.loading ? "正在读取…" : health.automaticUpdates ? "管理读取授权" : "授权并读取") {
                     Task { await health.authorizeAndRefresh() }
                 }.buttonStyle(PigPrimaryButton()).disabled(health.loading || health.authorizing)
-                if !health.authorizationError.isEmpty { Text(health.authorizationError).font(.caption) }
+                if !health.authorizationError.isEmpty { Text(health.authorizationError).font(.subheadline) }
 #endif
                 if health.loading { ProgressView("正在查询已有记录") }
-                Text(health.message).font(.caption).accessibilityIdentifier("health.status")
                 if !health.error.isEmpty {
                     StatusNote(title: "读取未完成", message: health.error, symbol: "exclamationmark.triangle")
                     Button("重试读取") { Task { await health.refresh() } }.disabled(health.loading)
@@ -72,32 +71,32 @@ struct HealthRecordView: View {
                 Divider()
                 HealthMetric(label: "最近心率记录", value: health.heartRate.map { "\(Int($0))" } ?? "暂无记录", unit: health.heartRate == nil ? "" : "次／分", symbol: "heart")
                 if let date = health.heartDate {
-                    Text(date.formatted(date: .abbreviated, time: .shortened)).font(.caption).foregroundStyle(.secondary)
-                    Text("这是已有记录，不是正在测量。").font(.caption).foregroundStyle(.secondary)
+                    Text(date.formatted(date: .abbreviated, time: .shortened)).font(.subheadline).foregroundStyle(.secondary)
                 }
             }
             PigPanel {
                 Label("睡眠记录来源", systemImage: "moon.zzz").font(.headline)
-                if health.days.isEmpty { Text("暂无可读睡眠。可能尚未记录、同步，或未允许读取。").font(.caption).foregroundStyle(.secondary) }
+                if health.days.isEmpty { Text("暂无可读睡眠").font(.subheadline) }
                 ForEach(health.days.reversed()) { day in
                     VStack(alignment: .leading, spacing: 4) {
                         Text("\(day.date.formatted(.dateTime.month().day())) · \(day.hours, specifier: "%.1f") 小时").font(.subheadline)
-                        Text(day.sources.joined(separator: "、")).font(.caption).foregroundStyle(.secondary)
+                        Text(day.sources.joined(separator: "、")).font(.subheadline).foregroundStyle(.secondary)
                     }
                 }
-                Text("按已结束的自然日统计，包含午睡；重叠时段合并，缺失保留未知。").font(.caption).foregroundStyle(.secondary)
             }
             if let date = health.refreshedAt {
-                Text("上次读取 \(date.formatted(date: .abbreviated, time: .shortened))").font(.caption).foregroundStyle(.secondary)
+                Text("上次读取 \(date.formatted(date: .abbreviated, time: .shortened))").font(.subheadline).foregroundStyle(.secondary)
 #if os(watchOS)
                 Button("刷新已有记录") { Task { await health.refresh() } }.disabled(health.loading)
 #endif
             }
             NavigationLink("刷新、权限与缓存说明") {
                 PigScreen {
+                    Text(health.message)
                     Text(health.backgroundMessage)
                     Text("健康系统不会说明是否拒绝读取。空结果也可能是未记录或未同步；在系统健康权限中检查。")
                     Text("应用仅查询已有记录，不主动测量心率或睡眠。")
+                    Text("睡眠按已结束的自然日统计，包含午睡，重叠时段合并。")
                 }.navigationTitle("数据说明")
             }
 
@@ -127,7 +126,7 @@ struct HealthMetric: View {
     let symbol: String
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label(label, systemImage: symbol).font(.caption).foregroundStyle(.secondary)
+            Label(label, systemImage: symbol).font(.subheadline).foregroundStyle(.secondary)
             Text(unit.isEmpty ? value : "\(value) \(unit)").font(.system(.title2, design: .rounded, weight: .semibold)).fixedSize(horizontal: false, vertical: true)
         }.accessibilityElement(children: .combine)
     }
