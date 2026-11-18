@@ -1,5 +1,14 @@
 import XCTest
 
+extension XCUIApplication {
+    func launchPastHealthSetup() {
+        if !launchArguments.contains("-phoneHealthSetupHandledV1") {
+            launchArguments += ["-phoneHealthSetupHandledV1", "YES"]
+        }
+        launch()
+    }
+}
+
 final class WellnessTests: XCTestCase {
     private func shot(_ app: XCUIApplication, _ name: String) {
         let image = XCTAttachment(screenshot: app.screenshot())
@@ -17,11 +26,33 @@ final class WellnessTests: XCTestCase {
         button.tap()
     }
 
+    func testFirstRunOffersOneSetupAndSkippingPersists() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-phoneHealthSetupHandledV1", "NO"]
+        app.launch()
+        let request = app.buttons["health.setup-request"]
+        XCTAssertTrue(request.waitForExistence(timeout: 10))
+        shot(app, "phone-health-first-run")
+        open("health.setup-skip", in: app)
+        open("phone.wellness", in: app)
+        open("wellness.vitals", in: app)
+        XCTAssertTrue(app.buttons["vitals.resting"].waitForExistence(timeout: 5))
+        XCTAssertFalse(request.exists)
+        XCTAssertFalse(app.buttons["读取健康数据"].exists)
+
+        app.terminate()
+        app.launchArguments = []
+        app.launch()
+        XCTAssertTrue(app.buttons["phone.wellness"].waitForExistence(timeout: 10))
+        XCTAssertFalse(request.exists)
+    }
+
     func testWellnessRoutesAndLocalMood() {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["--wellness-ui-test"]
-        app.launch()
+        app.launchPastHealthSetup()
         open("phone.wellness", in: app)
         shot(app, "wellness-hub")
         open("wellness.vitals", in: app)
@@ -59,7 +90,7 @@ final class WellnessTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["陪你安静待一会"].exists)
         shot(app, "wellness-mood")
         app.terminate()
-        app.launch()
+        app.launchPastHealthSetup()
         open("phone.wellness", in: app)
         open("wellness.mood", in: app)
         XCTAssertTrue(app.staticTexts["陪你安静待一会"].exists)

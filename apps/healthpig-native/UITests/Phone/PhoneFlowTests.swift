@@ -4,7 +4,7 @@ import UIKit
 final class PhoneFlowTests: XCTestCase {
     func testNativeTabsAndCollection() throws {
         continueAfterFailure = false
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchPastHealthSetup()
         XCTAssertTrue(app.tabBars.buttons["猪猪"].waitForExistence(timeout: 20))
         func shot(_ name: String) {
             let attachment = XCTAttachment(screenshot: app.screenshot()); attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
@@ -30,7 +30,7 @@ final class PhoneFlowTests: XCTestCase {
     }
     func testPublicExampleCanChangeInputAndExplain() throws {
         continueAfterFailure = false
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchPastHealthSetup()
         XCTAssertTrue(app.tabBars.buttons["更多"].waitForExistence(timeout: 20))
         app.tabBars.buttons["更多"].tap()
         app.buttons["demo.entry"].tap()
@@ -57,7 +57,7 @@ final class PhoneFlowTests: XCTestCase {
     func testPairedSyncAcknowledgement() throws {
         // Run with the paired Watch app in the foreground.
         continueAfterFailure = false
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchPastHealthSetup()
         XCTAssertTrue(app.tabBars.buttons["更多"].waitForExistence(timeout: 20))
         app.tabBars.buttons["更多"].tap()
         let retry = app.buttons["sync.retry"]
@@ -75,7 +75,7 @@ final class PhoneFlowTests: XCTestCase {
 
     func testPhoneDailyClaimAndWear() throws {
         continueAfterFailure = false
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchPastHealthSetup()
         let entry = app.buttons["phone.daily-entry"]
         XCTAssertTrue(entry.waitForExistence(timeout: 20))
         for _ in 0..<4 { if entry.isHittable { break }; app.swipeUp() }
@@ -96,7 +96,7 @@ final class PhoneFlowTests: XCTestCase {
 
     func testSleepGuidanceAndNoSpoilerDraw() throws {
         continueAfterFailure = false
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchPastHealthSetup()
         let review = app.buttons["phone.review"]
         XCTAssertTrue(review.waitForExistence(timeout: 20))
         for _ in 0..<5 { if review.isHittable { break }; app.swipeUp() }; review.tap()
@@ -104,7 +104,7 @@ final class PhoneFlowTests: XCTestCase {
         for _ in 0..<5 { if sleep.isHittable { break }; app.swipeUp() }; sleep.tap()
         XCTAssertTrue(app.staticTexts["sleep.empty-next-step"].waitForExistence(timeout: 10))
         var image = XCTAttachment(screenshot: app.screenshot()); image.name = "v7-phone-sleep-empty"; image.lifetime = .keepAlways; add(image)
-        app.terminate(); app.launch(); app.tabBars.buttons["猪猪"].tap(); app.buttons["collection.daily"].tap()
+        app.terminate(); app.launchPastHealthSetup(); app.tabBars.buttons["猪猪"].tap(); app.buttons["collection.daily"].tap()
         XCTAssertTrue(app.staticTexts["daily.status"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["daily.practice"].exists)
         XCTAssertFalse(app.buttons["daily.practice-reveal"].exists)
@@ -113,7 +113,7 @@ final class PhoneFlowTests: XCTestCase {
 
     func testEditableInputErrorRecoveryAndHelp() throws {
         continueAfterFailure = false
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchPastHealthSetup()
         XCTAssertTrue(app.tabBars.buttons["更多"].waitForExistence(timeout: 20)); app.tabBars.buttons["更多"].tap()
         app.buttons["demo.entry"].tap()
         app.buttons["demo.analyze"].tap()
@@ -132,7 +132,7 @@ final class PhoneFlowTests: XCTestCase {
         app.buttons["demo.analyze"].tap()
         XCTAssertTrue(app.staticTexts["demo.result"].waitForExistence(timeout: 5))
         image = XCTAttachment(screenshot: app.screenshot()); image.name = "v7-phone-input-recovered"; image.lifetime = .keepAlways; add(image)
-        app.terminate(); app.launch(); app.tabBars.buttons["更多"].tap()
+        app.terminate(); app.launchPastHealthSetup(); app.tabBars.buttons["更多"].tap()
         let help = app.buttons["accessibility.help"]
         for _ in 0..<8 { if help.isHittable { break }; app.swipeUp() }; help.tap()
         XCTAssertTrue(app.staticTexts["放大文字"].waitForExistence(timeout: 5))
@@ -141,7 +141,7 @@ final class PhoneFlowTests: XCTestCase {
 
     func testLargeTextHomeAndCollection() throws {
         continueAfterFailure = false
-        let app = XCUIApplication(); app.launchArguments = ["--large-text-check"]; app.launch()
+        let app = XCUIApplication(); app.launchArguments = ["--large-text-check"]; app.launchPastHealthSetup()
         XCTAssertTrue(app.buttons["phone.daily-entry"].waitForExistence(timeout: 20))
         var image = XCTAttachment(screenshot: app.screenshot()); image.name = "v7-phone-home-large-type"; image.lifetime = .keepAlways; add(image)
         app.tabBars.buttons["猪猪"].tap()
@@ -151,7 +151,7 @@ final class PhoneFlowTests: XCTestCase {
 
     func testRingRulesAndCompanionModelResponsesAreIsolatedDemos() throws {
         continueAfterFailure = false
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchPastHealthSetup()
         XCTAssertTrue(app.buttons["phone.rings"].waitForExistence(timeout: 20)); app.buttons["phone.rings"].tap()
         XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "rings.unavailable").firstMatch.waitForExistence(timeout: 10))
         var attachment = XCTAttachment(screenshot: app.screenshot()); attachment.name = "15-phone-rings-no-data"; attachment.lifetime = .keepAlways; add(attachment)
@@ -161,7 +161,7 @@ final class PhoneFlowTests: XCTestCase {
         let complete = app.descendants(matching: .any).matching(identifier: "rings.demo-result").firstMatch
         XCTAssertTrue(complete.label.contains("已达到"))
         attachment = XCTAttachment(screenshot: app.screenshot()); attachment.name = "16-phone-rings-completed-demo"; attachment.lifetime = .keepAlways; add(attachment)
-        app.terminate(); app.launch(); app.tabBars.buttons["更多"].tap()
+        app.terminate(); app.launchPastHealthSetup(); app.tabBars.buttons["更多"].tap()
         let companion = app.buttons["companion.demo"]
         for _ in 0..<4 { if companion.isHittable { break }; app.swipeUp() }; companion.tap()
         app.buttons["demo.analyze"].tap()
@@ -176,7 +176,7 @@ final class PhoneFlowTests: XCTestCase {
 
     func testHomeAccessibilityContrastAndDescriptions() throws {
         continueAfterFailure = false
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchPastHealthSetup()
         XCTAssertTrue(app.buttons["phone.daily-entry"].waitForExistence(timeout: 20))
         if #available(iOS 17.0, *) {
             try app.performAccessibilityAudit(for: [.contrast, .sufficientElementDescription])
@@ -191,7 +191,7 @@ final class PhoneFlowTests: XCTestCase {
     }
 
     private func openInput(_ app: XCUIApplication, captureMore: Bool = false) {
-        app.launch()
+        app.launchPastHealthSetup()
         XCTAssertTrue(app.tabBars.buttons["更多"].waitForExistence(timeout: 20))
         app.tabBars.buttons["更多"].tap()
         if captureMore {
@@ -247,12 +247,12 @@ final class PhoneFlowTests: XCTestCase {
 
     func testAccessibilityHealthEmptyAndResultAudit() throws {
         continueAfterFailure = false
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchPastHealthSetup()
         XCTAssertTrue(app.buttons["phone.review"].waitForExistence(timeout: 20))
         app.buttons["phone.review"].tap()
         evidence(app, "a11y-health-empty")
         try app.performAccessibilityAudit(for: [.contrast, .sufficientElementDescription, .hitRegion, .textClipped])
-        app.terminate(); app.launch(); app.tabBars.buttons["更多"].tap(); app.buttons["demo.entry"].tap()
+        app.terminate(); app.launchPastHealthSetup(); app.tabBars.buttons["更多"].tap(); app.buttons["demo.entry"].tap()
         app.buttons["demo.analyze"].tap()
         XCTAssertTrue(app.staticTexts["demo.result"].waitForExistence(timeout: 5))
         evidence(app, "a11y-model-result")
@@ -286,7 +286,7 @@ final class PhoneFlowTests: XCTestCase {
         // Enable Reduce Motion in Device Hub's actual simulator settings before running.
         try XCTSkipUnless(UIAccessibility.isReduceMotionEnabled, "Requires the system Reduce Motion setting")
         continueAfterFailure = false
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchPastHealthSetup()
         XCTAssertTrue(app.tabBars.buttons["更多"].waitForExistence(timeout: 20)); app.tabBars.buttons["更多"].tap()
         let entry = app.buttons["companion.demo"]
         for _ in 0..<6 { if entry.isHittable { break }; app.swipeUp() }; entry.tap()

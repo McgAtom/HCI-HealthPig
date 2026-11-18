@@ -11,7 +11,7 @@ final class ModelInsightsTests: XCTestCase {
     func testRankingDistributionAndExamples() {
         continueAfterFailure = false
         let app = XCUIApplication()
-        app.launch()
+        app.launchPastHealthSetup()
         let entry = app.buttons["phone.model-insights"]
         XCTAssertTrue(entry.waitForExistence(timeout: 15))
         shot(app, "04-phone-today")
@@ -51,7 +51,7 @@ final class ModelInsightsTests: XCTestCase {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["--large-text-check"]
-        app.launch()
+        app.launchPastHealthSetup()
         let tab = app.tabBars.buttons["判断"]
         XCTAssertTrue(tab.waitForExistence(timeout: 15))
         tab.tap()

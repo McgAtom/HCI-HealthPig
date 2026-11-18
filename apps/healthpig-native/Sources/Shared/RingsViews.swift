@@ -49,12 +49,28 @@ struct ActivityRingsView: View {
             if let rings = health.rings, rings.day == DailyPig.dayKey(.now) { RingSummaryPanel(rings: rings) }
             else { StatusNote(title: "等待今日圆环数据", message: health.ringsMessage, symbol: "circle.dashed").accessibilityIdentifier("rings.unavailable") }
             if health.ringsLoading { ProgressView("正在读取活动摘要") }
-            Button(health.readsRings ? "刷新今日圆环" : "读取圆环") { Task { await health.requestRingsRead() } }
-                .buttonStyle(.bordered).disabled(health.ringsLoading)
+            RingRefreshAction(health: health, label: "刷新今日圆环")
             NavigationLink("授权与数据来源") { HealthRecordView(health: health) }
             NavigationLink("怎样解锁抽卡？") { DailyRulesView() }
             NavigationLink("圆环规则示例") { RingsRuleDemoView() }.accessibilityIdentifier("rings.demo")
         }.navigationTitle("猪猪能量").task { if health.readsRings { await health.refreshRings() } }
+    }
+}
+
+struct RingRefreshAction: View {
+    @ObservedObject var health: HealthReader
+    let label: String
+
+    var body: some View {
+#if os(watchOS)
+        Button(health.readsRings ? label : "读取圆环") { Task { await health.requestRingsRead() } }
+            .buttonStyle(.bordered).disabled(health.ringsLoading)
+#else
+        if health.readsRings {
+            Button(label) { Task { await health.refreshRings() } }
+                .buttonStyle(.bordered).disabled(health.ringsLoading)
+        }
+#endif
     }
 }
 

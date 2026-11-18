@@ -16,7 +16,7 @@ struct WalkingCompanionView: View {
             VStack(spacing: 8) {
                 if motion.capturing || !didEnter {
                     Image(systemName: "waveform.path").font(.title2).foregroundStyle(PigTheme.mint)
-                    Text("陪走中").font(.headline)
+                    Text("采样中").font(.headline)
                     ProgressView(value: motion.progress).tint(PigTheme.mint)
                         .accessibilityLabel("动作采集").accessibilityValue("\(Int(motion.progress * 100))%")
                     Button("结束") { motion.cancel() }
@@ -40,7 +40,7 @@ struct WalkingCompanionView: View {
                     }
                 }
             }
-        }.navigationTitle("养猪")
+        }.navigationTitle("测动作")
             .task {
                 guard !didEnter else { return }
                 didEnter = true
@@ -54,7 +54,10 @@ struct WalkingCompanionView: View {
                 outcomeFocused = true
             }
             .onChange(of: motion.error) { _, error in if !error.isEmpty { outcomeFocused = true } }
-            .onChange(of: scenePhase) { _, phase in if phase != .active && motion.capturing { motion.cancel() } }
+            // Lowering the wrist makes a frontmost watchOS app inactive. The measurement can still finish.
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .background && motion.capturing { motion.cancel() }
+            }
             .onDisappear { if motion.capturing { motion.cancel() } }
     }
 

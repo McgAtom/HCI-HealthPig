@@ -96,10 +96,8 @@ private struct VitalDashboard: View {
             if health.vitalsEnabled {
                 Button { Task { await health.refreshVitals() } } label: { Label("刷新", systemImage: "arrow.clockwise") }
                     .buttonStyle(.bordered).disabled(health.vitalsLoading)
-                Button("停止读取", role: .destructive) { health.stopVitals() }.buttonStyle(.bordered)
             } else {
-                Button { Task { await health.authorizeVitals() } } label: { Label("读取健康数据", systemImage: "lock.open") }
-                    .buttonStyle(PigPrimaryButton()).disabled(health.vitalsLoading)
+                NavigationLink("数据与授权") { HealthRecordView(health: health) }.buttonStyle(.bordered)
             }
             NavigationLink {
                 VitalTrendView(metric: .resting, records: demoResting, demo: true)

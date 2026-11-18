@@ -6,6 +6,8 @@ import SwiftUI
     @StateObject private var health = HealthReader.shared
     @Environment(\.scenePhase) private var scenePhase
     @State private var tab = 0
+    @AppStorage("phoneHealthSetupHandledV1") private var healthSetupHandled = false
+    @State private var showHealthSetup = false
     init() {
         let store = PigStore()
         _store = StateObject(wrappedValue: store)
@@ -25,7 +27,17 @@ import SwiftUI
                 NavigationStack { PhoneMoreView(store: store, bridge: bridge, health: health) }
                     .tabItem { Label("更多", systemImage: "ellipsis.circle") }.tag(4)
             }.modifier(PigAccessibilityTestSize()).tint(PigTheme.rose).preferredColorScheme(.dark)
-                .task { health.beginAutomaticUpdatesIfEnabled() }
+                .task {
+                    health.beginAutomaticUpdatesIfEnabled()
+                    if !healthSetupHandled { showHealthSetup = true }
+                }
+                .sheet(isPresented: $showHealthSetup) {
+                    PhoneHealthSetupView(health: health) {
+                        healthSetupHandled = true
+                        showHealthSetup = false
+                    }
+                    .interactiveDismissDisabled()
+                }
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active { store.refreshDay(); Task { await health.refreshAutomaticallyIfEnabled() }; bridge.publish() }
                 }

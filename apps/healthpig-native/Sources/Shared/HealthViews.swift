@@ -1,16 +1,65 @@
 import SwiftUI
 
+#if os(iOS)
+struct PhoneHealthSetupView: View {
+    @ObservedObject var health: HealthReader
+    let finish: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            PigScreen {
+                PigPanel {
+                    Label("连接 Apple 健康", systemImage: "heart.text.clipboard").font(.title2.bold())
+                        .accessibilityIdentifier("health.setup-title")
+                    Label("步数、运动与站立圆环", systemImage: "figure.walk")
+                    Label("睡眠时长与分期", systemImage: "moon.stars")
+                    Label("心率、静息心率与心率变异性", systemImage: "waveform.path.ecg")
+                    Label("呼吸频率与血氧", systemImage: "lungs")
+                    Text("你可以在一次系统授权中逐项选择。记录只读，用于本机趋势和作息。")
+                        .font(.subheadline).foregroundStyle(.secondary)
+                }
+                Button(health.authorizing ? "正在打开系统授权…" : "选择共享的数据") {
+                    Task { if await health.authorizeAndRefresh() { finish() } }
+                }.buttonStyle(PigPrimaryButton()).disabled(health.authorizing)
+                    .accessibilityIdentifier("health.setup-request")
+                Button("稍后设置", action: finish).buttonStyle(.bordered).disabled(health.authorizing)
+                    .accessibilityIdentifier("health.setup-skip")
+                if !health.authorizationError.isEmpty {
+                    Label(health.authorizationError, systemImage: "exclamationmark.circle").font(.subheadline)
+                }
+            }.navigationTitle("欢迎使用走走猪猪").navigationBarTitleDisplayMode(.inline)
+        }.preferredColorScheme(.dark).tint(PigTheme.rose)
+    }
+}
+#endif
+
 struct HealthRecordView: View {
     @ObservedObject var health: HealthReader
     @State private var confirmClear = false
+    @State private var showHealthSetup = false
+    @AppStorage("phoneHealthSetupHandledV1") private var healthSetupHandled = false
     var body: some View {
         PigScreen {
             PigPanel {
                 Label("健康数据", systemImage: "heart.text.clipboard").font(.headline)
-                Text("经你授权，从本机 HealthKit 读取步数、睡眠、最近心率和今日活动圆环。圆环仅用于猪猪能量与抽卡条件。").font(.callout).foregroundStyle(.secondary)
+#if os(iOS)
+                if health.automaticUpdates && health.vitalsEnabled {
+                    Text("要修改共享项目，请到 Apple 健康 → 头像 → App 与服务 → 走走猪猪。")
+                        .font(.callout).foregroundStyle(.secondary)
+                    Button("刷新已有记录") {
+                        Task { await health.refresh(); await health.refreshVitals() }
+                    }.buttonStyle(PigPrimaryButton()).disabled(health.loading || health.vitalsLoading)
+                } else {
+                    Button("设置健康读取") { showHealthSetup = true }.buttonStyle(PigPrimaryButton())
+                }
+#else
+                Text("连接 Apple 健康后可读取步数、睡眠、心率和活动圆环。")
+                    .font(.callout).foregroundStyle(.secondary)
                 Button(health.loading ? "正在读取…" : health.automaticUpdates ? "管理读取授权" : "授权并读取") {
                     Task { await health.authorizeAndRefresh() }
-                }.buttonStyle(PigPrimaryButton()).disabled(health.loading)
+                }.buttonStyle(PigPrimaryButton()).disabled(health.loading || health.authorizing)
+                if !health.authorizationError.isEmpty { Text(health.authorizationError).font(.caption) }
+#endif
                 if health.loading { ProgressView("正在查询已有记录") }
                 Text(health.message).font(.caption).accessibilityIdentifier("health.status")
                 if !health.error.isEmpty {
@@ -40,7 +89,9 @@ struct HealthRecordView: View {
             }
             if let date = health.refreshedAt {
                 Text("上次读取 \(date.formatted(date: .abbreviated, time: .shortened))").font(.caption).foregroundStyle(.secondary)
+#if os(watchOS)
                 Button("刷新已有记录") { Task { await health.refresh() } }.disabled(health.loading)
+#endif
             }
             NavigationLink("刷新、权限与缓存说明") {
                 PigScreen {
@@ -50,10 +101,19 @@ struct HealthRecordView: View {
                 }.navigationTitle("数据说明")
             }
 
-            if health.automaticUpdates {
-                Button("关闭自动读取并清除本机缓存", role: .destructive) { confirmClear = true }.disabled(health.loading)
+            if health.automaticUpdates || health.vitalsEnabled || health.ringsReadOptIn {
+                Button("关闭自动读取并清除本机缓存", role: .destructive) { confirmClear = true }
+                    .disabled(health.loading || health.authorizing)
             }
         }.navigationTitle("数据与授权")
+#if os(iOS)
+            .sheet(isPresented: $showHealthSetup) {
+                PhoneHealthSetupView(health: health) {
+                    healthSetupHandled = true
+                    showHealthSetup = false
+                }.interactiveDismissDisabled()
+            }
+#endif
             .confirmationDialog("关闭自动读取？", isPresented: $confirmClear, titleVisibility: .visible) {
                 Button("关闭并清除缓存", role: .destructive) { Task { await health.stopAutomaticUpdatesAndClearCache() } }
             } message: { Text("只清除此应用的健康缓存，系统健康记录和猪猪收藏会保留。") }

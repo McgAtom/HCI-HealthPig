@@ -53,6 +53,8 @@ enum SleepIntervals {
     private var ringsTask: Task<Void, Never>?
     @Published private(set) var ringsMessage = "授权后读取今日活动摘要；未读取不等于零。"
     @Published var loading = false
+    @Published private(set) var authorizing = false
+    @Published private(set) var authorizationError = ""
     @Published var message = "点授权，读取本机健康数据库"
     @Published var error = ""
     @Published var refreshedAt: Date?
@@ -120,23 +122,6 @@ enum SleepIntervals {
         }
     }
 
-    // A separate request keeps existing authorizations from silently expanding.
-    func authorizeVitals() async {
-        guard !vitalsLoading, HKHealthStore.isHealthDataAvailable() else { return }
-        vitalsLoading = true
-        let generation = vitalsGeneration
-        do {
-            try await store.requestAuthorization(toShare: [], read: Set(VitalMetric.allCases.map { $0.type as HKObjectType }))
-            guard generation == vitalsGeneration else { return }
-            vitalsEnabled = true
-            UserDefaults.standard.set(true, forKey: "wellnessVitalsReadOptIn")
-            vitalsLoading = false
-            await refreshVitals()
-        } catch {
-            if generation == vitalsGeneration { vitalsLoading = false; vitalsError = true }
-        }
-    }
-
     func refreshVitals() async {
         guard vitalsEnabled, !vitalsLoading, HKHealthStore.isHealthDataAvailable() else { return }
         vitalsLoading = true; vitalsError = false
@@ -165,7 +150,7 @@ enum SleepIntervals {
         vitalRecords = updated; vitalsError = queryFailed; vitalsLoading = false
     }
 
-    func stopVitals() {
+    private func stopVitals() {
         vitalsGeneration += 1
         vitalRecords = [:]; vitalsEnabled = false; vitalsLoading = false; vitalsError = false
         UserDefaults.standard.removeObject(forKey: "wellnessVitalsReadOptIn")
@@ -193,23 +178,33 @@ enum SleepIntervals {
         backgroundMessage = "可再次授权开启；系统健康记录未被删除"
     }
 
-    func authorizeAndRefresh() async {
-        guard !loading else { return }
+    @discardableResult func authorizeAndRefresh() async -> Bool {
+        guard !authorizing else { return false }
         guard HKHealthStore.isHealthDataAvailable() else {
-            error = "当前设备没有可用的健康数据库"; return
+            authorizationError = "当前设备没有可用的健康数据库"; return false
         }
-        loading = true; error = ""
+        authorizing = true; authorizationError = ""
+        defer { authorizing = false }
+        var readTypes: Set<HKObjectType> = [sleepType, heartType, stepType, HKObjectType.activitySummaryType()]
+#if os(iOS)
+        readTypes.formUnion(VitalMetric.allCases.map(\.type))
+#endif
         do {
-            try await store.requestAuthorization(toShare: [], read: [sleepType, heartType, stepType, HKObjectType.activitySummaryType()])
+            try await store.requestAuthorization(toShare: [], read: readTypes)
             // Successful request does not prove read permission was granted.
             automaticUpdates = true
             UserDefaults.standard.set(true, forKey: "healthAutomaticUpdatesV2")
-            loading = false
-            startObservers()
-            await configureBackgroundDelivery()
-            await refresh()
-        } catch { self.error = error.localizedDescription }
-        loading = false
+#if os(iOS)
+            vitalsEnabled = true
+            UserDefaults.standard.set(true, forKey: "wellnessVitalsReadOptIn")
+#endif
+            beginAutomaticUpdatesIfEnabled()
+            Task { await refreshVitals() }
+            return true
+        } catch {
+            authorizationError = "未完成健康数据设置，请重试。"
+            return false
+        }
     }
 
     func refresh() async {
@@ -311,6 +306,7 @@ enum SleepIntervals {
         }
     }
 
+#if os(watchOS)
     func requestRingsRead() async {
         if readsRings { await refreshRings(); return }
         guard !ringsLoading, HKHealthStore.isHealthDataAvailable() else { return }
@@ -329,6 +325,7 @@ enum SleepIntervals {
             ringsMessage = "活动摘要未能读取：\(error.localizedDescription)"
         }
     }
+#endif
 
     func refreshRings() async {
         if let ringsTask { await ringsTask.value; return }
