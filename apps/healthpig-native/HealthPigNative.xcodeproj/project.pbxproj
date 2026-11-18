@@ -203,6 +203,18 @@
 			"path" = "Sources/Phone/PhonePreviews.swift";
 			"sourceTree" = "<group>";
 		};
+		"6D193B8B1E7D607EA374AD77" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Sources/Phone/PigDivination.swift";
+			"sourceTree" = "<group>";
+		};
+		"DBCDB0310D72488C72BAEC28" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Sources/Phone/PigDivinationView.swift";
+			"sourceTree" = "<group>";
+		};
 		"F5EF5DB1AE9047B630E2C3BE" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "text.json";
@@ -475,8 +487,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.5";
-				"CURRENT_PROJECT_VERSION" = "14";
+				"MARKETING_VERSION" = "0.8.6";
+				"CURRENT_PROJECT_VERSION" = "15";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -505,8 +517,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.5";
-				"CURRENT_PROJECT_VERSION" = "14";
+				"MARKETING_VERSION" = "0.8.6";
+				"CURRENT_PROJECT_VERSION" = "15";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -665,6 +677,14 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "0631995201692EC439D8419A";
 		};
+		"B6E9CBE168791F33B86B11A4" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "6D193B8B1E7D607EA374AD77";
+		};
+		"1E7BB0EF136050882CE8C275" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "DBCDB0310D72488C72BAEC28";
+		};
 		"3DCF80EEA3B50B8B8FF35E3E" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "F5EF5DB1AE9047B630E2C3BE";
@@ -725,6 +745,8 @@
 				"5DB7B607D01828E6B1449AD7",
 				"D9DB1B7FE55EBEE54C47709A",
 				"8113F02D2FC72DD2D107C5C0",
+				"B6E9CBE168791F33B86B11A4",
+				"1E7BB0EF136050882CE8C275",
 			);
 			"runOnlyForDeploymentPostprocessing" = 0;
 		};
@@ -788,8 +810,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.5";
-				"CURRENT_PROJECT_VERSION" = "14";
+				"MARKETING_VERSION" = "0.8.6";
+				"CURRENT_PROJECT_VERSION" = "15";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -820,8 +842,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.5";
-				"CURRENT_PROJECT_VERSION" = "14";
+				"MARKETING_VERSION" = "0.8.6";
+				"CURRENT_PROJECT_VERSION" = "15";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -1202,6 +1224,8 @@
 			"children" = (
 				"DAEFB0A7CC579729BE610BAD",
 				"0631995201692EC439D8419A",
+				"6D193B8B1E7D607EA374AD77",
+				"DBCDB0310D72488C72BAEC28",
 			);
 			"name" = "Phone";
 			"sourceTree" = "<group>";

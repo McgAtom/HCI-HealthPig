@@ -273,6 +273,11 @@ struct MoodCheckInView: View {
         PigScreen {
             if let companion { PigArtwork(card: companion, size: 92).accessibilityHidden(true) }
             if let today { Label(today.mood.response, systemImage: "heart").font(.headline) }
+#if os(iOS)
+            NavigationLink { PigDivinationView(companion: companion) } label: {
+                WellnessTile("猪猪占卜", symbol: "sparkles", tint: Color(red: 0.81, green: 0.73, blue: 1))
+            }.buttonStyle(.plain).accessibilityIdentifier("divination.entry")
+#endif
             ForEach(PigMood.allCases) { mood in
                 Button { log.set(mood) } label: {
                     HStack {

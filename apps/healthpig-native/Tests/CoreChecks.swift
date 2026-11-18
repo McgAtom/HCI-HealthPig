@@ -1,7 +1,7 @@
 import Foundation
 
 @main struct CoreChecks {
-    @MainActor static func main() throws {
+    @MainActor static func main() async throws {
         var checks = 0
         func check(_ condition: Bool, _ message: String) {
             precondition(condition, message); checks += 1
@@ -19,6 +19,36 @@ import Foundation
         check(DailyPig.dayKey(midnight, timeZone: TimeZone(secondsFromGMT: 8 * 3600)!) != DailyPig.dayKey(midnight, timeZone: TimeZone(secondsFromGMT: -8 * 3600)!), "eligibility follows local date")
         let a = DailyClaim(day: dates[0], cardID: DailyPig.cardID(for: dates[0])!)
         let b = DailyClaim(day: dates[1], cardID: DailyPig.cardID(for: dates[1])!)
+        let matcher = DivinationMatcher()
+        let tired = await matcher.matches(" 累 ")
+        let colloquialTired = await matcher.matches("好累")
+        let joy = await matcher.matches("开心")
+        let distant = await matcher.matches("苹果")
+        let emptyDraw = await matcher.matches("")
+        check(Set(DivinationCard.deck.map(\.id)).count == 24, "24 unique divination cards")
+        check(DivinationCard.deck.flatMap(\.anchors).allSatisfy { DivinationVocabulary.vectors[$0] != nil },
+              "every editorial anchor has an offline project vector")
+        check(DivinationDraw.cosine([1, 0], [0, 1]) == 0 && DivinationDraw.cosine([0, 0], [1, 1]) == nil,
+              "divination cosine accepts valid vectors and rejects zero vectors")
+        check(Set(tired.map(\.card.id)) == ["breath", "boundary", "loosen"], "tired uses the three relevant cards")
+        check(tired.map(\.card.id) == colloquialTired.map(\.card.id), "curated colloquial alias uses the same core candidates")
+        check(Set(joy.map(\.card.id)) == ["keep", "glow", "share"], "joy does not draw cards about sadness")
+        check(distant.isEmpty && emptyDraw.isEmpty, "weak or missing term uses the fallback pool")
+        let baseline = DivinationDraw.probabilities(from: tired, recentIDs: [])
+        let repeated = DivinationDraw.probabilities(from: tired, recentIDs: ["nest"])
+        let breathIndex = tired.firstIndex { $0.card.id == "breath" }!
+        check(abs(repeated.reduce(0, +) - 1) < 1e-9 && repeated.allSatisfy { $0 > 0 }
+              && repeated[breathIndex] < baseline[breathIndex], "recent angle gets less weight while all candidates remain reachable")
+        let next = DivinationDraw.pick(from: tired, recentIDs: ["breath"])
+        check(next != nil && next?.id != "breath", "result excludes most recent card while alternatives remain")
+        var divination = DivinationJournal()
+        let draw = DivinationRecord(cardID: "breath", wordMatched: true)
+        check(divination.record(draw, on: dates[0]) && !divination.record(draw, on: dates[0]) && divination.record(draw, on: dates[1]),
+              "divination permits one record per date and opens on the next date")
+        let encoded = try JSONEncoder().encode(divination)
+        let decoded = try JSONDecoder().decode(DivinationJournal.self, from: encoded)
+        check(decoded.days[dates[0]] == draw && decoded.recentCards(before: dates[2]) == ["breath", "breath"],
+              "daily divination and recent cards survive serialization")
         var left = PigLedger(claims: [a], selection: PigSelection(cardID: a.cardID, counter: 1, device: "A"))
         let right = PigLedger(claims: [b], selection: PigSelection(cardID: b.cardID, counter: 1, device: "B"))
         let union = try left.merging(right)

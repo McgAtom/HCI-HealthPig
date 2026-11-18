@@ -48,6 +48,52 @@ final class WellnessTests: XCTestCase {
         XCTAssertFalse(request.exists)
     }
 
+    func testDivinationDrawWithoutAWordPersistsToday() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchEnvironment["HEALTHPIG_DIVINATION_TEST_SUITE"] = "healthpig-divination-empty-\(UUID().uuidString)"
+        app.launchPastHealthSetup()
+        openDivination(in: app)
+        shot(app, "divination-entry")
+        open("divination.draw", in: app)
+        let card = app.staticTexts["divination.card-title"]
+        XCTAssertTrue(card.waitForExistence(timeout: 8))
+        XCTAssertEqual(app.staticTexts["divination.claimed"].label, "今日已抽 · 随机卡")
+        let title = card.label
+        app.terminate()
+        app.launchPastHealthSetup()
+        openDivination(in: app)
+        XCTAssertTrue(card.waitForExistence(timeout: 8))
+        XCTAssertEqual(card.label, title)
+        XCTAssertFalse(app.buttons["divination.draw"].exists)
+        XCTAssertFalse(app.textFields["divination.word"].exists)
+    }
+
+    func testDivinationDrawUsesWordCandidates() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchEnvironment["HEALTHPIG_DIVINATION_TEST_SUITE"] = "healthpig-divination-word-\(UUID().uuidString)"
+        app.launchPastHealthSetup()
+        openDivination(in: app)
+        let word = app.textFields["divination.word"]
+        XCTAssertTrue(word.waitForExistence(timeout: 8))
+        word.tap()
+        word.typeText("累")
+        XCTAssertEqual(word.value as? String, "累")
+        open("divination.draw", in: app)
+        let card = app.staticTexts["divination.card-title"]
+        XCTAssertTrue(card.waitForExistence(timeout: 10))
+        XCTAssertTrue(["喘息", "边界", "松开"].contains(card.label))
+        XCTAssertEqual(app.staticTexts["divination.claimed"].label, "今日已抽")
+        shot(app, "divination-word-result")
+    }
+
+    private func openDivination(in app: XCUIApplication) {
+        open("phone.wellness", in: app)
+        open("wellness.mood", in: app)
+        open("divination.entry", in: app)
+    }
+
     func testWellnessRoutesAndLocalMood() {
         continueAfterFailure = false
         let app = XCUIApplication()
