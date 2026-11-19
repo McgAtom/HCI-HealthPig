@@ -108,6 +108,7 @@
     "apps/healthpig-native/Sources/Phone/PhonePreviews.swift",
     "apps/healthpig-native/Sources/Phone/PigDivination.swift",
     "apps/healthpig-native/Sources/Phone/PigDivinationView.swift",
+    "apps/healthpig-native/Sources/Phone/SleepPlanView.swift",
     "apps/healthpig-native/Sources/Shared/AccessibilityHelpView.swift",
     "apps/healthpig-native/Sources/Shared/ActivityRings.swift",
     "apps/healthpig-native/Sources/Shared/AuditModels.swift",

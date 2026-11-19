@@ -115,21 +115,13 @@ final class WellnessTests: XCTestCase {
         shot(app, "wellness-sleep-stages-demo")
         back("睡眠阶段", in: app)
         open("wellness.sleep-plan", in: app)
-        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "wellness.bedtime").firstMatch.exists)
         let proposal = app.staticTexts["sleep.proposal"]
         XCTAssertTrue(proposal.exists)
-        XCTAssertTrue(app.staticTexts["按你的目标 · 睡眠记录不足"].exists)
-        open("sleep.duration", in: app)
-        open("8 小时 15 分", in: app)
-        open("sleep.use-proposal", in: app)
-        XCTAssertFalse(app.buttons["sleep.use-proposal"].exists)
-        let save = app.buttons["wellness.save-sleep"]
-        XCTAssertTrue(save.exists)
-        if !save.isHittable { app.swipeUp() }
-        if save.isEnabled { save.tap() }
-        XCTAssertFalse(save.isEnabled)
+        XCTAssertTrue(app.staticTexts["sleep.wake-proposal"].exists)
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "sleep.latest").firstMatch.exists)
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "sleep.basis").firstMatch.exists)
         shot(app, "wellness-sleep-plan")
-        back("作息计划", in: app)
+        back("今晚作息", in: app)
         back("睡眠与作息", in: app)
         open("wellness.mood", in: app)
         open("wellness.mood.calm", in: app)
@@ -147,5 +139,38 @@ final class WellnessTests: XCTestCase {
         let response = app.staticTexts["陪你安静待一会"]
         let removed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: response)
         XCTAssertEqual(XCTWaiter.wait(for: [removed], timeout: 5), .completed)
+    }
+
+    func testSleepAlarmHandlesSystemAuthorization() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--wellness-ui-test"]
+        app.launchPastHealthSetup()
+        open("phone.wellness", in: app)
+        open("wellness.sleep", in: app)
+        open("wellness.sleep-plan", in: app)
+        let cancel = app.buttons["sleep.cancel-alarm"]
+        let permission = app.buttons["sleep.alarm-permission"]
+        let confirmed = app.descendants(matching: .any).matching(identifier: "sleep.alarm-confirmed")
+        if cancel.exists { cancel.tap() }
+        if !permission.exists {
+            open("sleep.set-alarm", in: app)
+            let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+            let allow = springboard.alerts.buttons.matching(NSPredicate(format: "label == 'Allow' OR label == '允许'")).firstMatch
+            if allow.waitForExistence(timeout: 3) { allow.tap() }
+        }
+        if permission.exists {
+            XCTAssertTrue(permission.isHittable)
+            XCTAssertFalse(confirmed.firstMatch.exists)
+            shot(app, "wellness-alarm-permission-denied")
+            return
+        }
+        XCTAssertTrue(confirmed.firstMatch.waitForExistence(timeout: 12))
+        XCTAssertEqual(confirmed.count, 1)
+        XCTAssertFalse(app.buttons["sleep.set-alarm"].exists)
+        shot(app, "wellness-alarm-confirmed")
+        open("sleep.cancel-alarm", in: app)
+        XCTAssertTrue(app.buttons["sleep.set-alarm"].waitForExistence(timeout: 5))
+        XCTAssertFalse(confirmed.firstMatch.exists)
     }
 }

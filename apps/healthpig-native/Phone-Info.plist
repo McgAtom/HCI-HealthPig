@@ -8,6 +8,8 @@
 	<string>经你选择读取步数、睡眠、心率、圆环或身体指标（静息心率、心率变异性、呼吸、血氧），用于显示记录和趋势。</string>
 	<key>NSMotionUsageDescription</key>
 	<string>在手表上读取约10秒加速度，仅区分步行与坐站，不用于医疗判断。</string>
+	<key>NSAlarmKitUsageDescription</key>
+	<string>你选择设置闹钟后，走走猪猪会在建议的起床时间响铃。</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>

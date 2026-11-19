@@ -39,7 +39,8 @@ enum SleepIntervals {
     @Published private(set) var vitalsEnabled = UserDefaults.standard.bool(forKey: "wellnessVitalsReadOptIn")
     private var vitalsGeneration = 0
     @Published private(set) var sleepStages: [SleepStageSlice] = []
-    @Published private(set) var recentNights: [Int] = []
+    @Published private(set) var recentSleepNights: [SleepSchedule.Night] = []
+    var recentNights: [Int] { recentSleepNights.map(\.asleepMinutes) }
     @Published var days: [SleepDay] = []
     @Published var activityDays: [ActivityDay] = []
     @Published var heartRate: Double?
@@ -172,7 +173,7 @@ enum SleepIntervals {
         }
         backgroundConfigured = false
         try? FileManager.default.removeItem(at: cacheURL)
-        sleepStages = []; recentNights = []; days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil; rings = nil
+        sleepStages = []; recentSleepNights = []; days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil; rings = nil
         ringsMessage = "自动读取已关闭，可重新授权。"
         message = "自动读取已关闭，本机缓存已清除"
         backgroundMessage = "可再次授权开启；系统健康记录未被删除"
@@ -223,7 +224,7 @@ enum SleepIntervals {
 
     private func fetch() async throws {
         // Clear previous data before each query; never present stale data as refreshed.
-        sleepStages = []; recentNights = []; days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil
+        sleepStages = []; recentSleepNights = []; days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil
         await refreshRings()
         let now = Date(), calendar = Calendar.current
         let today = calendar.startOfDay(for: now)
@@ -236,7 +237,7 @@ enum SleepIntervals {
                           HKCategoryValueSleepAnalysis.asleepREM.rawValue])
         let valid = sleepSamples.compactMap { $0 as? HKCategorySample }
             .filter { asleep.contains($0.value) && $0.endDate > $0.startDate }
-        recentNights = SleepSchedule.recentNights(valid.map {
+        recentSleepNights = SleepSchedule.mainNights(valid.map {
             .init(start: $0.startDate, end: $0.endDate, source: $0.sourceRevision.source.bundleIdentifier)
         }, now: now, calendar: calendar)
         for offset in -7..<0 {

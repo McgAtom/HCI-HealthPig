@@ -99,6 +99,42 @@ import Foundation
         }
         let nights = SleepSchedule.recentNights(timeline, now: noon, calendar: calendar)
         check(nights == [420, 420, 420], "deduplicates overlap, excludes naps, selects one source")
+        let wakeWindow = SleepSchedule.wakeWindow(now: noon, calendar: calendar)!
+        let detailed = SleepSchedule.mainNights(timeline, now: noon, calendar: calendar)
+        let recommended = SleepSchedule.recommend(nights: detailed, target: 480, latestWake: wakeWindow.upperBound,
+                                                  now: noon, calendar: calendar)!
+        check(recommended.nightsUsed == 3 && recommended.reservedMinutes == 510 && !recommended.fallsShort,
+              "record timing and bounded wake reserve inform the recommendation")
+        let zeroHistory = SleepSchedule.recommend(nights: [], target: 480, latestWake: wakeWindow.upperBound,
+                                                now: noon, calendar: calendar)!
+        check(zeroHistory.nightsUsed == 0 && SleepSchedule.clockMinutes(zeroHistory.wake, calendar: calendar) == 450,
+              "fallback uses an ordinary reference time and the target")
+        let lateNow = SleepSchedule.clockDate(23 * 60 + 53, on: noon, calendar: calendar)!
+        let short = SleepSchedule.recommend(nights: detailed, target: 480, latestWake: wakeWindow.lowerBound,
+                                           now: lateNow, calendar: calendar)!
+        check(short.fallsShort && short.bedtime >= lateNow && short.wake == wakeWindow.lowerBound && short.reservedMinutes == 240,
+              "late-night plan reserves only the real remaining hours")
+        let earlyLimit = wakeWindow.lowerBound.addingTimeInterval(127 * 60)
+        let adjusted = SleepSchedule.recommend(nights: detailed, target: 480, latestWake: earlyLimit, now: noon, calendar: calendar)!
+        check(adjusted.wake <= earlyLimit && adjusted.reservedMinutes >= 480 && !adjusted.fallsShort,
+              "planned wake respects an exact user deadline")
+        let laterNights = detailed.map { night in
+            SleepSchedule.Night(start: night.start.addingTimeInterval(2 * 3600),
+                                end: night.end.addingTimeInterval(2 * 3600), asleepMinutes: night.asleepMinutes)
+        }
+        let laterPlan = SleepSchedule.recommend(nights: laterNights, target: 480, latestWake: wakeWindow.upperBound,
+                                               now: noon, calendar: calendar)!
+        check(laterPlan.wake > recommended.wake && laterPlan.bedtime > recommended.bedtime
+              && laterPlan.reservedMinutes == recommended.reservedMinutes,
+              "different recent rhythms change both suggested times at an equal deadline")
+        var dstCalendar = Calendar(identifier: .gregorian)
+        dstCalendar.timeZone = TimeZone(identifier: "America/New_York")!
+        let spring = dstCalendar.date(from: DateComponents(year: 2026, month: 3, day: 7, hour: 12))!
+        let springWake = SleepSchedule.wakeWindow(now: spring, calendar: dstCalendar)!.upperBound
+        let springPlan = SleepSchedule.recommend(nights: [], target: 480, latestWake: springWake,
+                                                 now: spring, calendar: dstCalendar)!
+        check(springPlan.reservedMinutes == Int(springPlan.wake.timeIntervalSince(springPlan.bedtime) / 60)
+              && springPlan.reservedMinutes >= 480, "spring clock jump uses real elapsed sleep minutes")
         let plan = SleepSchedule(target: 480, nights: nights)
         check(plan.duration == 510 && plan.typicalDuration == 420, "recent short nights add a bounded planning buffer")
         check(SleepSchedule(target: 480, nights: [420, 420]).duration == 480, "fewer than three nights uses chosen goal")
