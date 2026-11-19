@@ -26,7 +26,7 @@ import SwiftUI
         } else { journal = DivinationJournal() }
     }
 
-    func record(_ input: String) async {
+    func record(_ input: String, companion: PigCard?) async {
         let mood = DivinationDraw.clean(input)
         let day = DailyPig.dayKey(.now)
         guard DivinationDraw.canSubmit(mood), !saving, var next = journal, next.days[day] == nil else { return }
@@ -35,8 +35,10 @@ import SwiftUI
 
         let matches = await matcher.matches(mood)
         let pool = matches.isEmpty ? DivinationCard.deck.map { DivinationCandidate(card: $0, similarity: 0) } : matches
+        let artwork = DivinationArtwork(seed: UInt32.random(in: .min ... .max), pigID: companion?.id)
         guard let card = DivinationDraw.pick(from: pool, recentIDs: next.recentCards(before: day)),
-              next.record(DivinationRecord(cardID: card.id, wordMatched: !matches.isEmpty, mood: mood), on: day)
+              next.record(DivinationRecord(cardID: card.id, wordMatched: !matches.isEmpty, mood: mood,
+                                           artwork: artwork), on: day)
         else { failed = true; return }
         do {
             try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
@@ -51,6 +53,8 @@ import SwiftUI
 }
 
 struct WatchMoodPage<DailyEntry: View>: View {
+    let companion: PigCard?
+    let catalog: PigCatalog?
     @ViewBuilder let dailyEntry: DailyEntry
     @StateObject private var store = WatchMoodStore()
     @State private var input = ""
@@ -59,15 +63,14 @@ struct WatchMoodPage<DailyEntry: View>: View {
     var body: some View {
         WatchFrame {
             TimelineView(.everyMinute) { context in
+                let day = DailyPig.dayKey(context.date)
+                let today = store.journal?.days[day]
                 VStack(spacing: 5) {
-                    if let record = store.journal?.days[DailyPig.dayKey(context.date)],
+                    if let record = today,
                        let card = DivinationCard.deck.first(where: { $0.id == record.cardID }) {
-                        if let mood = record.mood { Text(mood).font(.subheadline).foregroundStyle(PigTheme.rose)
-                            .lineLimit(1).accessibilityIdentifier("watch.mood-recorded") }
-                        Image(systemName: card.symbol).font(.title2).foregroundStyle(PigTheme.cream).accessibilityHidden(true)
-                        Text(card.title).font(.headline).accessibilityIdentifier("divination.card-title")
-                        Text(card.prompt).font(.subheadline).multilineTextAlignment(.center)
-                            .fixedSize(horizontal: false, vertical: true).accessibilityIdentifier("divination.card-prompt")
+                        let art = record.appearance(on: day)
+                        let pig = art.pigID.flatMap { catalog?.card($0) } ?? catalog?.card("pig-001")
+                        PigOracleFace(card: card, mood: record.mood, art: art, pig: pig)
                         dailyEntry
                     } else if store.journal != nil {
                         VStack(spacing: 5) {
@@ -100,13 +103,13 @@ struct WatchMoodPage<DailyEntry: View>: View {
                             .buttonStyle(.bordered)
                         dailyEntry
                     }
-                }.padding(.top, 4)
+                }.padding(.top, today == nil ? 4 : 20)
             }
         }
     }
 
     private func save(_ mood: String) {
         retryMood = mood
-        Task { await store.record(mood) }
+        Task { await store.record(mood, companion: companion) }
     }
 }

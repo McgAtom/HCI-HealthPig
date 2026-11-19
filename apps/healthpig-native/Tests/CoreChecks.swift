@@ -45,13 +45,19 @@ import Foundation
         let next = DivinationDraw.pick(from: tired, recentIDs: ["breath"])
         check(next != nil && next?.id != "breath", "result excludes most recent card while alternatives remain")
         var divination = DivinationJournal()
-        let draw = DivinationRecord(cardID: "breath", wordMatched: true, mood: "今天好累")
+        let artwork = DivinationArtwork(seed: 1_234_567, pigID: "pig-001")
+        let draw = DivinationRecord(cardID: "breath", wordMatched: true, mood: "今天好累", artwork: artwork)
         check(divination.record(draw, on: dates[0]) && !divination.record(draw, on: dates[0]) && divination.record(draw, on: dates[1]),
               "divination permits one record per date and opens on the next date")
         let encoded = try JSONEncoder().encode(divination)
         let decoded = try JSONDecoder().decode(DivinationJournal.self, from: encoded)
         check(decoded.days[dates[0]] == draw && decoded.recentCards(before: dates[2]) == ["breath", "breath"],
               "daily divination and recent cards survive serialization")
+        let legacy = try JSONDecoder().decode(DivinationRecord.self, from: Data(#"{"cardID":"breath","wordMatched":true}"#.utf8))
+        check(legacy.appearance(on: dates[0]) == legacy.appearance(on: dates[0]), "legacy card has a stable visual fallback")
+        let appearances = (0..<72).map { DivinationArtwork(seed: UInt32($0) &* 2_654_435_761, pigID: nil) }
+        check(Set(appearances.map(\.frame)).count == 3 && Set(appearances.map(\.palette)).count == 4 &&
+              Set(appearances.map(\.ornament)).count == 6, "card faces vary all three visual components")
         let phoneSuite = "healthpig.sleep.phone.\(UUID())", watchSuite = "healthpig.sleep.watch.\(UUID())"
         let phoneDefaults = UserDefaults(suiteName: phoneSuite)!, watchDefaults = UserDefaults(suiteName: watchSuite)!
         defer { phoneDefaults.removePersistentDomain(forName: phoneSuite); watchDefaults.removePersistentDomain(forName: watchSuite) }

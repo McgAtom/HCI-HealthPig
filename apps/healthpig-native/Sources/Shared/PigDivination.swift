@@ -27,15 +27,15 @@ struct DivinationCard: Identifiable, Equatable, Sendable {
         .init(id: "fork", title: "岔路", angle: .act, prompt: "如果今天只试一小步，你想往哪边走？", symbol: "arrow.triangle.branch", anchors: ["迷茫", "选择", "犹豫", "决定"]),
         .init(id: "question", title: "问号", angle: .reflect, prompt: "这个问题里，哪部分值得你再想一想？", symbol: "questionmark.circle", anchors: ["迷茫", "困惑", "问题", "犹豫"]),
         .init(id: "blank", title: "留白", angle: .pause, prompt: "有哪个答案，可以暂时留空？", symbol: "circle.dotted", anchors: ["迷茫", "困惑", "等待", "想不通"]),
-        .init(id: "shore", title: "岸边", angle: .reflect, prompt: "如果只留下一种眼前的声音，你想听什么？", symbol: "water.waves", anchors: ["大海", "海边", "潮汐", "风景"]),
+        .init(id: "shore", title: "岸边", angle: .reflect, prompt: "此刻你最想听见什么声音？", symbol: "water.waves", anchors: ["大海", "海边", "潮汐", "风景"]),
         .init(id: "slow", title: "慢下来", angle: .act, prompt: "今天有没有一段路，你想慢慢走完？", symbol: "figure.walk", anchors: ["散步", "海边", "旅行", "放松"]),
         .init(id: "far", title: "远方", angle: .pause, prompt: "哪个地方，你愿意留给下一次出发？", symbol: "safari", anchors: ["海边", "大海", "旅行", "远方"]),
         .init(id: "cushion", title: "软垫", angle: .pause, prompt: "现在什么能让你觉得舒服一点？", symbol: "cloud", anchors: ["难过", "低落", "委屈", "伤心"]),
         .init(id: "after-rain", title: "雨停", angle: .reflect, prompt: "今天有哪一刻，心里稍微松了一点？", symbol: "cloud.sun", anchors: ["难过", "低落", "失落", "雨天"]),
-        .init(id: "speak", title: "说出来", angle: .connect, prompt: "如果可以说一句心里话，你想怎么开头？", symbol: "quote.bubble", anchors: ["愤怒", "委屈", "烦躁", "生气"]),
+        .init(id: "speak", title: "说出来", angle: .connect, prompt: "你想怎样开口说出心里话？", symbol: "quote.bubble", anchors: ["愤怒", "委屈", "烦躁", "生气"]),
         .init(id: "goodnight", title: "晚安", angle: .pause, prompt: "哪件事今天可以在这里打个句号？", symbol: "moon.stars", anchors: ["睡觉", "失眠", "夜晚", "困倦"]),
         .init(id: "light", title: "小灯", angle: .act, prompt: "今天有没有发生一件值得记住的小事？", symbol: "lightbulb", anchors: ["平静", "日常", "普通", "满足"]),
-        .init(id: "cup", title: "空杯", angle: .reflect, prompt: "如果把一个念头先放在一旁，它会是哪一个？", symbol: "cup.and.saucer", anchors: ["放松", "平静", "失眠", "休息", "放空"]),
+        .init(id: "cup", title: "空杯", angle: .reflect, prompt: "今天哪个念头可以先放一放？", symbol: "cup.and.saucer", anchors: ["放松", "平静", "失眠", "休息", "放空"]),
     ]
 }
 
@@ -141,6 +141,24 @@ struct DivinationRecord: Codable, Equatable {
     let cardID: String
     let wordMatched: Bool
     var mood: String? = nil
+    var artwork: DivinationArtwork? = nil
+
+    func appearance(on day: String) -> DivinationArtwork {
+        if let artwork { return artwork }
+        let seed = (day + cardID).utf8.reduce(UInt32(2_166_136_261)) { ($0 ^ UInt32($1)) &* 16_777_619 }
+        return DivinationArtwork(seed: seed, pigID: nil)
+    }
+}
+
+struct DivinationArtwork: Codable, Equatable {
+    enum Frame: Int, CaseIterable { case orbit, garden, dawn }
+    let seed: UInt32
+    let pigID: String?
+
+    var frame: Frame { Frame.allCases[Int(seed % UInt32(Frame.allCases.count))] }
+    var palette: Int { Int((seed >> 8) % 4) }
+    var ornament: Int { Int((seed >> 16) % 6) }
+    var flipped: Bool { (seed >> 24) % 2 == 1 }
 }
 
 struct DivinationJournal: Codable {

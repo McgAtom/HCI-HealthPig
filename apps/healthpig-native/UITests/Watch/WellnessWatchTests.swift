@@ -48,12 +48,12 @@ final class WellnessWatchTests: XCTestCase {
         let done = app.buttons.matching(NSPredicate(format: "label == 'Done' OR label == '完成'")).firstMatch
         XCTAssertTrue(done.waitForExistence(timeout: 8), app.debugDescription)
         screenshot(app, "watch-custom-mood")
-        app.typeText("今天好累")
+        app.typeText("今天很开心")
         done.tap()
         let card = app.staticTexts["divination.card-title"]
         XCTAssertTrue(card.waitForExistence(timeout: 8))
-        XCTAssertTrue(["喘息", "边界", "松开"].contains(card.label))
-        XCTAssertEqual(app.staticTexts["watch.mood-recorded"].label, "今天好累")
+        XCTAssertTrue(["留下", "发光", "分享"].contains(card.label))
+        XCTAssertEqual(app.staticTexts["watch.mood-recorded"].label, "今天很开心")
         screenshot(app, "watch-custom-mood-card")
     }
 

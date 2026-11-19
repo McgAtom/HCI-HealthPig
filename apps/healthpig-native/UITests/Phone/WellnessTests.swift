@@ -52,6 +52,7 @@ final class WellnessTests: XCTestCase {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["--wellness-ui-test"]
+        app.launchEnvironment["HEALTHPIG_SLEEP_TEST_SUITE"] = "healthpig.sleep-ui.\(UUID())"
         app.launchPastHealthSetup()
         open("phone.wellness", in: app)
         shot(app, "wellness-hub")
@@ -73,6 +74,7 @@ final class WellnessTests: XCTestCase {
         XCTAssertTrue(proposal.exists)
         XCTAssertTrue(app.staticTexts["sleep.wake-proposal"].exists)
         XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "sleep.latest").firstMatch.exists)
+        RunLoop.current.run(until: Date().addingTimeInterval(0.6))
         shot(app, "phone-sleep-plan")
         let alarm = app.buttons["sleep.set-watch-alarm"]
         if alarm.exists {
@@ -80,6 +82,7 @@ final class WellnessTests: XCTestCase {
             XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "sleep.alarm-pending").firstMatch.exists
                           || app.descendants(matching: .any).matching(identifier: "sleep.alarm-confirmed").firstMatch.exists
                           || app.descendants(matching: .any).matching(identifier: "sleep.alarm-failed").firstMatch.exists)
+            shot(app, "phone-wrist-alarm-request")
         } else {
             XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "sleep.watch-required").firstMatch.exists
                           || app.descendants(matching: .any).matching(identifier: "sleep.alarm-pending").firstMatch.exists

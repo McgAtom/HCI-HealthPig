@@ -138,6 +138,7 @@
     "apps/healthpig-native/Sources/Shared/WellnessRecords.swift",
     "apps/healthpig-native/Sources/Watch/HealthPigWatchApp.swift",
     "apps/healthpig-native/Sources/Watch/LiveMotion.swift",
+    "apps/healthpig-native/Sources/Watch/PigOracleFace.swift",
     "apps/healthpig-native/Sources/Watch/PigWalkView.swift",
     "apps/healthpig-native/Sources/Watch/WalkingCompanionView.swift",
     "apps/healthpig-native/Sources/Watch/WatchMoodPage.swift",

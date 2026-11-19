@@ -191,6 +191,12 @@
 			"path" = "Sources/Watch/LiveMotion.swift";
 			"sourceTree" = "<group>";
 		};
+		"34DF8B4B26201723E7642055" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Sources/Watch/PigOracleFace.swift";
+			"sourceTree" = "<group>";
+		};
 		"406A2CEE499B030AB72603F7" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -423,6 +429,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "06A24E28A429E85FFB6B6A78";
 		};
+		"0FC2996E13516CF35288D019" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "34DF8B4B26201723E7642055";
+		};
 		"F18E39BABC1526043A2FEF29" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "406A2CEE499B030AB72603F7";
@@ -510,6 +520,7 @@
 				"32C48B18A08DA308D49A0019",
 				"0DB23BD1085C8D79F12F78C1",
 				"3AD113E129820232C3514698",
+				"0FC2996E13516CF35288D019",
 				"F18E39BABC1526043A2FEF29",
 				"2082ACD56D55D9BBAF75D5B4",
 				"5AA150374FF30E127540E2F0",
@@ -547,8 +558,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.8";
-				"CURRENT_PROJECT_VERSION" = "17";
+				"MARKETING_VERSION" = "0.8.9";
+				"CURRENT_PROJECT_VERSION" = "18";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -577,8 +588,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.8";
-				"CURRENT_PROJECT_VERSION" = "17";
+				"MARKETING_VERSION" = "0.8.9";
+				"CURRENT_PROJECT_VERSION" = "18";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -880,8 +891,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.8";
-				"CURRENT_PROJECT_VERSION" = "17";
+				"MARKETING_VERSION" = "0.8.9";
+				"CURRENT_PROJECT_VERSION" = "18";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -912,8 +923,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.8";
-				"CURRENT_PROJECT_VERSION" = "17";
+				"MARKETING_VERSION" = "0.8.9";
+				"CURRENT_PROJECT_VERSION" = "18";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -1285,6 +1296,7 @@
 			"children" = (
 				"385107832C11A6E311B90C21",
 				"06A24E28A429E85FFB6B6A78",
+				"34DF8B4B26201723E7642055",
 				"406A2CEE499B030AB72603F7",
 				"D11BBB67E0811DB51240E0AF",
 				"B0F442AB82E00515668D7E0F",

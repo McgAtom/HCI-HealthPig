@@ -117,7 +117,7 @@ struct WatchTodayView: View {
                     }
                 }.padding(.top, 3)
             }.tag(0)
-            WatchMoodPage {
+            WatchMoodPage(companion: store.companion, catalog: store.catalog) {
                 NavigationLink { WatchDailyView(store: store, health: health) } label: {
                     let energy = health.rings?.energy()
                     WatchCompactButton(title: store.todayClaim() != nil ? "已抽" : energy == 100 ? "可抽猪" : "抽猪",

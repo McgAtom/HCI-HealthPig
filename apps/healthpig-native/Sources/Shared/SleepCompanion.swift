@@ -98,8 +98,11 @@ private struct SleepCompanionSnapshot: Codable {
 
     private static func appDefaults() -> UserDefaults {
 #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("--wellness-ui-test"),
-           let isolated = UserDefaults(suiteName: "healthpig.sleep-ui") { return isolated }
+        let process = ProcessInfo.processInfo
+        if process.arguments.contains("--wellness-ui-test") {
+            let suite = process.environment["HEALTHPIG_SLEEP_TEST_SUITE"] ?? "healthpig.sleep-ui"
+            if let isolated = UserDefaults(suiteName: suite) { return isolated }
+        }
 #endif
         return .standard
     }
