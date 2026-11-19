@@ -107,6 +107,13 @@ private struct SleepPlanBasisView: View {
                            symbol: difference > 0 ? "clock.badge.plus" : "clock.badge.exclamationmark")
                 }
             }
+#if os(iOS)
+            NavigationLink {
+                ModelInsightsView(initialTask: .sleep)
+            } label: {
+                Label("模型用到什么", systemImage: "chart.bar.xaxis")
+            }.buttonStyle(.bordered).accessibilityIdentifier("sleep.forecast-insights")
+#endif
         }.navigationTitle("推荐依据")
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("完成") { dismiss() } } }
     }

@@ -61,7 +61,10 @@ def check(path, data, allowed):
                 for item in value: inspect(item)
         payload = json.loads(text)
         inspect(payload)
-        if path == 'apps/healthpig-native/Resources/model-insights.json' and payload.get('cases') != []:
+        if path in {
+            'apps/healthpig-native/Resources/model-insights.json',
+            'apps/healthpig-native/Resources/sleep-forecast-insights.json',
+        } and payload.get('cases') != []:
             raise ValueError('Individual validation examples in public insights')
 
 def main():

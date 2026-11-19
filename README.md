@@ -4,7 +4,7 @@
 
 ## 当前原生双端入口
 
-[原生工程 0.8.14](apps/healthpig-native/HealthPigNative.xcodeproj)可用 Xcode 打开。iPhone 选择 `HealthPigPhone`，Apple Watch 选择 `HealthPigWatch`。随包提供模型参数和图表数据，可直接运行。 [原生应用说明](apps/healthpig-native/README.md)
+[原生工程 0.8.15](apps/healthpig-native/HealthPigNative.xcodeproj)可用 Xcode 打开。iPhone 选择 `HealthPigPhone`，Apple Watch 选择 `HealthPigWatch`。随包提供模型参数和图表数据，可直接运行。 [原生应用说明](apps/healthpig-native/README.md)
 
 历史目录保留原始模型实验与早期手表代码。公开Git记录实际导出时间，不用补造的提交日期代替早期本地迭代证据。
 
@@ -12,7 +12,7 @@
 
 iPhone 底栏「判断」展示腕部动作分类器使用的特征。首屏有五项代表输入，点击条形可查验证集分布和样本量。固定 CAPTURE-24 验证集包含 30 人、12,993 个窗口，基线平衡准确率为 85.3261%。24 项特征各置换 40 次，平均偏差的分数下降最多，为 42.69 个百分点。图表保留零线、负值和重复置换的范围。 [计算代码](04-model-insights/code/compute_importance.py) · [汇总数据](apps/healthpig-native/Resources/model-insights.json) · [复现说明](REPRODUCE.md#作业四模型判断)
 
-0.8.14 也在双端离线预测当晚实睡时长。NetHealth 留出测试的平均绝对误差为 63.26 分钟，UVA 外部验证为 58.05 分钟。作息计划按用户目标与时段约束生成。 [训练与结果](research/sleep-forecast/README.md)
+「判断 → 睡眠」展示实睡时长预测的十项输入及置换影响。UVA 外部验证基线误差为 58.05 分钟，打乱近七天平均实睡时长后误差增加最多，为 3.16 分钟。 [训练与结果](research/sleep-forecast/README.md#睡眠输入的置换重要性)
 
 ## 历史内容
 

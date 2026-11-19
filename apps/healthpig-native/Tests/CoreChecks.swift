@@ -160,6 +160,18 @@ import Foundation
         let detailed = SleepSchedule.mainNights(timeline, now: noon, calendar: calendar)
         let forecast = try JSONDecoder().decode(SleepForecast.self, from: Data(contentsOf:
             root.appendingPathComponent("Resources/sleep-forecast.json")))
+        let insightsData = try Data(contentsOf: root.appendingPathComponent("Resources/sleep-forecast-insights.json"))
+        let insights = ModelInsights.decode(insightsData, task: .sleep)!
+        check(insights.windows == 26_031 && insights.people == 160 && abs(insights.baseline - 58.054095631870624) < 1e-9,
+              "sleep insights reproduce the original external-test baseline")
+        check(insights.features.count == 10 && insights.highlights.first?.id == "mean_minutes" && insights.domain(for: .sleep).contains(0),
+              "sleep insights show the strongest deployment input and retain zero")
+        for example in insights.cases {
+            let deviation = abs(example.actual - example.prediction)
+            check(abs(forecast.estimate(example.inputs)! - example.prediction) < 1e-9,
+                  "sleep insight examples match the on-device prediction")
+            check(example.positive ? deviation <= 30 : deviation >= 90, "regression examples label deviations correctly")
+        }
         func forecastNight(_ offset: Int, _ start: Int, _ end: Int, _ minutes: Int) -> SleepSchedule.Night {
             let day = calendar.startOfDay(for: calendar.date(byAdding: .day, value: -offset, to: wakeWindow.lowerBound)!)
             return .init(start: day.addingTimeInterval(Double(start * 60)), end: day.addingTimeInterval(Double(end * 60)),

@@ -4,15 +4,49 @@ import SwiftUI
 private let insightAccent = Color(red: 0.78, green: 0.75, blue: 1)
 
 struct ModelInsightsView: View {
-    @State private var report = ModelInsights.load()
+    @State private var task: ModelInsights.Task
+
+    init(initialTask: ModelInsights.Task = .motion) {
+        _task = State(initialValue: initialTask)
+    }
+
+    var body: some View {
+        InsightReportView(task: task, picker: $task).id(task)
+            .navigationTitle("模型判断")
+#if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+#endif
+    }
+}
+
+private struct InsightReportView: View {
+    let task: ModelInsights.Task
+    @Binding var picker: ModelInsights.Task
+    @State private var report: ModelInsights?
     @State private var selection: ModelInsights.Feature?
     @State private var allFeatures = false
     @State private var showMethod = false
     @ScaledMetric(relativeTo: .caption2) private var axisHeight = 18.0
 
+    init(task: ModelInsights.Task, picker: Binding<ModelInsights.Task>) {
+        self.task = task
+        _picker = picker
+        _report = State(initialValue: ModelInsights.load(task))
+    }
+
     var body: some View {
         PigScreen {
+#if os(iOS)
+            Picker("模型", selection: $picker) {
+                ForEach(ModelInsights.Task.allCases) { choice in
+                    Text(choice.title).tag(choice)
+                }
+            }.pickerStyle(.segmented).accessibilityIdentifier("insights.picker")
+#endif
             if let report {
+                Label(task.source, systemImage: task.icon)
+                    .font(.headline).foregroundStyle(PigTheme.cream)
+                    .accessibilityIdentifier("insights.source")
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Label("打乱输入", systemImage: "shuffle").font(.headline)
@@ -23,7 +57,7 @@ struct ModelInsightsView: View {
                         }.buttonStyle(.plain).foregroundStyle(insightAccent)
                             .accessibilityLabel("图例与实验方法")
                     }
-                    Label("表现下降 · 百分点", systemImage: "arrow.down.right")
+                    Label("\(task.metric) · \(task.unit)", systemImage: task == .motion ? "arrow.down.right" : "arrow.up.right")
                         .font(.subheadline.weight(.medium)).foregroundStyle(insightAccent)
                     scale(report)
                     ForEach(allFeatures ? report.features : report.highlights) { feature in
@@ -32,30 +66,26 @@ struct ModelInsightsView: View {
                     Button {
                         allFeatures.toggle()
                     } label: {
-                        Label(allFeatures ? "收起 · 只看 5 项" : "全部 24 项输入",
+                        Label(allFeatures ? "收起 · 只看 \(report.highlights.count) 项" : "全部 \(report.features.count) 项输入",
                               systemImage: allFeatures ? "chevron.up" : "list.bullet")
                             .font(.subheadline.weight(.semibold)).frame(minHeight: 44)
                     }.buttonStyle(.plain).foregroundStyle(insightAccent)
                     .accessibilityIdentifier("insights.all-features")
                 }.padding(14).background(PigTheme.panel, in: RoundedRectangle(cornerRadius: 22))
-                Label("只看动作，不判病因", systemImage: "figure.walk")
+                Label(task.scope, systemImage: task.icon)
                     .font(.subheadline).foregroundStyle(PigTheme.cream)
-                    .accessibilityIdentifier("insights.not-causal")
+                    .accessibilityIdentifier(task == .motion ? "insights.not-causal" : "insights.sleep-scope")
             } else {
                 StatusNote(title: "判断资料不可用", message: "重新读取实验结果", symbol: "exclamationmark.triangle")
-                Button("重新读取") { report = ModelInsights.load() }.buttonStyle(PigPrimaryButton())
+                Button("重新读取") { report = ModelInsights.load(task) }.buttonStyle(PigPrimaryButton())
             }
         }
-        .navigationTitle("模型判断")
-#if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
-#endif
         .sheet(item: $selection) { feature in
-            if let report { NavigationStack { InsightDetail(feature: feature, report: report) } }
+            if let report { NavigationStack { InsightDetail(feature: feature, report: report, task: task) } }
         }
         .sheet(isPresented: $showMethod) {
             if let report {
-                NavigationStack { InsightMethod(report: report) }
+                NavigationStack { InsightMethod(report: report, task: task) }
 #if os(iOS)
                     .presentationDetents([.medium, .large])
 #endif
@@ -67,10 +97,10 @@ struct ModelInsightsView: View {
         Chart {
             RuleMark(x: .value("基线", 0.0)).foregroundStyle(.clear)
         }
-        .chartXScale(domain: report.domain)
+        .chartXScale(domain: report.domain(for: task))
         .chartYAxis(.hidden)
         .chartXAxis {
-            AxisMarks(values: report.ticks.filter { $0 >= 0 }) { value in
+            AxisMarks(values: report.ticks(for: task)) { value in
                 AxisValueLabel(anchor: .top) {
                     if let score = value.as(Double.self) {
                         Text(score.formatted(.number.precision(.fractionLength(0))))
@@ -87,7 +117,7 @@ struct ModelInsightsView: View {
                 HStack(spacing: 6) {
                     Text(feature.title).font(.subheadline.weight(.semibold))
                     Spacer(minLength: 2)
-                    Text(String(format: "%+.2f", feature.mean)).monospacedDigit()
+                    Text(task.impact(feature.mean)).monospacedDigit()
                         .font(.subheadline.weight(.semibold)).foregroundStyle(feature.mean < 0 ? PigTheme.mint : insightAccent)
                     Image(systemName: "chevron.right").font(.caption2).foregroundStyle(.secondary)
                 }
@@ -104,13 +134,13 @@ struct ModelInsightsView: View {
                     PointMark(x: .value("均值", feature.mean), y: .value("特征", feature.id))
                         .symbolSize(11).foregroundStyle(.white)
                 }
-                .chartXScale(domain: report.domain)
+                .chartXScale(domain: report.domain(for: task))
                 .chartXAxis(.hidden).chartYAxis(.hidden)
                 .frame(height: 14).accessibilityHidden(true)
             }.frame(minHeight: 44).contentShape(Rectangle())
         }.buttonStyle(.plain)
             .accessibilityLabel(feature.title)
-            .accessibilityValue(String(format: "平均下降 %+.2f 个百分点，最小 %+.2f，最大 %+.2f", feature.mean, feature.low, feature.high))
+            .accessibilityValue("\(task.metric) \(task.impact(feature.mean)) \(task.unit)，最小 \(task.impact(feature.low))，最大 \(task.impact(feature.high))")
             .accessibilityHint("查看分布与预测样例")
             .accessibilityIdentifier("insights.feature." + feature.id)
     }
@@ -119,6 +149,7 @@ struct ModelInsightsView: View {
 private struct InsightDetail: View {
     let feature: ModelInsights.Feature
     let report: ModelInsights
+    let task: ModelInsights.Task
     @Environment(\.dismiss) private var dismiss
     @State private var showAll = false
 
@@ -134,17 +165,17 @@ private struct InsightDetail: View {
                 Label(feature.unit, systemImage: "ruler").font(.caption).foregroundStyle(insightAccent)
             }
             PigPanel {
-                Label("验证集分布", systemImage: "chart.bar.xaxis").font(.headline)
+                Label(task == .motion ? "验证集分布" : "外部验证分布", systemImage: "chart.bar.xaxis").font(.headline)
                 ViewThatFits(in: .horizontal) {
                     HStack(spacing: 12) { samplingBadges }
                     VStack(alignment: .leading, spacing: 6) { samplingBadges }
                 }.font(.subheadline).foregroundStyle(insightAccent)
                 Chart(Array(feature.bins.enumerated()), id: \.offset) { _, bin in
                     RectangleMark(xStart: .value("下界", bin.lower), xEnd: .value("上界", bin.upper),
-                                  yStart: .value("零", 0), yEnd: .value("窗口数", bin.count))
+                                  yStart: .value("零", 0), yEnd: .value(task.sampleName, bin.count))
                         .foregroundStyle(insightAccent.gradient)
                         .accessibilityLabel("\(feature.formatted(bin.lower)) 至 \(feature.formatted(bin.upper))\(feature.suffix)")
-                        .accessibilityValue("\(bin.count) 个窗口")
+                        .accessibilityValue("\(bin.count) \(task.sampleName)")
                 }
                 .chartXScale(domain: histogramDomain)
                 .chartYScale(domain: 0...max(1, feature.bins.map(\.count).max() ?? 1))
@@ -162,7 +193,7 @@ private struct InsightDetail: View {
                         VStack(spacing: 8) { exampleCards }
                     }
                     Button { showAll.toggle() } label: {
-                        Label(showAll ? "收起 24 项输入" : "这两段的 24 项输入",
+                        Label(showAll ? "收起 \(report.features.count) 项输入" : "\(task.comparison)的 \(report.features.count) 项输入",
                               systemImage: showAll ? "chevron.up" : "chevron.down")
                             .font(.subheadline).frame(minHeight: 44)
                     }.buttonStyle(.plain).foregroundStyle(insightAccent)
@@ -172,7 +203,7 @@ private struct InsightDetail: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(item.title).font(.caption.weight(.semibold))
                                 ForEach(report.cases) { example in
-                                    Text("\(example.correct ? "判对" : "判错")  \(example.value(for: item))")
+                                    Text("\(task.caseTitle(example.id))  \(example.value(for: item))")
                                         .font(.caption2).monospacedDigit()
                                 }
                             }.padding(.vertical, 4)
@@ -188,7 +219,7 @@ private struct InsightDetail: View {
     }
 
     @ViewBuilder private var samplingBadges: some View {
-        Label(report.windows.formatted() + " 窗口", systemImage: "square.stack").monospacedDigit()
+        Label("\(report.windows.formatted()) \(task.sampleName)", systemImage: "square.stack").monospacedDigit()
         Label("\(report.people) 人", systemImage: "person.2").monospacedDigit()
     }
 
@@ -201,11 +232,11 @@ private struct InsightDetail: View {
     @ViewBuilder private var exampleCards: some View {
         ForEach(report.cases) { example in
             VStack(alignment: .leading, spacing: 5) {
-                Label(example.correct ? "判对" : "判错", systemImage: example.correct ? "checkmark.circle.fill" : "xmark.circle.fill")
-                    .font(.subheadline.weight(.bold)).foregroundStyle(example.correct ? PigTheme.mint : PigTheme.rose)
+                Label(task.caseTitle(example.id), systemImage: example.positive ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                    .font(.subheadline.weight(.bold)).foregroundStyle(example.positive ? PigTheme.mint : PigTheme.rose)
                 Text(example.value(for: feature)).font(.headline.monospacedDigit())
-                Text("真实：\(ModelInsights.Example.label(example.actual))").font(.caption)
-                Text("模型：\(ModelInsights.Example.label(example.prediction))").font(.caption)
+                Text("\(task == .sleep ? "实睡" : "真实")：\(task.output(example.actual))").font(.caption)
+                Text("模型：\(task.output(example.prediction))").font(.caption)
             }.fixedSize(horizontal: true, vertical: false)
                 .frame(maxWidth: .infinity, alignment: .leading).padding(10)
                 .background(PigTheme.background, in: RoundedRectangle(cornerRadius: 12))
@@ -217,18 +248,24 @@ private struct InsightDetail: View {
 
 private struct InsightMethod: View {
     let report: ModelInsights
+    let task: ModelInsights.Task
     @Environment(\.dismiss) private var dismiss
     var body: some View {
         PigScreen {
             Label("打乱一列 → 重算 → 比基线", systemImage: "shuffle").font(.headline)
-            Label(String(format: "验证集基线 %.2f%%", report.baseline), systemImage: "scope").font(.headline)
-            Text("CAPTURE-24 · 24 项腕部加速度特征")
-            Text("同一模型，同一验证集；每项打乱 \(report.repeats) 次。条形与圆点是平均下降，细线是重复结果的最小–最大，不是置信区间。").font(.subheadline)
-            Text("零表示无变化，负值表示打乱后分数上升。输入有关联时，重要性可能被分摊或放大。").font(.subheadline)
-            Text("平衡准确率是步行与坐／站召回率的平均。比较固定二分类阈值；应用另有「拿不准」提示。").font(.subheadline)
-            Text("排行表示整批数据的模型依赖；正误样例不能解释单条预测为何如此。")
-            Label("只判断动作，不能用来判断个人患病原因。", systemImage: "info.circle")
-                .font(.footnote.weight(.semibold)).foregroundStyle(PigTheme.cream)
+            let unit = task == .motion ? "%" : " 分钟"
+            Label("\(task.baselineName) \(report.baseline.formatted(.number.precision(.fractionLength(2))))\(unit)", systemImage: "scope")
+                .font(.headline)
+            Text("\(report.dataset) · \(report.features.count) 项输入")
+            Text("每项打乱 \(report.repeats) 次。条和圆点表示平均值，细线表示最小至最大。")
+            if task == .motion {
+                Text("比较固定阈值的平衡准确率。零为无变化，负值表示打乱后的分数较高。")
+                Label("只看动作，不判病因", systemImage: task.icon)
+            } else {
+                Text("比较平均绝对误差。零为无变化，负值表示打乱后的误差较小。")
+                Label("历史实睡与次晨日期", systemImage: task.icon)
+            }
+            Text("排行表示整批结果对输入的依赖。有关联的输入可能相互替代，样例显示实际值与模型输出。")
         }.navigationTitle("怎么看这张图")
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("完成") { dismiss() } } }
     }

@@ -62,4 +62,40 @@ final class ModelInsightsTests: XCTestCase {
         largest.tap()
         XCTAssertTrue(app.staticTexts["验证集分布"].waitForExistence(timeout: 10))
     }
+
+    func testSwitchToSleepEvidenceAndBack() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchPastHealthSetup()
+        let tab = app.tabBars.buttons["判断"]
+        XCTAssertTrue(tab.waitForExistence(timeout: 15))
+        tab.tap()
+        XCTAssertTrue(app.buttons["睡眠"].waitForExistence(timeout: 8))
+        app.buttons["睡眠"].tap()
+        let largest = app.buttons["insights.feature.mean_minutes"]
+        XCTAssertTrue(largest.waitForExistence(timeout: 8))
+        XCTAssertTrue((largest.value as? String ?? "").contains("+3.163 分钟"))
+        XCTAssertTrue(app.staticTexts["误差增加 · 分钟"].exists)
+        shot(app, "sleep-input-rank")
+        largest.tap()
+        XCTAssertTrue(app.staticTexts["外部验证分布"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["26,031 晚"].exists)
+        XCTAssertTrue(app.staticTexts["160 人"].exists)
+        let cases = app.descendants(matching: .any).matching(identifier: "insights.case-inputs").firstMatch
+        if cases.exists {
+            XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "insights.case.near").firstMatch.exists)
+            XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "insights.case.far").firstMatch.exists)
+        }
+        shot(app, "sleep-input-detail")
+        if cases.exists {
+            if !cases.isHittable { app.swipeUp() }
+            cases.tap()
+            XCTAssertTrue(app.staticTexts["次晨是否周末"].exists)
+        }
+        app.buttons["完成"].tap()
+        app.buttons["动作"].tap()
+        let motion = app.buttons["insights.feature.mag_abs_dev"]
+        XCTAssertTrue(motion.waitForExistence(timeout: 8))
+        XCTAssertTrue((motion.value as? String ?? "").contains("+42.69"))
+    }
 }

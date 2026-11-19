@@ -82,6 +82,13 @@ final class WellnessTests: XCTestCase {
         basis.tap()
         XCTAssertTrue(app.navigationBars["推荐依据"].waitForExistence(timeout: 8))
         shot(app, "phone-sleep-basis")
+        let inputs = app.buttons["sleep.forecast-insights"]
+        XCTAssertTrue(inputs.waitForExistence(timeout: 8))
+        if !inputs.isHittable { app.swipeUp() }
+        inputs.tap()
+        XCTAssertTrue(app.buttons["insights.feature.mean_minutes"].waitForExistence(timeout: 8))
+        back("模型判断", in: app)
+        XCTAssertTrue(app.navigationBars["推荐依据"].waitForExistence(timeout: 8))
         open("完成", in: app)
         let alarm = app.buttons["sleep.set-watch-alarm"]
         if alarm.exists {

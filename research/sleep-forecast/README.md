@@ -29,3 +29,21 @@ python3.11 -m venv .venv
 ```
 
 训练入口不覆盖已有输出目录。训练权重约 38 KB，原生资源 `Resources/sleep-forecast.json`。双端在「睡眠计划 → 推荐依据」展示向外取整到 15 分钟的「沿用作息 · 实睡预测」。记录不足时保留已有的作息入口。核心检查用合成睡眠记录逐项核对 Python 特征和预测值与 Swift 一致，测试包含跨午夜、目标夜排除、缺数及区间取整。 [指标文件](results.json)
+
+## 睡眠输入的置换重要性
+
+在 iPhone 的「判断 → 睡眠」可查五项代表输入及全部十项。分数为打乱一个输入后平均绝对误差的增加量，单位是分钟。模型与目标值固定，在 UVA 同一批 160 人、26,031 晚上逐列打乱，每项 40 次，种子为 20261120。条形和圆点是平均增加，细线是 40 次的最小至最大。跨参与者置换会产生平常少见的组合，相关的历史时长均值与中位数也可能相互替代。指标刻画整批样本中的模型依赖。
+
+原始误差为 58.054096 分钟。近七天平均实睡时长贡献最高，打乱后误差增加 3.1629 分钟；时长中位数增加 1.2747 分钟，次晨是否为周末增加 0.6238 分钟。原生睡眠预测使用近期睡眠历史和次晨日历，步数和心率仍用于各自的健康记录。正式作息和闹钟继续依据用户设置与时间约束。
+
+复算只需下载 UVA 睡眠概要，然后直接加载部署权重：
+
+```sh
+.venv/bin/python research/sleep-forecast/download.py uva
+.venv/bin/python research/sleep-forecast/compute_importance.py \
+  --model apps/healthpig-watch/native-app/Resources/sleep-forecast.json \
+  --uva research/sleep-forecast/data/uva-sleep \
+  --output /tmp/healthpig-sleep-insights.json
+```
+
+公开 GitHub 路径中的应用目录为 `apps/healthpig-native/`。复算默认输出汇总数据。课程工程另展示两条去标识的夜晚记录，按绝对误差不超过 30 分钟与至少 90 分钟分组，分别选取组内偏差居中的一晚。
