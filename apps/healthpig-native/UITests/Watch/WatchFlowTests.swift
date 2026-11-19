@@ -11,13 +11,15 @@ final class WatchFlowTests: XCTestCase {
         let app = XCUIApplication(); app.launch()
         let action = app.buttons["watch.companion"]
         XCTAssertTrue(action.waitForExistence(timeout: 12))
-        let draw = app.buttons["daily.entry"], mood = app.buttons["watch.mood"]
-        XCTAssertTrue(draw.isHittable && mood.isHittable)
-        XCTAssertFalse(app.scrollViews.firstMatch.exists)
+        let sleep = app.buttons["watch.sleep"]
+        XCTAssertTrue(sleep.isHittable)
+        XCTAssertFalse(app.buttons["watch.status"].exists)
         XCTAssertGreaterThanOrEqual(action.frame.height, 44)
-        XCTAssertGreaterThanOrEqual(action.frame.minY - app.frame.minY, 54)
-        XCTAssertLessThan(action.frame.maxY, mood.frame.minY)
-        XCTAssertLessThanOrEqual(mood.frame.maxY, app.frame.maxY - 8)
+        XCTAssertLessThanOrEqual(action.frame.maxY, app.frame.maxY - 8)
+        let pig = app.descendants(matching: .any).matching(identifier: "watch.pig").firstMatch
+        XCTAssertTrue(pig.exists)
+        XCTAssertGreaterThanOrEqual(pig.frame.height, 100)
+        XCTAssertLessThan(pig.frame.maxY, action.frame.minY)
         screenshot(app, "watch-compact-home")
         action.tap()
         XCTAssertTrue(app.staticTexts["walk.unavailable"].waitForExistence(timeout: 8))
@@ -41,6 +43,8 @@ final class WatchFlowTests: XCTestCase {
     func testDrawEntryDoesNotTurnMissingRingsIntoReward() {
         continueAfterFailure = false
         let app = XCUIApplication(); app.launch()
+        XCTAssertTrue(app.buttons["watch.companion"].waitForExistence(timeout: 12))
+        app.swipeUp()
         let draw = app.buttons["daily.entry"]
         XCTAssertTrue(draw.waitForExistence(timeout: 12))
         draw.tap()

@@ -69,7 +69,10 @@ def main():
     parser.add_argument('--working-tree',action='store_true')
     parser.add_argument('--history',action='store_true')
     args=parser.parse_args()
-    allowed=set(json.loads((ROOT/'public-files.json').read_text())['files'])
+    manifest=json.loads((ROOT/'public-files.json').read_text())
+    allowed=set(manifest['files'])
+    retired=set(manifest.get('retired', []))
+    if allowed & retired: raise ValueError('Retired paths also present in the current allowlist')
     for relative in allowed:
         path=ROOT/relative
         if path.is_symlink() or not path.resolve().is_relative_to(ROOT.resolve()): raise ValueError('Unsafe path')
@@ -80,7 +83,10 @@ def main():
             missing=allowed-tracked
             if missing: raise ValueError('Allowlisted files missing from Git index: '+', '.join(sorted(missing)))
         for relative in sorted(tracked):
-            check(relative,subprocess.check_output(['git','show',':'+relative],cwd=ROOT),allowed)
+            permitted = allowed
+            if args.working_tree and relative in retired and not (ROOT/relative).exists():
+                permitted = allowed | retired
+            check(relative,subprocess.check_output(['git','show',':'+relative],cwd=ROOT),permitted)
         if args.history:
             seen=set()
             for commit in git('rev-list','--all').splitlines():
@@ -90,7 +96,7 @@ def main():
                     if mode not in {'100644','100755'}: raise ValueError('Non-file Git entry: '+relative)
                     if (relative,oid) in seen: continue
                     seen.add((relative,oid))
-                    check(relative,subprocess.check_output(['git','cat-file','blob',oid],cwd=ROOT),allowed)
+                    check(relative,subprocess.check_output(['git','cat-file','blob',oid],cwd=ROOT),allowed | retired)
                 for email in git('show','-s','--format=%ae%n%ce',commit).splitlines():
                     if not email.endswith('@users.noreply.github.com') and email!='noreply@github.com':
                         raise ValueError('Non-public email in Git history')

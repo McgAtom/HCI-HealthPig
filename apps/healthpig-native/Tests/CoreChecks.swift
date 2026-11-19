@@ -22,6 +22,7 @@ import Foundation
         let matcher = DivinationMatcher()
         let tired = await matcher.matches(" 累 ")
         let colloquialTired = await matcher.matches("好累")
+        let phrase = await matcher.matches("今天真的好累")
         let joy = await matcher.matches("开心")
         let distant = await matcher.matches("苹果")
         let emptyDraw = await matcher.matches("")
@@ -32,6 +33,8 @@ import Foundation
               "divination cosine accepts valid vectors and rejects zero vectors")
         check(Set(tired.map(\.card.id)) == ["breath", "boundary", "loosen"], "tired uses the three relevant cards")
         check(tired.map(\.card.id) == colloquialTired.map(\.card.id), "curated colloquial alias uses the same core candidates")
+        check(phrase.map(\.card.id) == tired.map(\.card.id), "typed mood phrases find the known mood")
+        check(!DivinationDraw.canSubmit("   "), "blank mood cannot trigger a draw")
         check(Set(joy.map(\.card.id)) == ["keep", "glow", "share"], "joy does not draw cards about sadness")
         check(distant.isEmpty && emptyDraw.isEmpty, "weak or missing term uses the fallback pool")
         let baseline = DivinationDraw.probabilities(from: tired, recentIDs: [])
@@ -42,13 +45,59 @@ import Foundation
         let next = DivinationDraw.pick(from: tired, recentIDs: ["breath"])
         check(next != nil && next?.id != "breath", "result excludes most recent card while alternatives remain")
         var divination = DivinationJournal()
-        let draw = DivinationRecord(cardID: "breath", wordMatched: true)
+        let draw = DivinationRecord(cardID: "breath", wordMatched: true, mood: "今天好累")
         check(divination.record(draw, on: dates[0]) && !divination.record(draw, on: dates[0]) && divination.record(draw, on: dates[1]),
               "divination permits one record per date and opens on the next date")
         let encoded = try JSONEncoder().encode(divination)
         let decoded = try JSONDecoder().decode(DivinationJournal.self, from: encoded)
         check(decoded.days[dates[0]] == draw && decoded.recentCards(before: dates[2]) == ["breath", "breath"],
               "daily divination and recent cards survive serialization")
+        let phoneSuite = "healthpig.sleep.phone.\(UUID())", watchSuite = "healthpig.sleep.watch.\(UUID())"
+        let phoneDefaults = UserDefaults(suiteName: phoneSuite)!, watchDefaults = UserDefaults(suiteName: watchSuite)!
+        defer { phoneDefaults.removePersistentDomain(forName: phoneSuite); watchDefaults.removePersistentDomain(forName: watchSuite) }
+        let phone = SleepCompanion(device: .phone, defaults: phoneDefaults)
+        let watch = SleepCompanion(device: .watch, defaults: watchDefaults)
+        phone.set(latest: 405)
+        let original = phone.payload()!
+        watch.receive(original)
+        check(watch.preferences.latest == 405, "phone planning settings transfer to watch")
+        watch.set(target: 510)
+        watch.receive(original)
+        phone.receive(watch.payload()!)
+        check(phone.preferences == watch.preferences && phone.preferences.target == 510, "newer watch edits win replay")
+        let displayNow = Date.now
+        let displayCalendar = Calendar.current
+        let baselinePlan = watch.preferences.recommend(nights: [], now: displayNow, calendar: displayCalendar)!
+        watch.project(baselinePlan)
+        phone.receive(watch.payload()!)
+        check(phone.plan(nights: [], now: displayNow, calendar: displayCalendar) == baselinePlan,
+              "phone displays the watch projection when record coverage ties")
+        let personalPlan = SleepSchedule.Proposal(bedtime: baselinePlan.bedtime, wake: baselinePlan.wake,
+            reservedMinutes: baselinePlan.reservedMinutes, nightsUsed: 4, fallsShort: baselinePlan.fallsShort)
+        phone.project(personalPlan)
+        watch.receive(phone.payload()!)
+        check(watch.plan(nights: [], now: displayNow, calendar: displayCalendar) == personalPlan,
+              "watch uses the phone projection if it has a fuller sleep history")
+        watch.set(target: 525)
+        check(watch.plan(nights: [], now: displayNow, calendar: displayCalendar) != personalPlan,
+              "plans from earlier settings cannot overwrite new preferences")
+        let wake = Date.now.addingTimeInterval(10_000)
+        phone.request(wake)
+        let setMessage = phone.payload()!
+        watch.receive(setMessage)
+        let setRequest = watch.pending!
+        check(setRequest.date == wake && phone.alarm?.date == nil, "peer request is pending until a watch response")
+        watch.reply(.init(requestID: setRequest.id, date: wake, commandSent: setRequest.sent))
+        phone.receive(watch.payload()!)
+        check(phone.pending == nil && phone.alarm?.date == wake, "watch acknowledgement confirms the scheduled time")
+        watch.receive(setMessage)
+        check(watch.pending == nil, "duplicate delivery does not set the alarm again")
+        phone.request(nil)
+        watch.receive(phone.payload()!)
+        let cancel = watch.pending!
+        watch.reply(.init(requestID: cancel.id, commandSent: cancel.sent))
+        phone.receive(watch.payload()!)
+        check(phone.pending == nil && phone.alarm?.date == nil, "confirmation of cancellation clears the schedule")
         var left = PigLedger(claims: [a], selection: PigSelection(cardID: a.cardID, counter: 1, device: "A"))
         let right = PigLedger(claims: [b], selection: PigSelection(cardID: b.cardID, counter: 1, device: "B"))
         let union = try left.merging(right)

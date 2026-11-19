@@ -7,7 +7,7 @@ struct SleepWellnessView: View {
         PigScreen {
 #if os(iOS)
             NavigationLink { SleepPlanView(health: health) } label: {
-                WellnessTile("今晚作息", symbol: "alarm.fill", tint: PigTheme.cream)
+                WellnessTile("今晚作息", symbol: "moon.stars.fill", tint: PigTheme.cream)
             }.buttonStyle(.plain).accessibilityIdentifier("wellness.sleep-plan")
 #endif
             if health.sleepStages.isEmpty {
@@ -90,8 +90,8 @@ enum PigMood: String, CaseIterable, Identifiable, Codable {
         switch self {
         case .bright: return "开心"
         case .calm: return "平静"
-        case .tired: return "有点累"
-        case .down: return "低落"
+        case .tired: return "累"
+        case .down: return "难过"
         }
     }
     var symbol: String {
@@ -110,14 +110,7 @@ enum PigMood: String, CaseIterable, Identifiable, Codable {
         case .down: return Color(red: 0.69, green: 0.83, blue: 1)
         }
     }
-    var response: String {
-        switch self {
-        case .bright: return "一起记住这一刻"
-        case .calm: return "陪你安静待一会"
-        case .tired: return "可以慢一点"
-        case .down: return "猪猪陪着你"
-        }
-    }
+
 }
 
 private struct MoodEntry: Identifiable, Codable {
@@ -149,12 +142,6 @@ private struct MoodEntry: Identifiable, Codable {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("wellness-moods.json")
     }
-    func set(_ mood: PigMood?) {
-        let today = Calendar.current.startOfDay(for: .now)
-        var next = entries.filter { !Calendar.current.isDate($0.day, inSameDayAs: today) }
-        if let mood { next.append(MoodEntry(day: today, mood: mood)) }
-        save(next)
-    }
     func remove(_ day: Date) { save(entries.filter { $0.day != day }) }
     private func save(_ next: [MoodEntry]) {
         guard readable else { return }
@@ -174,37 +161,18 @@ private struct MoodEntry: Identifiable, Codable {
 }
 
 struct MoodCheckInView: View {
-    let companion: PigCard?
     @StateObject private var log = LocalMoodLog()
     @State private var pendingRemoval: MoodEntry?
-    private var today: MoodEntry? { log.entries.first { Calendar.current.isDateInToday($0.day) } }
 
     var body: some View {
         PigScreen {
-            if let companion { PigArtwork(card: companion, size: 92).accessibilityHidden(true) }
-            if let today { Label(today.mood.response, systemImage: "heart").font(.headline) }
-#if os(iOS)
-            NavigationLink { PigDivinationView(companion: companion) } label: {
-                WellnessTile("猪猪占卜", symbol: "sparkles", tint: Color(red: 0.81, green: 0.73, blue: 1))
-            }.buttonStyle(.plain).accessibilityIdentifier("divination.entry")
-#endif
-            ForEach(PigMood.allCases) { mood in
-                Button { log.set(mood) } label: {
-                    HStack {
-                        Label(mood.title, systemImage: mood.symbol).foregroundStyle(mood.tint)
-                        Spacer()
-                        if today?.mood == mood { Image(systemName: "checkmark.circle.fill") }
-                    }.frame(minHeight: 44).padding(.horizontal, 11)
-                        .background(PigTheme.panel, in: RoundedRectangle(cornerRadius: 14))
-                }.buttonStyle(.plain).accessibilityAddTraits(today?.mood == mood ? .isSelected : [])
-                    .accessibilityIdentifier("wellness.mood." + mood.rawValue)
-            }
-            if !log.entries.isEmpty {
-                Label("回顾", systemImage: "calendar").font(.headline)
+            if log.entries.isEmpty {
+                Label("暂无心情记录", systemImage: "face.smiling").font(.headline)
+            } else {
                 ForEach(log.entries.sorted { $0.day > $1.day }.prefix(7)) { entry in
                     HStack {
-                        Label(entry.day.formatted(.dateTime.month().day()), systemImage: entry.mood.symbol)
-                            .foregroundStyle(entry.mood.tint).accessibilityValue(entry.mood.title)
+                        Label(entry.mood.title, systemImage: entry.mood.symbol).foregroundStyle(entry.mood.tint)
+                        Text(entry.day.formatted(.dateTime.month().day())).font(.subheadline)
                         Spacer()
                         Button(role: .destructive) { pendingRemoval = entry } label: {
                             Image(systemName: "trash").frame(minWidth: 44, minHeight: 44)
@@ -225,41 +193,3 @@ struct MoodCheckInView: View {
             }
     }
 }
-
-#if os(watchOS)
-struct WatchQuickMoodView: View {
-    let companion: PigCard?
-    @Environment(\.dismiss) private var dismiss
-    @StateObject private var log = LocalMoodLog()
-    @State private var selection: PigMood?
-
-    var body: some View {
-        WatchFrame {
-            if let selection, !log.failed {
-                VStack(spacing: 8) {
-                    if let companion { PigArtwork(card: companion, size: 49).accessibilityHidden(true) }
-                    Text(selection.response).font(.headline)
-                    Button("完成") { dismiss() }.buttonStyle(PigPrimaryButton())
-                    Button("修改") { self.selection = nil }.buttonStyle(.bordered)
-                }
-            } else {
-                VStack(spacing: 7) {
-                    ForEach(0..<2) { row in
-                        HStack(spacing: 7) {
-                            ForEach(Array(PigMood.allCases[(row * 2)..<(row * 2 + 2)])) { mood in
-                                Button {
-                                    log.set(mood)
-                                    if !log.failed { selection = mood }
-                                } label: {
-                                    WatchCompactButton(title: mood.title, symbol: mood.symbol)
-                                }.buttonStyle(.plain).accessibilityIdentifier("watch.mood." + mood.rawValue)
-                            }
-                        }
-                    }
-                    if log.failed { Text("未能保存").font(.subheadline) }
-                }
-            }
-        }.navigationTitle("此刻心情")
-    }
-}
-#endif

@@ -12,7 +12,7 @@
 	<true/>
 	<key>WKBackgroundModes</key>
 	<array>
-		<string>self-care</string>
+		<string>alarm</string>
 	</array>
 	<key>WKCompanionAppBundleIdentifier</key>
 	<string>org.example.HealthPig.Native</string>

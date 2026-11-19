@@ -5,7 +5,6 @@ private let lavender = Color(red: 0.75, green: 0.76, blue: 1)
 
 struct WellnessHubView: View {
     @ObservedObject var health: HealthReader
-    let companion: PigCard?
 
     private var currentSteps: String? {
         guard let date = health.refreshedAt, Calendar.current.isDateInToday(date), let steps = health.steps else { return nil }
@@ -34,7 +33,7 @@ struct WellnessHubView: View {
             NavigationLink { SleepWellnessView(health: health) } label: {
                 WellnessTile("睡眠与作息", symbol: "moon.stars.fill", tint: lavender, value: recentSleep)
             }.buttonStyle(.plain).accessibilityIdentifier("wellness.sleep")
-            NavigationLink { MoodCheckInView(companion: companion) } label: {
+            NavigationLink { MoodCheckInView() } label: {
                 WellnessTile("心情", symbol: "face.smiling.inverse", tint: PigTheme.cream)
             }.buttonStyle(.plain).accessibilityIdentifier("wellness.mood")
             NavigationLink { TrendHomeView(health: health) } label: {

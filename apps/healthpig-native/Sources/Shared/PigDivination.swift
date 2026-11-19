@@ -140,6 +140,7 @@ enum DivinationDraw {
 struct DivinationRecord: Codable, Equatable {
     let cardID: String
     let wordMatched: Bool
+    var mood: String? = nil
 }
 
 struct DivinationJournal: Codable {
@@ -170,8 +171,18 @@ actor DivinationMatcher {
         let trimmed = DivinationDraw.clean(input)
         let term = trimmed.applyingTransform(StringTransform("Traditional-Simplified"), reverse: false) ?? trimmed
         guard term.unicodeScalars.contains(where: { (0x3400...0x9FFF).contains($0.value) }) else { return [] }
-        if let query = DivinationVocabulary.vectors[term] {
-            return Self.closest(query, anchors: DivinationVocabulary.vectors)
+        let words = DivinationVocabulary.vectors
+        if let query = words[term] { return Self.closest(query, anchors: words) }
+        let tokenizer = NLTokenizer(unit: .word)
+        tokenizer.string = term
+        let tokens = tokenizer.tokens(for: term.startIndex..<term.endIndex)
+            .map { String(term[$0]) }.filter { words[$0] != nil }
+        let matches = tokens.isEmpty ? words.keys.filter { $0.count > 1 && term.contains($0) } : tokens
+        if let token = matches.sorted(by: {
+            $0.count == $1.count ? $0 < $1 : $0.count > $1.count
+        }).first, let query = words[token] {
+            let candidates = Self.closest(query, anchors: words)
+            if !candidates.isEmpty { return candidates }
         }
         guard let systemWords, let query = systemWords.model.vector(for: term) else { return [] }
         return Self.closest(query, anchors: systemWords.anchors)

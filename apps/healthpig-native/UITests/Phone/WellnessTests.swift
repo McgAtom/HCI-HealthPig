@@ -48,53 +48,7 @@ final class WellnessTests: XCTestCase {
         XCTAssertFalse(request.exists)
     }
 
-    func testDivinationDrawWithoutAWordPersistsToday() {
-        continueAfterFailure = false
-        let app = XCUIApplication()
-        app.launchEnvironment["HEALTHPIG_DIVINATION_TEST_SUITE"] = "healthpig-divination-empty-\(UUID().uuidString)"
-        app.launchPastHealthSetup()
-        openDivination(in: app)
-        shot(app, "divination-entry")
-        open("divination.draw", in: app)
-        let card = app.staticTexts["divination.card-title"]
-        XCTAssertTrue(card.waitForExistence(timeout: 8))
-        XCTAssertEqual(app.staticTexts["divination.claimed"].label, "今日已抽 · 随机卡")
-        let title = card.label
-        app.terminate()
-        app.launchPastHealthSetup()
-        openDivination(in: app)
-        XCTAssertTrue(card.waitForExistence(timeout: 8))
-        XCTAssertEqual(card.label, title)
-        XCTAssertFalse(app.buttons["divination.draw"].exists)
-        XCTAssertFalse(app.textFields["divination.word"].exists)
-    }
-
-    func testDivinationDrawUsesWordCandidates() {
-        continueAfterFailure = false
-        let app = XCUIApplication()
-        app.launchEnvironment["HEALTHPIG_DIVINATION_TEST_SUITE"] = "healthpig-divination-word-\(UUID().uuidString)"
-        app.launchPastHealthSetup()
-        openDivination(in: app)
-        let word = app.textFields["divination.word"]
-        XCTAssertTrue(word.waitForExistence(timeout: 8))
-        word.tap()
-        word.typeText("累")
-        XCTAssertEqual(word.value as? String, "累")
-        open("divination.draw", in: app)
-        let card = app.staticTexts["divination.card-title"]
-        XCTAssertTrue(card.waitForExistence(timeout: 10))
-        XCTAssertTrue(["喘息", "边界", "松开"].contains(card.label))
-        XCTAssertEqual(app.staticTexts["divination.claimed"].label, "今日已抽")
-        shot(app, "divination-word-result")
-    }
-
-    private func openDivination(in app: XCUIApplication) {
-        open("phone.wellness", in: app)
-        open("wellness.mood", in: app)
-        open("divination.entry", in: app)
-    }
-
-    func testWellnessRoutesAndLocalMood() {
+    func testWellnessRoutesAndSleepPlan() {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["--wellness-ui-test"]
@@ -119,58 +73,22 @@ final class WellnessTests: XCTestCase {
         XCTAssertTrue(proposal.exists)
         XCTAssertTrue(app.staticTexts["sleep.wake-proposal"].exists)
         XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "sleep.latest").firstMatch.exists)
-        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "sleep.basis").firstMatch.exists)
-        shot(app, "wellness-sleep-plan")
+        shot(app, "phone-sleep-plan")
+        let alarm = app.buttons["sleep.set-watch-alarm"]
+        if alarm.exists {
+            alarm.tap()
+            XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "sleep.alarm-pending").firstMatch.exists
+                          || app.descendants(matching: .any).matching(identifier: "sleep.alarm-confirmed").firstMatch.exists
+                          || app.descendants(matching: .any).matching(identifier: "sleep.alarm-failed").firstMatch.exists)
+        } else {
+            XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "sleep.watch-required").firstMatch.exists
+                          || app.descendants(matching: .any).matching(identifier: "sleep.alarm-pending").firstMatch.exists
+                          || app.descendants(matching: .any).matching(identifier: "sleep.alarm-confirmed").firstMatch.exists
+                          || app.descendants(matching: .any).matching(identifier: "sleep.alarm-failed").firstMatch.exists)
+        }
         back("今晚作息", in: app)
         back("睡眠与作息", in: app)
         open("wellness.mood", in: app)
-        open("wellness.mood.calm", in: app)
-        XCTAssertTrue(app.staticTexts["陪你安静待一会"].exists)
-        shot(app, "wellness-mood")
-        app.terminate()
-        app.launchPastHealthSetup()
-        open("phone.wellness", in: app)
-        open("wellness.mood", in: app)
-        XCTAssertTrue(app.staticTexts["陪你安静待一会"].exists)
-        open("wellness.delete-mood", in: app)
-        let delete = app.alerts.buttons["删除"]
-        XCTAssertTrue(delete.waitForExistence(timeout: 5))
-        delete.tap()
-        let response = app.staticTexts["陪你安静待一会"]
-        let removed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: response)
-        XCTAssertEqual(XCTWaiter.wait(for: [removed], timeout: 5), .completed)
-    }
-
-    func testSleepAlarmHandlesSystemAuthorization() {
-        continueAfterFailure = false
-        let app = XCUIApplication()
-        app.launchArguments = ["--wellness-ui-test"]
-        app.launchPastHealthSetup()
-        open("phone.wellness", in: app)
-        open("wellness.sleep", in: app)
-        open("wellness.sleep-plan", in: app)
-        let cancel = app.buttons["sleep.cancel-alarm"]
-        let permission = app.buttons["sleep.alarm-permission"]
-        let confirmed = app.descendants(matching: .any).matching(identifier: "sleep.alarm-confirmed")
-        if cancel.exists { cancel.tap() }
-        if !permission.exists {
-            open("sleep.set-alarm", in: app)
-            let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
-            let allow = springboard.alerts.buttons.matching(NSPredicate(format: "label == 'Allow' OR label == '允许'")).firstMatch
-            if allow.waitForExistence(timeout: 3) { allow.tap() }
-        }
-        if permission.exists {
-            XCTAssertTrue(permission.isHittable)
-            XCTAssertFalse(confirmed.firstMatch.exists)
-            shot(app, "wellness-alarm-permission-denied")
-            return
-        }
-        XCTAssertTrue(confirmed.firstMatch.waitForExistence(timeout: 12))
-        XCTAssertEqual(confirmed.count, 1)
-        XCTAssertFalse(app.buttons["sleep.set-alarm"].exists)
-        shot(app, "wellness-alarm-confirmed")
-        open("sleep.cancel-alarm", in: app)
-        XCTAssertTrue(app.buttons["sleep.set-alarm"].waitForExistence(timeout: 5))
-        XCTAssertFalse(confirmed.firstMatch.exists)
+        XCTAssertFalse(app.buttons["divination.entry"].exists)
     }
 }

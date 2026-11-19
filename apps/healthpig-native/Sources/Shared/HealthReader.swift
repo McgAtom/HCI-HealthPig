@@ -222,13 +222,28 @@ enum SleepIntervals {
         refreshTask = nil
     }
 
-    private func fetch() async throws {
-        // Clear previous data before each query; never present stale data as refreshed.
-        sleepStages = []; recentSleepNights = []; days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil
-        await refreshRings()
-        let now = Date(), calendar = Calendar.current
-        let today = calendar.startOfDay(for: now)
-        guard let from = calendar.date(byAdding: .day, value: -7, to: today) else { return }
+#if os(watchOS)
+    @Published private(set) var watchSleepLoading = false
+    @Published private(set) var hasRequestedWatchSleep = UserDefaults.standard.bool(forKey: "watchSleepReadOptIn")
+    func refreshWatchSleep(requestAccess: Bool = false) async {
+        guard HKHealthStore.isHealthDataAvailable(), !watchSleepLoading,
+              requestAccess || hasRequestedWatchSleep || automaticUpdates else { return }
+        watchSleepLoading = true
+        defer { watchSleepLoading = false }
+        do {
+            if requestAccess {
+                try await store.requestAuthorization(toShare: [], read: [sleepType])
+                hasRequestedWatchSleep = true
+                UserDefaults.standard.set(true, forKey: "watchSleepReadOptIn")
+            }
+            let now = Date(), calendar = Calendar.current
+            guard let from = calendar.date(byAdding: .day, value: -7, to: calendar.startOfDay(for: now)) else { return }
+            _ = try await fetchSleep(from: from, until: now, calendar: calendar)
+        } catch { recentSleepNights = [] }
+    }
+#endif
+
+    private func fetchSleep(from: Date, until now: Date, calendar: Calendar) async throws -> [HKCategorySample] {
         let sleepSamples = try await samples(type: sleepType, start: from, end: now)
         sleepStages = SleepStageSlice.overnight(sleepSamples.compactMap { $0 as? HKCategorySample }, now: now)
         let asleep = Set([HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue,
@@ -240,6 +255,17 @@ enum SleepIntervals {
         recentSleepNights = SleepSchedule.mainNights(valid.map {
             .init(start: $0.startDate, end: $0.endDate, source: $0.sourceRevision.source.bundleIdentifier)
         }, now: now, calendar: calendar)
+        return valid
+    }
+
+    private func fetch() async throws {
+        // Clear previous data before each query; never present stale data as refreshed.
+        sleepStages = []; recentSleepNights = []; days = []; activityDays = []; heartRate = nil; heartDate = nil; steps = nil; refreshedAt = nil
+        await refreshRings()
+        let now = Date(), calendar = Calendar.current
+        let today = calendar.startOfDay(for: now)
+        guard let from = calendar.date(byAdding: .day, value: -7, to: today) else { return }
+        let valid = try await fetchSleep(from: from, until: now, calendar: calendar)
         for offset in -7..<0 {
             guard let start = calendar.date(byAdding: .day, value: offset, to: today),
                   let end = calendar.date(byAdding: .day, value: 1, to: start) else { continue }

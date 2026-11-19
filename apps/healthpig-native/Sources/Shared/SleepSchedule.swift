@@ -6,12 +6,12 @@ struct SleepSchedule {
         let source: String
     }
 
-    struct Night {
+    struct Night: Equatable {
         let start, end: Date
         let asleepMinutes: Int
     }
 
-    struct Proposal {
+    struct Proposal: Codable, Equatable {
         let bedtime, wake: Date
         let reservedMinutes, nightsUsed: Int
         let fallsShort: Bool

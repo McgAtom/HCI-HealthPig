@@ -26,7 +26,7 @@ import SwiftUI
                     .tabItem { Label("判断", systemImage: "chart.bar.xaxis") }.tag(3)
                 NavigationStack { PhoneMoreView(store: store, bridge: bridge, health: health) }
                     .tabItem { Label("更多", systemImage: "ellipsis.circle") }.tag(4)
-            }.modifier(PigAccessibilityTestSize()).tint(PigTheme.rose).preferredColorScheme(.dark)
+            }.environmentObject(bridge).modifier(PigAccessibilityTestSize()).tint(PigTheme.rose).preferredColorScheme(.dark)
                 .task {
                     health.beginAutomaticUpdatesIfEnabled()
                     if !healthSetupHandled { showHealthSetup = true }
@@ -73,7 +73,7 @@ struct PhoneTodayView: View {
             }
             let layout = textSize.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 8)) : AnyLayout(HStackLayout(spacing: 8))
             layout {
-                NavigationLink { WellnessHubView(health: health, companion: store.companion) } label: {
+                NavigationLink { WellnessHubView(health: health) } label: {
                     WellnessTile("健康", symbol: "heart.text.clipboard", tint: PigTheme.rose)
                 }.buttonStyle(.plain).accessibilityIdentifier("phone.wellness")
                 if let openInsights {

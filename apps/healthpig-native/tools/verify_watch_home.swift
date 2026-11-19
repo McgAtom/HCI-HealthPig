@@ -12,6 +12,6 @@ request.recognitionLevel = .accurate
 try VNImageRequestHandler(cgImage: image, options: [:]).perform([request])
 let text = (request.results ?? []).compactMap { $0.topCandidates(1).first?.string }
     .joined().replacingOccurrences(of: " ", with: "")
-let visible = text.contains("养猪") && text.contains("走走猪猪")
+let visible = text.contains("养猪") && text.contains("作息")
 print(visible ? "PASS: Watch home is rendered" : "FAIL: Watch home is not visible (black screen, clock face, or another page)")
 exit(visible ? 0 : 1)

@@ -106,8 +106,6 @@
     "apps/healthpig-native/Resources/sleep-audit.json",
     "apps/healthpig-native/Sources/Phone/HealthPigPhoneApp.swift",
     "apps/healthpig-native/Sources/Phone/PhonePreviews.swift",
-    "apps/healthpig-native/Sources/Phone/PigDivination.swift",
-    "apps/healthpig-native/Sources/Phone/PigDivinationView.swift",
     "apps/healthpig-native/Sources/Phone/SleepPlanView.swift",
     "apps/healthpig-native/Sources/Shared/AccessibilityHelpView.swift",
     "apps/healthpig-native/Sources/Shared/ActivityRings.swift",
@@ -126,10 +124,13 @@
     "apps/healthpig-native/Sources/Shared/ModelInsights.swift",
     "apps/healthpig-native/Sources/Shared/ModelInsightsView.swift",
     "apps/healthpig-native/Sources/Shared/MotionEngine.swift",
+    "apps/healthpig-native/Sources/Shared/PigDivination.swift",
     "apps/healthpig-native/Sources/Shared/PigModels.swift",
     "apps/healthpig-native/Sources/Shared/PigStore.swift",
     "apps/healthpig-native/Sources/Shared/ResultViews.swift",
     "apps/healthpig-native/Sources/Shared/RingsViews.swift",
+    "apps/healthpig-native/Sources/Shared/SleepCompanion.swift",
+    "apps/healthpig-native/Sources/Shared/SleepPlanControls.swift",
     "apps/healthpig-native/Sources/Shared/SleepSchedule.swift",
     "apps/healthpig-native/Sources/Shared/TrendViews.swift",
     "apps/healthpig-native/Sources/Shared/WellnessActionsView.swift",
@@ -139,7 +140,10 @@
     "apps/healthpig-native/Sources/Watch/LiveMotion.swift",
     "apps/healthpig-native/Sources/Watch/PigWalkView.swift",
     "apps/healthpig-native/Sources/Watch/WalkingCompanionView.swift",
+    "apps/healthpig-native/Sources/Watch/WatchMoodPage.swift",
     "apps/healthpig-native/Sources/Watch/WatchPreviews.swift",
+    "apps/healthpig-native/Sources/Watch/WatchSleepPlanView.swift",
+    "apps/healthpig-native/Sources/Watch/WristAlarm.swift",
     "apps/healthpig-native/Tests/CoreChecks.swift",
     "apps/healthpig-native/UITests/Phone/ModelInsightsTests.swift",
     "apps/healthpig-native/UITests/Phone/PhoneFlowTests.swift",
@@ -155,5 +159,9 @@
     "apps/healthpig-native/tools/verify_watch_home.swift",
     "public-files.json",
     "tools/check_public.py"
+  ],
+  "retired": [
+    "apps/healthpig-native/Sources/Phone/PigDivination.swift",
+    "apps/healthpig-native/Sources/Phone/PigDivinationView.swift"
   ]
 }

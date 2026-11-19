@@ -12,47 +12,63 @@ import WatchKit
     }
     var body: some Scene {
         WindowGroup {
-            WatchRootView(store: store, bridge: bridge).modifier(PigAccessibilityTestSize()).preferredColorScheme(.dark).tint(PigTheme.rose)
-        }
+            WatchRootView(store: store, bridge: bridge, sleep: bridge.sleep).modifier(PigAccessibilityTestSize()).preferredColorScheme(.dark).tint(PigTheme.rose)
+        }.backgroundTask(.watchConnectivity) { await bridge.finishBackgroundDelivery() }
     }
 }
 
 @MainActor final class PigApplicationDelegate: NSObject, WKApplicationDelegate {
+    func handle(_ extendedRuntimeSession: WKExtendedRuntimeSession) {
+        WristAlarm.shared.restore(extendedRuntimeSession)
+    }
+
     func applicationDidFinishLaunching() { HealthReader.shared.beginAutomaticUpdatesIfEnabled() }
 }
 
 struct WatchRootView: View {
     @ObservedObject var store: PigStore
-    @ObservedObject var bridge: CompanionBridge
+    let bridge: CompanionBridge
+    @ObservedObject var sleep: SleepCompanion
+    @StateObject private var alarm = WristAlarm.shared
     @StateObject private var health = HealthReader.shared
     @StateObject private var walk = PigWalk()
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack {
-            WatchTodayView(store: store, health: health, walk: walk)
-                .navigationTitle("走走猪猪")
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        NavigationLink { WatchStatusView(health: health, bridge: bridge) } label: {
-                            Image(systemName: "ellipsis").foregroundStyle(PigTheme.background)
-                        }.accessibilityLabel("今日状态").accessibilityIdentifier("watch.status")
-                    }
-                }
+            WatchTodayView(store: store, health: health, walk: walk, sleep: sleep)
+                .toolbar(.hidden, for: .navigationBar)
         }.onChange(of: scenePhase) { _, value in
             if value == .active {
                 store.refreshDay()
                 walk.catchUp()
-                Task { await health.refreshAutomaticallyIfEnabled() }
+                bridge.applyWristRequest()
+                Task { await health.refreshAutomaticallyIfEnabled(); await health.refreshWatchSleep() }
             }
         }.task(id: scenePhase) {
             guard scenePhase == .active else { return }
+            await health.refreshWatchSleep()
             while !Task.isCancelled {
+                projectSleep()
                 if health.readsRings { await health.refreshRings() }
                 try? await Task.sleep(for: .seconds(60))
             }
         }
+        .onChange(of: sleep.preferences, initial: true) { _, _ in projectSleep() }
+        .onChange(of: health.recentSleepNights) { _, _ in projectSleep() }
+        .sheet(isPresented: Binding(get: { alarm.ringing }, set: { if !$0 { alarm.stop() } })) {
+            Button { alarm.stop() } label: {
+                Label("停止闹钟", systemImage: "alarm.fill")
+            }.buttonStyle(PigPrimaryButton()).padding(12)
+        }
     }
+
+    private func projectSleep() {
+        if let plan = sleep.preferences.recommend(nights: health.recentSleepNights, now: .now, calendar: .current) {
+            sleep.project(plan)
+        }
+    }
+
 }
 
 struct WatchFrame<Content: View>: View {
@@ -79,32 +95,37 @@ struct WatchTodayView: View {
     @ObservedObject var store: PigStore
     @ObservedObject var health: HealthReader
     @ObservedObject var walk: PigWalk
+    @ObservedObject var sleep: SleepCompanion
+    @Environment(\.dynamicTypeSize) private var textSize
+    @State private var page = 0
 
     var body: some View {
-        WatchFrame {
-            VStack(spacing: 6) {
-                NavigationLink { PigWalkView(walk: walk, store: store, health: health) } label: {
-                    Label(walk.phase == .active || walk.phase == .finishing ? "陪走中" : "养猪", systemImage: "figure.walk")
-                }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("watch.companion")
-                if let card = store.companion {
-                    HStack(spacing: 8) {
-                        PigArtwork(card: card, size: 47).frame(width: 49).accessibilityHidden(true)
-                        Text(card.name).font(.subheadline.weight(.semibold)).foregroundStyle(PigTheme.cream)
-                            .fixedSize(horizontal: false, vertical: true)
+        TabView(selection: $page) {
+            WatchFrame {
+                VStack(spacing: 6) {
+                    if let card = store.companion {
+                        PigArtwork(card: card, size: textSize.isAccessibilitySize ? 67 : 106)
+                            .accessibilityIdentifier("watch.pig")
                     }
-                }
-                HStack(spacing: 6) {
-                    NavigationLink { WatchDailyView(store: store, health: health) } label: {
-                        let energy = health.rings?.energy()
-                        WatchCompactButton(title: store.todayClaim() != nil ? "已抽" : energy == 100 ? "可抽猪" : "抽猪",
-                                           symbol: "gift.fill", value: energy.map { "能量 \($0)" })
-                    }.buttonStyle(.plain).accessibilityIdentifier("daily.entry")
-                    NavigationLink { WatchQuickMoodView(companion: store.companion) } label: {
-                        WatchCompactButton(title: "心情", symbol: "face.smiling.inverse")
-                    }.buttonStyle(.plain).accessibilityIdentifier("watch.mood")
-                }
-            }.padding(.top, 20)
-        }
+                    HStack(spacing: 8) {
+                        NavigationLink { PigWalkView(walk: walk, store: store, health: health) } label: {
+                            Label(walk.phase == .active || walk.phase == .finishing ? "陪走" : "养猪", systemImage: "figure.walk")
+                        }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("watch.companion")
+                        NavigationLink { WatchSleepPlanView(health: health, sleep: sleep) } label: {
+                            WatchCompactButton(title: "作息", symbol: "moon.stars.fill")
+                        }.buttonStyle(.plain).accessibilityIdentifier("watch.sleep")
+                    }
+                }.padding(.top, 3)
+            }.tag(0)
+            WatchMoodPage {
+                NavigationLink { WatchDailyView(store: store, health: health) } label: {
+                    let energy = health.rings?.energy()
+                    WatchCompactButton(title: store.todayClaim() != nil ? "已抽" : energy == 100 ? "可抽猪" : "抽猪",
+                                       symbol: "gift.fill")
+                    .accessibilityValue(energy.map { "能量 \($0)" } ?? "")
+                }.buttonStyle(.plain).accessibilityIdentifier("daily.entry")
+            }.tag(1)
+        }.tabViewStyle(.verticalPage)
     }
 }
 
@@ -160,28 +181,6 @@ private struct WatchDailyView: View {
                 StoreErrorView(store: store)
             }
         }.navigationTitle("抽猪")
-            .task { if health.readsRings { await health.refreshRings() } }
-    }
-}
-
-private struct WatchStatusView: View {
-    @ObservedObject var health: HealthReader
-    @ObservedObject var bridge: CompanionBridge
-
-    var body: some View {
-        WatchFrame {
-            VStack(alignment: .leading, spacing: 6) {
-                let rings = health.rings.flatMap { $0.day == DailyPig.dayKey(.now) ? $0 : nil }
-                Label(rings.map { "运动 \(Int($0.exercise.value)) 分钟" } ?? "运动 —", systemImage: "figure.walk")
-                Label(rings.map { "站立 \(Int($0.stand.value)) / \(Int($0.stand.goal)) 小时" } ?? "站立 —",
-                      systemImage: "figure.stand")
-                let synced = bridge.status == "对端已保存本次同步" || bridge.status == "已接收并保存在本机"
-                Button { bridge.publish() } label: {
-                    Label(synced ? "已同步" : "同步收藏", systemImage: synced ? "checkmark" : "arrow.triangle.2.circlepath")
-                }.buttonStyle(.bordered).accessibilityValue(bridge.status)
-                Label("详情在手机", systemImage: "iphone").foregroundStyle(.secondary)
-            }.font(.subheadline).frame(maxWidth: .infinity, alignment: .leading)
-        }.navigationTitle("今日")
             .task { if health.readsRings { await health.refreshRings() } }
     }
 }
