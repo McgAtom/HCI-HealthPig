@@ -4,6 +4,9 @@ import Foundation
 struct SleepPreferences: Codable, Equatable {
     var latest = 540
     var target = 480
+    var savedRoutineWake: Int?
+
+    var routineWake: Int { savedRoutineWake ?? SleepSchedule.defaultRoutineWake }
     var revision = Date.distantPast
 
     static let wakeRange = 240...720
@@ -15,7 +18,8 @@ struct SleepPreferences: Codable, Equatable {
 
     func recommend(nights: [SleepSchedule.Night], now: Date, calendar: Calendar) -> SleepSchedule.Proposal? {
         guard let limit = wakeLimit(now: now, calendar: calendar) else { return nil }
-        return SleepSchedule.recommend(nights: nights, target: target, latestWake: limit, now: now, calendar: calendar)
+        return SleepSchedule.recommend(nights: nights, target: target, latestWake: limit, now: now,
+                                       routineWake: routineWake, calendar: calendar)
     }
 }
 
@@ -107,9 +111,12 @@ private struct SleepCompanionSnapshot: Codable {
         return .standard
     }
 
-    func set(latest: Int? = nil, target: Int? = nil) {
+    func set(latest: Int? = nil, target: Int? = nil, routineWake: Int? = nil) {
         var next = snapshot
         if let latest, SleepPreferences.wakeRange.contains(latest) { next.preferences.latest = latest }
+        if let routineWake, SleepPreferences.wakeRange.contains(routineWake), routineWake != preferences.routineWake {
+            next.preferences.savedRoutineWake = routineWake
+        }
         if let target, SleepSchedule.targetRange.contains(target), target.isMultiple(of: 15) { next.preferences.target = target }
         guard next.preferences != preferences else { return }
         next.preferences.revision = max(.now, preferences.revision.addingTimeInterval(0.001))
@@ -127,7 +134,7 @@ private struct SleepCompanionSnapshot: Codable {
     }
 
     private func valid(_ projection: SleepProjection?, now: Date, calendar: Calendar) -> SleepSchedule.Proposal? {
-        guard let projection, projection.plan.basis != nil, projection.revision == preferences.revision,
+        guard let projection, projection.plan.basis?.goalWake != nil, projection.revision == preferences.revision,
               SleepSchedule.wakeWindow(now: now, calendar: calendar)?.contains(projection.plan.wake) == true,
               projection.plan.bedtime.addingTimeInterval(60) > now else { return nil }
         return projection.plan
@@ -165,6 +172,7 @@ private struct SleepCompanionSnapshot: Codable {
         var changed = false
         if other.preferences.revision > preferences.revision,
            SleepPreferences.wakeRange.contains(other.preferences.latest),
+           SleepPreferences.wakeRange.contains(other.preferences.routineWake),
            SleepSchedule.targetRange.contains(other.preferences.target),
            other.preferences.target.isMultiple(of: 15) {
             next.preferences = other.preferences; changed = true

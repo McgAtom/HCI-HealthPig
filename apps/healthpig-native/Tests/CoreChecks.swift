@@ -67,10 +67,11 @@ import Foundation
         let original = phone.payload()!
         watch.receive(original)
         check(watch.preferences.latest == 405, "phone planning settings transfer to watch")
-        watch.set(target: 510)
+        watch.set(target: 510, routineWake: 390)
         watch.receive(original)
         phone.receive(watch.payload()!)
-        check(phone.preferences == watch.preferences && phone.preferences.target == 510, "newer watch edits win replay")
+        check(phone.preferences == watch.preferences && phone.preferences.target == 510 && phone.preferences.routineWake == 390,
+              "newer wake goal and watch edits sync despite replay")
         let displayNow = Date.now
         let displayCalendar = Calendar.current
         let baselinePlan = watch.preferences.recommend(nights: [], now: displayNow, calendar: displayCalendar)!
@@ -163,9 +164,10 @@ import Foundation
               "record timing and bounded wake reserve inform the recommendation")
         let zeroHistory = SleepSchedule.recommend(nights: [], target: 480, latestWake: wakeWindow.upperBound,
                                                 now: noon, calendar: calendar)!
-        check(zeroHistory.nightsUsed == 0 && zeroHistory.wake == wakeWindow.upperBound
+        let wakeGoal = SleepSchedule.clockDate(SleepSchedule.defaultRoutineWake, on: wakeWindow.lowerBound, calendar: calendar)!
+        check(zeroHistory.nightsUsed == 0 && zeroHistory.wake == wakeGoal
               && zeroHistory.reservedMinutes == 480 && zeroHistory.basis?.observedNights == 0,
-              "fallback calculates back from the user's wake setting and target")
+              "fallback uses the regular wake goal and target without history")
         let lateNow = SleepSchedule.clockDate(23 * 60 + 53, on: noon, calendar: calendar)!
         let short = SleepSchedule.recommend(nights: detailed, target: 480, latestWake: wakeWindow.lowerBound,
                                            now: lateNow, calendar: calendar)!
@@ -192,14 +194,32 @@ import Foundation
         check(adjusted.wake <= earlyLimit && adjusted.reservedMinutes >= 480 && !adjusted.fallsShort,
               "planned wake respects an exact user deadline")
         let laterNights = detailed.map { night in
-            SleepSchedule.Night(start: night.start.addingTimeInterval(2 * 3600),
-                                end: night.end.addingTimeInterval(2 * 3600), asleepMinutes: night.asleepMinutes)
+            SleepSchedule.Night(start: night.start.addingTimeInterval(3 * 3600),
+                                end: night.end.addingTimeInterval(3 * 3600), asleepMinutes: night.asleepMinutes)
         }
         let laterPlan = SleepSchedule.recommend(nights: laterNights, target: 480, latestWake: wakeWindow.upperBound,
                                                now: noon, calendar: calendar)!
-        check(laterPlan.wake > recommended.wake && laterPlan.bedtime > recommended.bedtime
-              && laterPlan.reservedMinutes == recommended.reservedMinutes,
-              "different recent rhythms change both suggested times at an equal deadline")
+        let latestHabitualWake = SleepSchedule.clockDate(600, on: wakeGoal, calendar: calendar)!
+        check(laterPlan.wake == latestHabitualWake.addingTimeInterval(-1800) && laterPlan.basis?.goalWake == wakeGoal,
+              "late routine advances toward the fixed goal by 30 minutes")
+        let movedHistory = laterNights.map {
+            SleepSchedule.Night(start: $0.start.addingTimeInterval(-1800), end: $0.end.addingTimeInterval(-1800),
+                                asleepMinutes: $0.asleepMinutes)
+        }
+        let progressing = SleepSchedule.recommend(nights: movedHistory, target: 480, latestWake: wakeWindow.upperBound,
+                                                  now: noon, calendar: calendar)!
+        check(progressing.wake == laterPlan.wake.addingTimeInterval(-1800) && progressing.basis?.goalWake == wakeGoal,
+              "improved recent routine leads to the next step without moving the goal")
+        let earlierDeadline = wakeGoal.addingTimeInterval(-45 * 60)
+        let deadlinePlan = SleepSchedule.recommend(nights: laterNights, target: 480, latestWake: earlierDeadline,
+                                                   now: noon, calendar: calendar)!
+        check(deadlinePlan.wake == earlierDeadline && deadlinePlan.basis?.goalWake == wakeGoal
+              && deadlinePlan.reservedMinutes >= 480, "deadline can require a larger shift while the goal stays fixed")
+        let scheduleMidnight = calendar.startOfDay(for: wakeGoal)
+        let lateButEnough = SleepSchedule.recommend(nights: [], target: 480, latestWake: wakeWindow.upperBound,
+                                                     now: scheduleMidnight, calendar: calendar)!
+        check(lateButEnough.wake == scheduleMidnight.addingTimeInterval(8 * 3600) && lateButEnough.reservedMinutes == 480,
+              "keep enough sleep time by moving tonight's wake later when the deadline allows")
         var dstCalendar = Calendar(identifier: .gregorian)
         dstCalendar.timeZone = TimeZone(identifier: "America/New_York")!
         let spring = dstCalendar.date(from: DateComponents(year: 2026, month: 3, day: 7, hour: 12))!

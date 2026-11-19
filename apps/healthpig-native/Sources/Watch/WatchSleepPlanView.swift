@@ -49,26 +49,49 @@ struct WatchSleepPlanView: View {
             .task { await health.refreshWatchSleep(); await alarm.refreshNotificationAccess() }
     }
 
-    private func controls(_ plan: SleepSchedule.Proposal) -> some View {
+    @ViewBuilder private func controls(_ plan: SleepSchedule.Proposal) -> some View {
         let scheduled = sleep.alarm?.date.flatMap { $0 > .now ? $0 : nil }
-        return VStack(spacing: 5) {
-            if alarm.pending {
-                ProgressView().accessibilityLabel("正在设置")
-            } else if scheduled != plan.wake {
-                Button {
-                    alarm.apply(SleepAlarmRequest(date: plan.wake))
-                } label: {
-                    Label((scheduled == nil ? "设 " : "改为 ") + SleepPlanSettings.clock(plan.wake) + " 闹钟", systemImage: "alarm.fill")
-                }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("sleep.set-alarm")
+        if alarm.pending {
+            ProgressView().accessibilityLabel("正在设置")
+        } else if let scheduled {
+            if scheduled == plan.wake {
+                cancelAlarm(scheduled, compact: false)
+            } else {
+                HStack(spacing: 6) {
+                    setAlarm(plan.wake, replacing: true)
+                    cancelAlarm(scheduled, compact: true)
+                }
             }
-            if let scheduled {
-                Button { alarm.stop() } label: {
-                    Label("已设 \(scheduled.formatted(date: .omitted, time: .shortened))",
-                          systemImage: sleep.alarm?.reminder == true ? "bell.fill" : "alarm.fill")
-                        .foregroundStyle(PigTheme.mint)
-                }.buttonStyle(.bordered).accessibilityHint("取消闹钟").accessibilityIdentifier("sleep.alarm-confirmed")
-                .disabled(alarm.pending)
-            }
+        } else {
+            setAlarm(plan.wake, replacing: false)
         }
+    }
+
+    private func setAlarm(_ date: Date, replacing: Bool) -> some View {
+        let clock = SleepPlanSettings.clock(date)
+        return Button { alarm.apply(SleepAlarmRequest(date: date)) } label: {
+            if replacing { Text("改 " + clock).monospacedDigit().lineLimit(1).minimumScaleFactor(0.84) }
+            else { Label("设 " + clock + " 闹钟", systemImage: "alarm.fill") }
+        }.buttonStyle(PigPrimaryButton())
+            .accessibilityLabel((replacing ? "改为 " : "设 ") + clock + " 闹钟")
+            .accessibilityIdentifier("sleep.set-alarm")
+    }
+
+    private func cancelAlarm(_ date: Date, compact: Bool) -> some View {
+        let clock = SleepPlanSettings.clock(date)
+        return Button { alarm.stop() } label: {
+            if compact {
+                VStack(spacing: 1) {
+                    Label("已设", systemImage: "xmark.circle").font(.caption2)
+                    Text(clock).font(.caption.weight(.semibold).monospacedDigit())
+                }.frame(width: 60, height: 44)
+                    .background(PigTheme.panel, in: Capsule())
+            } else {
+                Label("已设 " + clock, systemImage: sleep.alarm?.reminder == true ? "bell.fill" : "alarm.fill")
+                    .frame(minHeight: 44)
+            }
+        }.buttonStyle(.plain).foregroundStyle(PigTheme.mint)
+            .accessibilityLabel("已设 " + clock).accessibilityHint("取消闹钟")
+            .accessibilityIdentifier("sleep.alarm-confirmed")
     }
 }

@@ -46,9 +46,11 @@ struct SleepPlanTimes: View {
             return PigText.compact("少 " + shortage.replacingOccurrences(of: " ", with: ""),
                                    full: "比目标少 " + shortage)
         }
-        if plan.nightsUsed > 0 { return "参考近 \(plan.nightsUsed) 晚" }
-        if plan.basis?.observedNights == 0 { return PigText.compact("无记录 · 倒推", full: "暂无记录 · 按目标") }
-        return PigText.compact("记录少 · 倒推", full: "记录不足 · 按目标")
+        if let wake = plan.basis?.goalWake {
+            let clock = SleepPlanSettings.clock(wake)
+            return PigText.compact("目标 " + clock, full: "固定起床目标 " + clock)
+        }
+        return "按睡眠目标"
     }
 
     private func time(_ action: String, at date: Date, day: String, icon: String, id: String) -> some View {
@@ -78,10 +80,15 @@ private struct SleepPlanBasisView: View {
     var body: some View {
         PigScreen {
             if let basis = plan.basis {
-                Label(plan.nightsUsed > 0 ? "参考近 \(plan.nightsUsed) 晚" : "按起床时间倒推",
-                      systemImage: "moon.stars").font(.headline)
+                if let goal = basis.goalWake {
+                    let goalBed = goal.addingTimeInterval(-Double(basis.targetMinutes * 60))
+                    metric("目标作息", SleepPlanSettings.clock(goalBed) + "–" + SleepPlanSettings.clock(goal), symbol: "calendar")
+                    if goal > basis.latestWake {
+                        Label("今晚须更早起床", systemImage: "sun.max").font(.subheadline)
+                    }
+                }
                 if let bed = basis.usualBedtime, let wake = basis.usualWake, let asleep = basis.typicalAsleepMinutes {
-                    metric("常见作息", SleepPlanSettings.clock(minutes: bed) + "–" + SleepPlanSettings.clock(minutes: wake),
+                    metric("近 \(plan.nightsUsed) 晚常见作息", SleepPlanSettings.clock(minutes: bed) + "–" + SleepPlanSettings.clock(minutes: wake),
                            symbol: "chart.line.uptrend.xyaxis")
                     metric("通常实睡", SleepPlanSettings.duration(asleep), symbol: "bed.double")
                 } else {
@@ -113,6 +120,12 @@ struct SleepPlanSettings: View {
 
     var body: some View {
         if let window = SleepSchedule.wakeWindow(now: .now, calendar: calendar) {
+            let routine = Binding {
+                SleepSchedule.clockDate(sleep.preferences.routineWake, on: window.lowerBound, calendar: calendar)
+                    ?? window.lowerBound
+            } set: { sleep.set(routineWake: SleepSchedule.clockMinutes($0, calendar: calendar)) }
+            DatePicker("目标起床", selection: routine, in: window, displayedComponents: .hourAndMinute)
+                .accessibilityIdentifier("sleep.routine")
             let selection = Binding {
                 sleep.preferences.wakeLimit(now: .now, calendar: calendar) ?? window.upperBound
             } set: { sleep.set(latest: SleepSchedule.clockMinutes($0, calendar: calendar)) }

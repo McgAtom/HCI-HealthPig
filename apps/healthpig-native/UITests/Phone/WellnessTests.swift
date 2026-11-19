@@ -74,6 +74,7 @@ final class WellnessTests: XCTestCase {
         XCTAssertTrue(proposal.exists)
         XCTAssertTrue(app.staticTexts["sleep.wake-proposal"].exists)
         XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "sleep.latest").firstMatch.exists)
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "sleep.routine").firstMatch.exists)
         RunLoop.current.run(until: Date().addingTimeInterval(0.6))
         shot(app, "phone-sleep-plan")
         let basis = app.buttons["sleep.basis"]
