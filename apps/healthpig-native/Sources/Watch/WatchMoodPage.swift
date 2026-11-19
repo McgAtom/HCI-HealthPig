@@ -6,6 +6,7 @@ import SwiftUI
     @Published private(set) var failed = false
     private let matcher = DivinationMatcher()
     private let url: URL
+    private let previewSeed: UInt32?
 
     init() {
         let directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
@@ -15,6 +16,12 @@ import SwiftUI
            let id = UUID(uuidString: suite) {
             filename = "watch-mood-cards-\(id).json"
         }
+#endif
+
+#if DEBUG && targetEnvironment(simulator)
+        previewSeed = ProcessInfo.processInfo.environment["HEALTHPIG_DIVINATION_TEST_ART_SEED"].flatMap(UInt32.init)
+#else
+        previewSeed = nil
 #endif
         url = directory.appendingPathComponent(filename)
         load()
@@ -26,7 +33,7 @@ import SwiftUI
         } else { journal = DivinationJournal() }
     }
 
-    func record(_ input: String, companion: PigCard?) async {
+    func record(_ input: String) async {
         let mood = DivinationDraw.clean(input)
         let day = DailyPig.dayKey(.now)
         guard DivinationDraw.canSubmit(mood), !saving, var next = journal, next.days[day] == nil else { return }
@@ -35,7 +42,7 @@ import SwiftUI
 
         let matches = await matcher.matches(mood)
         let pool = matches.isEmpty ? DivinationCard.deck.map { DivinationCandidate(card: $0, similarity: 0) } : matches
-        let artwork = DivinationArtwork(seed: UInt32.random(in: .min ... .max), pigID: companion?.id)
+        let artwork = DivinationArtwork(seed: previewSeed ?? UInt32.random(in: .min ... .max))
         guard let card = DivinationDraw.pick(from: pool, recentIDs: next.recentCards(before: day)),
               next.record(DivinationRecord(cardID: card.id, wordMatched: !matches.isEmpty, mood: mood,
                                            artwork: artwork), on: day)
@@ -53,9 +60,7 @@ import SwiftUI
 }
 
 struct WatchMoodPage<DailyEntry: View>: View {
-    let companion: PigCard?
-    let catalog: PigCatalog?
-    @ViewBuilder let dailyEntry: DailyEntry
+    @ViewBuilder let dailyEntry: (Bool) -> DailyEntry
     @StateObject private var store = WatchMoodStore()
     @State private var input = ""
     @State private var retryMood = ""
@@ -68,10 +73,9 @@ struct WatchMoodPage<DailyEntry: View>: View {
                 VStack(spacing: 5) {
                     if let record = today,
                        let card = DivinationCard.deck.first(where: { $0.id == record.cardID }) {
-                        let art = record.appearance(on: day)
-                        let pig = art.pigID.flatMap { catalog?.card($0) } ?? catalog?.card("pig-001")
-                        PigOracleFace(card: card, mood: record.mood, art: art, pig: pig)
-                        dailyEntry
+                        PigOracleFace(card: card, mood: record.mood, art: record.appearance(on: day)) {
+                            dailyEntry(true)
+                        }
                     } else if store.journal != nil {
                         VStack(spacing: 5) {
                             if store.saving { ProgressView().accessibilityLabel("正在记录心情") }
@@ -92,7 +96,7 @@ struct WatchMoodPage<DailyEntry: View>: View {
                                         let cleaned = DivinationDraw.clean(value)
                                         if !cleaned.isEmpty { save(String(cleaned.prefix(DivinationDraw.maximumInputLength))) }
                                     }
-                                dailyEntry
+                                dailyEntry(false)
                             }
                         }.disabled(store.saving)
                         if store.failed {
@@ -101,7 +105,7 @@ struct WatchMoodPage<DailyEntry: View>: View {
                     } else {
                         Button { store.load() } label: { Label("重试", systemImage: "arrow.clockwise") }
                             .buttonStyle(.bordered)
-                        dailyEntry
+                        dailyEntry(false)
                     }
                 }.padding(.top, today == nil ? 4 : 20)
             }
@@ -110,6 +114,6 @@ struct WatchMoodPage<DailyEntry: View>: View {
 
     private func save(_ mood: String) {
         retryMood = mood
-        Task { await store.record(mood, companion: companion) }
+        Task { await store.record(mood) }
     }
 }

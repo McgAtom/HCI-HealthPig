@@ -117,12 +117,21 @@ struct WatchTodayView: View {
                     }
                 }.padding(.top, 3)
             }.tag(0)
-            WatchMoodPage(companion: store.companion, catalog: store.catalog) {
+            WatchMoodPage { compact in
                 NavigationLink { WatchDailyView(store: store, health: health) } label: {
                     let energy = health.rings?.energy()
-                    WatchCompactButton(title: store.todayClaim() != nil ? "已抽" : energy == 100 ? "可抽猪" : "抽猪",
-                                       symbol: "gift.fill")
-                    .accessibilityValue(energy.map { "能量 \($0)" } ?? "")
+                    let title = store.todayClaim() != nil ? "已抽" : energy == 100 ? "可抽猪" : "抽猪"
+                    if compact {
+                        Image(systemName: store.todayClaim() == nil ? "gift.fill" : "checkmark")
+                            .font(.callout.weight(.semibold)).foregroundStyle(PigTheme.cream)
+                            .frame(width: 30, height: 30).background(.black.opacity(0.72), in: Circle())
+                            .frame(width: 44, height: 44).contentShape(Rectangle())
+                            .accessibilityLabel(title)
+                            .accessibilityValue(energy.map { "能量 \($0)" } ?? "")
+                    } else {
+                        WatchCompactButton(title: title, symbol: "gift.fill")
+                            .accessibilityValue(energy.map { "能量 \($0)" } ?? "")
+                    }
                 }.buttonStyle(.plain).accessibilityIdentifier("daily.entry")
             }.tag(1)
         }.tabViewStyle(.verticalPage)

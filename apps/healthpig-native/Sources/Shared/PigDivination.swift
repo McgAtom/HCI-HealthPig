@@ -146,18 +146,16 @@ struct DivinationRecord: Codable, Equatable {
     func appearance(on day: String) -> DivinationArtwork {
         if let artwork { return artwork }
         let seed = (day + cardID).utf8.reduce(UInt32(2_166_136_261)) { ($0 ^ UInt32($1)) &* 16_777_619 }
-        return DivinationArtwork(seed: seed, pigID: nil)
+        return DivinationArtwork(seed: seed)
     }
 }
 
 struct DivinationArtwork: Codable, Equatable {
     enum Frame: Int, CaseIterable { case orbit, garden, dawn }
     let seed: UInt32
-    let pigID: String?
 
     var frame: Frame { Frame.allCases[Int(seed % UInt32(Frame.allCases.count))] }
-    var palette: Int { Int((seed >> 8) % 4) }
-    var ornament: Int { Int((seed >> 16) % 6) }
+    var ornament: Int { Int((seed >> 16) % 3) }
     var flipped: Bool { (seed >> 24) % 2 == 1 }
 }
 

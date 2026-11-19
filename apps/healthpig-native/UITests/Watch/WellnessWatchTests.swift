@@ -6,10 +6,22 @@ final class WellnessWatchTests: XCTestCase {
         shot.name = name; shot.lifetime = .keepAlways; add(shot)
     }
 
+    private func verifyCardFits(_ app: XCUIApplication) {
+        let title = app.staticTexts["divination.card-title"]
+        let prompt = app.staticTexts["divination.card-prompt"]
+        let gift = app.buttons["daily.entry"]
+        XCTAssertTrue(title.isHittable && prompt.exists)
+        XCTAssertTrue(gift.isHittable)
+        XCTAssertGreaterThanOrEqual(gift.frame.height, 44)
+        XCTAssertGreaterThanOrEqual(gift.frame.minY, app.frame.minY + 30)
+        XCTAssertLessThanOrEqual(prompt.frame.maxY, app.frame.maxY - 8)
+    }
+
     func testQuickMoodRevealsOneDailyCard() {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchEnvironment["HEALTHPIG_DIVINATION_TEST_SUITE"] = UUID().uuidString
+        app.launchEnvironment["HEALTHPIG_DIVINATION_TEST_ART_SEED"] = "0"
         app.launch()
         XCTAssertTrue(app.buttons["watch.companion"].waitForExistence(timeout: 12))
         app.swipeUp()
@@ -25,7 +37,8 @@ final class WellnessWatchTests: XCTestCase {
         XCTAssertTrue(["喘息", "边界", "松开"].contains(card.label))
         XCTAssertEqual(app.staticTexts["watch.mood-recorded"].label, "累")
         XCTAssertFalse(tired.exists)
-        screenshot(app, "watch-mood-card")
+        verifyCardFits(app)
+        screenshot(app, "oracle-orbit")
         let title = card.label
         app.terminate()
         app.launch()
@@ -39,6 +52,7 @@ final class WellnessWatchTests: XCTestCase {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchEnvironment["HEALTHPIG_DIVINATION_TEST_SUITE"] = UUID().uuidString
+        app.launchEnvironment["HEALTHPIG_DIVINATION_TEST_ART_SEED"] = "65536"
         app.launch()
         XCTAssertTrue(app.buttons["watch.companion"].waitForExistence(timeout: 12))
         app.swipeUp()
@@ -54,7 +68,26 @@ final class WellnessWatchTests: XCTestCase {
         XCTAssertTrue(card.waitForExistence(timeout: 8))
         XCTAssertTrue(["留下", "发光", "分享"].contains(card.label))
         XCTAssertEqual(app.staticTexts["watch.mood-recorded"].label, "今天很开心")
-        screenshot(app, "watch-custom-mood-card")
+        verifyCardFits(app)
+        screenshot(app, "oracle-garden")
+    }
+
+    func testDawnCardStillOpensDailyPig() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchEnvironment["HEALTHPIG_DIVINATION_TEST_SUITE"] = UUID().uuidString
+        app.launchEnvironment["HEALTHPIG_DIVINATION_TEST_ART_SEED"] = "16908287"
+        app.launch()
+        XCTAssertTrue(app.buttons["watch.companion"].waitForExistence(timeout: 12))
+        app.swipeUp()
+        let down = app.buttons["watch.mood.down"]
+        XCTAssertTrue(down.waitForExistence(timeout: 8))
+        down.tap()
+        XCTAssertTrue(app.staticTexts["divination.card-title"].waitForExistence(timeout: 8))
+        verifyCardFits(app)
+        screenshot(app, "oracle-dawn")
+        app.buttons["daily.entry"].tap()
+        XCTAssertTrue(app.staticTexts["daily.status"].waitForExistence(timeout: 8) || app.buttons["daily.wear"].exists)
     }
 
     func testWristSleepShowsTimesAndSchedulesOrReportsFailure() {
