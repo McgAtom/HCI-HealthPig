@@ -158,6 +158,30 @@ import Foundation
         check(nights == [420, 420, 420], "deduplicates overlap, excludes naps, selects one source")
         let wakeWindow = SleepSchedule.wakeWindow(now: noon, calendar: calendar)!
         let detailed = SleepSchedule.mainNights(timeline, now: noon, calendar: calendar)
+        let forecast = try JSONDecoder().decode(SleepForecast.self, from: Data(contentsOf:
+            root.appendingPathComponent("Resources/sleep-forecast.json")))
+        func forecastNight(_ offset: Int, _ start: Int, _ end: Int, _ minutes: Int) -> SleepSchedule.Night {
+            let day = calendar.startOfDay(for: calendar.date(byAdding: .day, value: -offset, to: wakeWindow.lowerBound)!)
+            return .init(start: day.addingTimeInterval(Double(start * 60)), end: day.addingTimeInterval(Double(end * 60)),
+                         asleepMinutes: minutes)
+        }
+        let forecastNights = [forecastNight(4, -75, 435, 455), forecastNight(3, 10, 460, 435), forecastNight(1, -55, 433, 405)]
+        let modelInput = SleepForecast.inputs(nights: forecastNights, wake: wakeWindow.lowerBound, now: noon, calendar: calendar)!
+        let expected = [435.0, 431.6666666666667, 20.548046676563253, 420, 405, -55, 435, 3, 1, 0]
+        check(modelInput.count == expected.count && zip(modelInput, expected).allSatisfy { abs($0 - $1) < 1e-10 },
+              "calendar lags and signed bedtime agree with Python fixture")
+        check(abs(forecast.estimate(modelInput)! - 426.3216977467062) < 1e-9,
+              "on-device boosted model reproduces scikit-learn on synthetic history")
+        check(forecast.predict(nights: forecastNights, wake: wakeWindow.lowerBound, now: noon, calendar: calendar)
+              == SleepForecast.Range(low: 315, high: 525), "round prediction range outward")
+        let unobserved = forecastNight(0, -90, 450, 450)
+        check(SleepForecast.inputs(nights: forecastNights + [unobserved], wake: wakeWindow.lowerBound, now: noon, calendar: calendar)
+              == modelInput, "ignore target-night observations")
+        check(forecast.predict(nights: Array(forecastNights.suffix(2)), wake: wakeWindow.lowerBound, now: noon, calendar: calendar) == nil,
+              "hide forecast when recent history is sparse")
+        let wakeDay = calendar.startOfDay(for: wakeWindow.lowerBound)
+        check(forecast.predict(nights: forecastNights, wake: wakeWindow.lowerBound, now: wakeDay, calendar: calendar) == nil,
+              "hide full-night forecast on the wake date")
         let recommended = SleepSchedule.recommend(nights: detailed, target: 480, latestWake: wakeWindow.upperBound,
                                                   now: noon, calendar: calendar)!
         check(recommended.nightsUsed == 3 && recommended.reservedMinutes == 510 && !recommended.fallsShort,

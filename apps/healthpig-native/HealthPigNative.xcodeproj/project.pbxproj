@@ -143,6 +143,12 @@
 			"path" = "Sources/Shared/SleepCompanion.swift";
 			"sourceTree" = "<group>";
 		};
+		"E322BB2B62A484E3E77385B8" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Sources/Shared/SleepForecast.swift";
+			"sourceTree" = "<group>";
+		};
 		"EA13D528A7B6ADCDBFD5F48F" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -287,6 +293,12 @@
 			"path" = "Resources/sleep-audit.json";
 			"sourceTree" = "<group>";
 		};
+		"0BD0048DFDF4262CE9EFA0CC" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.json";
+			"path" = "Resources/sleep-forecast.json";
+			"sourceTree" = "<group>";
+		};
 		"3C551A4C0543822E6C1BEF48" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "folder.assetcatalog";
@@ -397,6 +409,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "45848B03B8CD6851B1CCB7F4";
 		};
+		"DAFE9E426C5BE927993BCC6B" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "E322BB2B62A484E3E77385B8";
+		};
 		"A7274D9CC9E380064125D385" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "EA13D528A7B6ADCDBFD5F48F";
@@ -481,6 +497,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "0D2E789F8F106E3CECD38992";
 		};
+		"20AD5143D2A63B55195B1C64" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "0BD0048DFDF4262CE9EFA0CC";
+		};
 		"032E343FF0C0C060D603352D" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "3C551A4C0543822E6C1BEF48";
@@ -512,6 +532,7 @@
 				"03649D4BB5A784F76D54F6DC",
 				"2C556ABDDCDC59A019A2919B",
 				"858C3BAC32BE36256EC6BF6A",
+				"DAFE9E426C5BE927993BCC6B",
 				"A7274D9CC9E380064125D385",
 				"E6AD5A952C0E0CD4EA1E1BB1",
 				"F8C82C5FE166F1BDED93A2DC",
@@ -540,6 +561,7 @@
 				"75C8E8F446549D601CD20CDC",
 				"24AEB384A1737D0EDBDC851F",
 				"38EADD39F0FA4B72E9348096",
+				"20AD5143D2A63B55195B1C64",
 				"032E343FF0C0C060D603352D",
 			);
 			"runOnlyForDeploymentPostprocessing" = 0;
@@ -558,8 +580,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.13";
-				"CURRENT_PROJECT_VERSION" = "22";
+				"MARKETING_VERSION" = "0.8.14";
+				"CURRENT_PROJECT_VERSION" = "23";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -588,8 +610,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.13";
-				"CURRENT_PROJECT_VERSION" = "22";
+				"MARKETING_VERSION" = "0.8.14";
+				"CURRENT_PROJECT_VERSION" = "23";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -728,6 +750,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "45848B03B8CD6851B1CCB7F4";
 		};
+		"D02C761FA6EC4264DB8FD2D4" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "E322BB2B62A484E3E77385B8";
+		};
 		"075FA9181F9C70E4F748CFB3" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "EA13D528A7B6ADCDBFD5F48F";
@@ -788,6 +814,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "0D2E789F8F106E3CECD38992";
 		};
+		"4C9302F310AF79387EF9E82A" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "0BD0048DFDF4262CE9EFA0CC";
+		};
 		"61A6D5D946DF470E86F49C02" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "3C551A4C0543822E6C1BEF48";
@@ -819,6 +849,7 @@
 				"531F585DE855E794774DFF58",
 				"642DB91A2F05E0A5D8AF422B",
 				"702518C88AC3951A5D60E1CB",
+				"D02C761FA6EC4264DB8FD2D4",
 				"075FA9181F9C70E4F748CFB3",
 				"2BD08D3917DDD2DEAFBE888C",
 				"EB58C123C7FFA5D0819CE8CA",
@@ -841,6 +872,7 @@
 				"747745D11E55D0FA9D0E95B5",
 				"E29A1F96AC731348F6669813",
 				"CBE2F42A3F6128959A089632",
+				"4C9302F310AF79387EF9E82A",
 				"61A6D5D946DF470E86F49C02",
 			);
 			"runOnlyForDeploymentPostprocessing" = 0;
@@ -891,8 +923,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.13";
-				"CURRENT_PROJECT_VERSION" = "22";
+				"MARKETING_VERSION" = "0.8.14";
+				"CURRENT_PROJECT_VERSION" = "23";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -923,8 +955,8 @@
 				"CLANG_ENABLE_MODULES" = "YES";
 				"CODE_SIGN_STYLE" = "Automatic";
 				"DEVELOPMENT_TEAM" = "";
-				"MARKETING_VERSION" = "0.8.13";
-				"CURRENT_PROJECT_VERSION" = "22";
+				"MARKETING_VERSION" = "0.8.14";
+				"CURRENT_PROJECT_VERSION" = "23";
 				"GENERATE_INFOPLIST_FILE" = "YES";
 				"ENABLE_PREVIEWS" = "YES";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
@@ -1281,6 +1313,7 @@
 				"B46636AC74C98D32D380273B",
 				"69381CAF8441A4B20E38A647",
 				"45848B03B8CD6851B1CCB7F4",
+				"E322BB2B62A484E3E77385B8",
 				"EA13D528A7B6ADCDBFD5F48F",
 				"701DB36BE734D25531F8EC26",
 				"FCF3B8AE9AB8691B8EF1493F",
@@ -1326,6 +1359,7 @@
 				"3AA22D9BAE4294CA699A192A",
 				"FEF62D50B310D1A93148C549",
 				"0D2E789F8F106E3CECD38992",
+				"0BD0048DFDF4262CE9EFA0CC",
 				"3C551A4C0543822E6C1BEF48",
 			);
 			"name" = "Resources";

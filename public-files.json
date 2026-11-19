@@ -116,6 +116,7 @@
     "apps/healthpig-native/Resources/motion-model.json",
     "apps/healthpig-native/Resources/pig-catalog.json",
     "apps/healthpig-native/Resources/sleep-audit.json",
+    "apps/healthpig-native/Resources/sleep-forecast.json",
     "apps/healthpig-native/Sources/Phone/HealthPigPhoneApp.swift",
     "apps/healthpig-native/Sources/Phone/PhonePreviews.swift",
     "apps/healthpig-native/Sources/Phone/SleepPlanView.swift",
@@ -142,6 +143,7 @@
     "apps/healthpig-native/Sources/Shared/ResultViews.swift",
     "apps/healthpig-native/Sources/Shared/RingsViews.swift",
     "apps/healthpig-native/Sources/Shared/SleepCompanion.swift",
+    "apps/healthpig-native/Sources/Shared/SleepForecast.swift",
     "apps/healthpig-native/Sources/Shared/SleepPlanControls.swift",
     "apps/healthpig-native/Sources/Shared/SleepSchedule.swift",
     "apps/healthpig-native/Sources/Shared/TrendViews.swift",
@@ -171,6 +173,11 @@
     "apps/healthpig-native/tools/run_simulators.py",
     "apps/healthpig-native/tools/verify_watch_home.swift",
     "public-files.json",
+    "research/sleep-forecast/README.md",
+    "research/sleep-forecast/download.py",
+    "research/sleep-forecast/requirements.txt",
+    "research/sleep-forecast/results.json",
+    "research/sleep-forecast/train.py",
     "tools/check_public.py"
   ],
   "retired": [

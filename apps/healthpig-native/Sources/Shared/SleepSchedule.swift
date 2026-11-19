@@ -16,6 +16,7 @@ struct SleepSchedule {
         let latestWake: Date
         let usualBedtime, usualWake, typicalAsleepMinutes: Int?
         var goalWake: Date? = nil
+        var forecast: SleepForecast.Range? = nil
     }
 
     struct Proposal: Codable, Equatable {
@@ -135,9 +136,11 @@ struct SleepSchedule {
             })
             usualWake = median(typicalNights.map { clockMinutes($0.end, calendar: calendar) })
         }
+        let forecast = SleepForecast.bundled?.predict(nights: nights, wake: latestWake, now: now, calendar: calendar)
         let basis = Basis(targetMinutes: target, observedNights: typicalNights.count, latestWake: latestWake,
                           usualBedtime: usualBedtime.map { ($0 + 1440) % 1440 },
-                          usualWake: usualWake, typicalAsleepMinutes: durations.typicalDuration, goalWake: goalWake)
+                          usualWake: usualWake, typicalAsleepMinutes: durations.typicalDuration,
+                          goalWake: goalWake, forecast: forecast)
         func proposal(bedtime: Date, wake: Date) -> Proposal {
             let reserved = Int(wake.timeIntervalSince(bedtime) / 60)
             return Proposal(bedtime: bedtime, wake: wake, reservedMinutes: reserved, nightsUsed: nightsUsed,

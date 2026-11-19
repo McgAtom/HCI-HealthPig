@@ -80,6 +80,11 @@ private struct SleepPlanBasisView: View {
     var body: some View {
         PigScreen {
             if let basis = plan.basis {
+                if let forecast = basis.forecast {
+                    let range = SleepPlanSettings.duration(forecast.low) + "–" + SleepPlanSettings.duration(forecast.high)
+                    metric("沿用作息 · 实睡预测", range, symbol: "chart.line.uptrend.xyaxis")
+                        .accessibilityIdentifier("sleep.forecast")
+                }
                 if let goal = basis.goalWake {
                     let goalBed = goal.addingTimeInterval(-Double(basis.targetMinutes * 60))
                     metric("目标作息", SleepPlanSettings.clock(goalBed) + "–" + SleepPlanSettings.clock(goal), symbol: "calendar")

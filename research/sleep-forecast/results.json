@@ -1,0 +1,152 @@
+{
+  "dataset": {
+    "nethealth": {
+      "raw_rows": 333708,
+      "usable_nights": 271240,
+      "usable_people": 619
+    },
+    "uva": {
+      "revision": "3fe83300ca9726a1ff6755d235347bc63a976022",
+      "raw_rows": 35446,
+      "usable_nights": 27353,
+      "usable_people": 161
+    }
+  },
+  "features": [
+    "median_minutes",
+    "mean_minutes",
+    "sd_minutes",
+    "recent_two_mean",
+    "last_minutes",
+    "median_start",
+    "median_end",
+    "nights",
+    "last_gap",
+    "weekend"
+  ],
+  "train": {
+    "people": 364,
+    "nights": 149333
+  },
+  "calibration": {
+    "people": 61,
+    "nights": 26517,
+    "radius_minutes": 98
+  },
+  "validation": {
+    "median": {
+      "people": 61,
+      "nights": 25094,
+      "mae_minutes": 66.96070773890173,
+      "bias_minutes": 0.6951861002630111,
+      "median_baseline_mae": 66.96070773890173,
+      "improvement_minutes": 0.0,
+      "improvement_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "ridge": {
+      "people": 61,
+      "nights": 25094,
+      "mae_minutes": 63.96434045534143,
+      "bias_minutes": 4.773472631390822,
+      "median_baseline_mae": 66.96070773890173,
+      "improvement_minutes": 2.9963672835603026,
+      "improvement_ci95": [
+        2.0144605278597725,
+        3.9631680807615064
+      ]
+    },
+    "boosted_trees": {
+      "people": 61,
+      "nights": 25094,
+      "mae_minutes": 63.543418849586736,
+      "bias_minutes": 5.8496462852423265,
+      "median_baseline_mae": 66.96070773890173,
+      "improvement_minutes": 3.4172888893149898,
+      "improvement_ci95": [
+        2.7168522524029823,
+        4.144506337783934
+      ]
+    }
+  },
+  "selected": "boosted_trees",
+  "nethealth_test": {
+    "people": 122,
+    "nights": 50628,
+    "mae_minutes": 63.25895554699451,
+    "bias_minutes": 1.8275790990544571,
+    "median_baseline_mae": 67.15295883700719,
+    "improvement_minutes": 3.894003290012676,
+    "improvement_ci95": [
+      3.4470089759164337,
+      4.322697766054876
+    ],
+    "unrounded_interval_coverage": 0.7832819783519002
+  },
+  "uva_external": {
+    "people": 160,
+    "nights": 26031,
+    "mae_minutes": 58.054095631870624,
+    "bias_minutes": 6.696653380396658,
+    "median_baseline_mae": 60.73604548423034,
+    "improvement_minutes": 2.6819498523597236,
+    "improvement_ci95": [
+      2.289520727997049,
+      3.078232056562204
+    ],
+    "unrounded_interval_coverage": 0.8177941684914141
+  },
+  "activity_experiment": {
+    "train_nights": 135014,
+    "validation_sleep_only": {
+      "people": 61,
+      "nights": 22309,
+      "mae_minutes": 63.317873586931505,
+      "bias_minutes": 6.063935620231481,
+      "median_baseline_mae": 66.62407548523018,
+      "improvement_minutes": 3.3062018982986636,
+      "improvement_ci95": [
+        2.597995930525844,
+        4.054844329707498
+      ]
+    },
+    "validation_sleep_and_activity": {
+      "people": 61,
+      "nights": 22309,
+      "mae_minutes": 63.308301884210046,
+      "bias_minutes": 6.178515025650104,
+      "median_baseline_mae": 66.62407548523018,
+      "improvement_minutes": 3.3157736010201337,
+      "improvement_ci95": [
+        2.5554174199776467,
+        4.085268105282624
+      ]
+    },
+    "test_sleep_only": {
+      "people": 122,
+      "nights": 46844,
+      "mae_minutes": 62.9795903127222,
+      "bias_minutes": 1.7412237559483954,
+      "median_baseline_mae": 66.8293698232431,
+      "improvement_minutes": 3.8497795105208974,
+      "improvement_ci95": [
+        3.373645801834892,
+        4.2950871206204555
+      ]
+    },
+    "test_sleep_and_activity": {
+      "people": 122,
+      "nights": 46844,
+      "mae_minutes": 62.96217138276934,
+      "bias_minutes": 1.6978197048552826,
+      "median_baseline_mae": 66.8293698232431,
+      "improvement_minutes": 3.867198440473766,
+      "improvement_ci95": [
+        3.371704203741914,
+        4.318363954986428
+      ]
+    }
+  }
+}
