@@ -19,9 +19,9 @@ struct WatchSleepPlanView: View {
                         Label("设置失败", systemImage: "exclamationmark.circle").font(.subheadline)
                             .accessibilityIdentifier("sleep.alarm-failed")
                     }
-                }
+                }.padding(.top, 20)
             }
-        }.navigationTitle("今晚作息")
+        }.navigationTitle("睡眠计划")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { settings = true } label: { Image(systemName: "slider.horizontal.3").foregroundStyle(PigTheme.background) }
@@ -58,7 +58,7 @@ struct WatchSleepPlanView: View {
                 Button {
                     alarm.apply(SleepAlarmRequest(date: plan.wake))
                 } label: {
-                    Label(scheduled == nil ? "设闹钟" : "改闹钟", systemImage: "alarm.fill")
+                    Label((scheduled == nil ? "设 " : "改为 ") + SleepPlanSettings.clock(plan.wake) + " 闹钟", systemImage: "alarm.fill")
                 }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("sleep.set-alarm")
             }
             if let scheduled {

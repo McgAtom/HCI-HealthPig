@@ -103,6 +103,13 @@ final class WellnessWatchTests: XCTestCase {
         let scheduled = app.buttons["sleep.alarm-confirmed"]
         XCTAssertTrue(action.isHittable || scheduled.isHittable)
         screenshot(app, "watch-sleep-plan")
+        let basis = app.buttons["sleep.basis"]
+        XCTAssertTrue(basis.isHittable)
+        basis.tap()
+        let done = app.buttons["完成"]
+        XCTAssertTrue(done.waitForExistence(timeout: 8))
+        screenshot(app, "watch-sleep-basis")
+        done.tap()
         if scheduled.exists { scheduled.tap() }
         XCTAssertTrue(action.waitForExistence(timeout: 8)); action.tap()
         let failed = app.descendants(matching: .any).matching(identifier: "sleep.alarm-failed").firstMatch

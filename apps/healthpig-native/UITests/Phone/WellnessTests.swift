@@ -76,6 +76,12 @@ final class WellnessTests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "sleep.latest").firstMatch.exists)
         RunLoop.current.run(until: Date().addingTimeInterval(0.6))
         shot(app, "phone-sleep-plan")
+        let basis = app.buttons["sleep.basis"]
+        XCTAssertTrue(basis.isHittable)
+        basis.tap()
+        XCTAssertTrue(app.navigationBars["推荐依据"].waitForExistence(timeout: 8))
+        shot(app, "phone-sleep-basis")
+        open("完成", in: app)
         let alarm = app.buttons["sleep.set-watch-alarm"]
         if alarm.exists {
             alarm.tap()
@@ -89,7 +95,7 @@ final class WellnessTests: XCTestCase {
                           || app.descendants(matching: .any).matching(identifier: "sleep.alarm-confirmed").firstMatch.exists
                           || app.descendants(matching: .any).matching(identifier: "sleep.alarm-failed").firstMatch.exists)
         }
-        back("今晚作息", in: app)
+        back("睡眠计划", in: app)
         back("睡眠与作息", in: app)
         open("wellness.mood", in: app)
         XCTAssertFalse(app.buttons["divination.entry"].exists)

@@ -127,7 +127,7 @@ private struct SleepCompanionSnapshot: Codable {
     }
 
     private func valid(_ projection: SleepProjection?, now: Date, calendar: Calendar) -> SleepSchedule.Proposal? {
-        guard let projection, projection.revision == preferences.revision,
+        guard let projection, projection.plan.basis != nil, projection.revision == preferences.revision,
               SleepSchedule.wakeWindow(now: now, calendar: calendar)?.contains(projection.plan.wake) == true,
               projection.plan.bedtime.addingTimeInterval(60) > now else { return nil }
         return projection.plan

@@ -7,7 +7,7 @@ struct SleepWellnessView: View {
         PigScreen {
 #if os(iOS)
             NavigationLink { SleepPlanView(health: health) } label: {
-                WellnessTile("今晚作息", symbol: "moon.stars.fill", tint: PigTheme.cream)
+                WellnessTile("睡眠计划", symbol: "moon.stars.fill", tint: PigTheme.cream)
             }.buttonStyle(.plain).accessibilityIdentifier("wellness.sleep-plan")
 #endif
             if health.sleepStages.isEmpty {

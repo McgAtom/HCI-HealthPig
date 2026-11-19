@@ -11,10 +11,17 @@ struct SleepSchedule {
         let asleepMinutes: Int
     }
 
+    struct Basis: Codable, Equatable {
+        let targetMinutes, observedNights: Int
+        let latestWake: Date
+        let usualBedtime, usualWake, typicalAsleepMinutes: Int?
+    }
+
     struct Proposal: Codable, Equatable {
         let bedtime, wake: Date
         let reservedMinutes, nightsUsed: Int
         let fallsShort: Bool
+        var basis: Basis? = nil
     }
 
     static let targetRange = 420...540
@@ -88,48 +95,62 @@ struct SleepSchedule {
     }
 
     static func wakeWindow(now: Date, calendar: Calendar) -> ClosedRange<Date>? {
-        guard let tomorrow = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now)),
-              let start = clockDate(240, on: tomorrow, calendar: calendar),
-              let end = clockDate(720, on: tomorrow, calendar: calendar) else { return nil }
+        let midnight = calendar.startOfDay(for: now)
+        // Until the first supported wake time, keep planning the night that is still in progress.
+        let offset = clockMinutes(now, calendar: calendar) < 240 ? 0 : 1
+        guard let morning = calendar.date(byAdding: .day, value: offset, to: midnight),
+              let start = clockDate(240, on: morning, calendar: calendar),
+              let end = clockDate(720, on: morning, calendar: calendar) else { return nil }
         return start...end
     }
 
     static func recommend(nights: [Night], target: Int, latestWake: Date, now: Date,
                           calendar: Calendar = .current) -> Proposal? {
         guard let window = wakeWindow(now: now, calendar: calendar), window.contains(latestWake),
-              let evening = clockDate(1080, on: now, calendar: calendar) else { return nil }
-        let remaining = max(now, evening)
-        let firstBed = nextQuarter(remaining, calendar: calendar)
-        guard firstBed < latestWake else { return nil }
+              let eveningDay = calendar.date(byAdding: .day, value: -1, to: latestWake),
+              let evening = clockDate(1080, on: eveningDay, calendar: calendar) else { return nil }
+        let availableFrom = max(now, evening)
+        guard availableFrom.addingTimeInterval(60) <= latestWake else { return nil }
 
         let target = min(targetRange.upperBound, max(targetRange.lowerBound, target))
         let typicalNights = nights.filter { night in
             let start = clockMinutes(night.start, calendar: calendar)
-            return (start >= 1080 || start < 360) && clockMinutes(night.end, calendar: calendar) <= 720
+            return night.end <= evening &&
+                (start >= 1080 || start < 360) && clockMinutes(night.end, calendar: calendar) <= 720
         }
-        let showsRoutine = typicalNights.count >= 3
         let durations = SleepSchedule(target: target, nights: typicalNights.map(\.asleepMinutes))
-        let typicalWake = showsRoutine ? median(typicalNights.map { clockMinutes($0.end, calendar: calendar) }) : 450
-        let wakeCenter = clockDate(typicalWake, on: latestWake, calendar: calendar) ?? latestWake
-        let bedCenter: Date
-        if showsRoutine {
-            // Noon separates the prior evening from the morning, so midnight is continuous.
-            let usual = median(typicalNights.map { night in
+        let nightsUsed = durations.typicalDuration == nil ? 0 : typicalNights.count
+        var usualBedtime: Int?
+        var usualWake: Int?
+        if nightsUsed > 0 {
+            // Noon separates the prior evening from the morning on the clock.
+            usualBedtime = median(typicalNights.map { night in
                 let minutes = clockMinutes(night.start, calendar: calendar)
                 return minutes >= 720 ? minutes - 1440 : minutes
             })
-            let day = usual < 0 ? now : latestWake
-            bedCenter = clockDate((usual + 1440) % 1440, on: day, calendar: calendar) ?? evening
-        } else {
-            bedCenter = min(wakeCenter, latestWake).addingTimeInterval(-Double(target * 60))
+            usualWake = median(typicalNights.map { clockMinutes($0.end, calendar: calendar) })
+        }
+        let basis = Basis(targetMinutes: target, observedNights: typicalNights.count, latestWake: latestWake,
+                          usualBedtime: usualBedtime.map { ($0 + 1440) % 1440 },
+                          usualWake: usualWake, typicalAsleepMinutes: durations.typicalDuration)
+        func proposal(bedtime: Date, wake: Date) -> Proposal {
+            let reserved = Int(wake.timeIntervalSince(bedtime) / 60)
+            return Proposal(bedtime: bedtime, wake: wake, reservedMinutes: reserved, nightsUsed: nightsUsed,
+                            fallsShort: reserved < target, basis: basis)
         }
 
-        let availableMinutes = Int(latestWake.timeIntervalSince(firstBed) / 60)
-        if availableMinutes < target {
-            return Proposal(bedtime: firstBed, wake: latestWake, reservedMinutes: availableMinutes,
-                            nightsUsed: durations.typicalDuration == nil ? 0 : typicalNights.count, fallsShort: true)
+        let deadlineBedtime = latestWake.addingTimeInterval(-Double(target * 60))
+        if deadlineBedtime < availableFrom {
+            return proposal(bedtime: availableFrom, wake: latestWake)
+        }
+        guard let usualBedtime, let usualWake else {
+            return proposal(bedtime: deadlineBedtime, wake: latestWake)
         }
 
+        let bedCenterDay = usualBedtime < 0 ? eveningDay : latestWake
+        let bedCenter = clockDate((usualBedtime + 1440) % 1440, on: bedCenterDay, calendar: calendar) ?? evening
+        let wakeCenter = clockDate(usualWake, on: latestWake, calendar: calendar) ?? latestWake
+        let firstBed = min(nextQuarter(availableFrom, calendar: calendar), deadlineBedtime)
         var wakeDates = strideDates(from: window.lowerBound, through: latestWake)
         if wakeDates.last != latestWake { wakeDates.append(latestWake) }
         var best: (score: Double, plan: Proposal)?
@@ -140,8 +161,7 @@ struct SleepSchedule {
                 let timing = (abs(bedtime.timeIntervalSince(bedCenter)) + abs(wake.timeIntervalSince(wakeCenter))) / 60
                 let score = timing + 3 * Double(abs(minutes - durations.duration))
                 if best.map({ score < $0.score }) ?? true {
-                    best = (score, Proposal(bedtime: bedtime, wake: wake, reservedMinutes: minutes,
-                                            nightsUsed: showsRoutine ? typicalNights.count : 0, fallsShort: false))
+                    best = (score, proposal(bedtime: bedtime, wake: wake))
                 }
             }
         }

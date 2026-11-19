@@ -29,7 +29,7 @@ private struct PhoneSleepPlan: View {
                     }
                 } else { Label("暂无作息", systemImage: "moon.zzz").font(.headline) }
             }
-        }.navigationTitle("今晚作息").navigationBarTitleDisplayMode(.inline)
+        }.navigationTitle("睡眠计划").navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .tabBar)
     }
 
@@ -49,7 +49,7 @@ private struct PhoneSleepPlan: View {
                 }
                 if scheduled != plan.wake {
                     Button { sleep.request(plan.wake) } label: {
-                        Label("设到手表", systemImage: "applewatch")
+                        Label("设 " + SleepPlanSettings.clock(plan.wake) + " 手表闹钟", systemImage: "applewatch")
                     }.buttonStyle(PigPrimaryButton()).accessibilityIdentifier("sleep.set-watch-alarm")
                 }
                 if sleep.alarm?.failed == true {

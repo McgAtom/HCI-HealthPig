@@ -79,7 +79,8 @@ import Foundation
         check(phone.plan(nights: [], now: displayNow, calendar: displayCalendar) == baselinePlan,
               "phone displays the watch projection when record coverage ties")
         let personalPlan = SleepSchedule.Proposal(bedtime: baselinePlan.bedtime, wake: baselinePlan.wake,
-            reservedMinutes: baselinePlan.reservedMinutes, nightsUsed: 4, fallsShort: baselinePlan.fallsShort)
+            reservedMinutes: baselinePlan.reservedMinutes, nightsUsed: 4, fallsShort: baselinePlan.fallsShort,
+            basis: baselinePlan.basis)
         phone.project(personalPlan)
         watch.receive(phone.payload()!)
         check(watch.plan(nights: [], now: displayNow, calendar: displayCalendar) == personalPlan,
@@ -162,13 +163,30 @@ import Foundation
               "record timing and bounded wake reserve inform the recommendation")
         let zeroHistory = SleepSchedule.recommend(nights: [], target: 480, latestWake: wakeWindow.upperBound,
                                                 now: noon, calendar: calendar)!
-        check(zeroHistory.nightsUsed == 0 && SleepSchedule.clockMinutes(zeroHistory.wake, calendar: calendar) == 450,
-              "fallback uses an ordinary reference time and the target")
+        check(zeroHistory.nightsUsed == 0 && zeroHistory.wake == wakeWindow.upperBound
+              && zeroHistory.reservedMinutes == 480 && zeroHistory.basis?.observedNights == 0,
+              "fallback calculates back from the user's wake setting and target")
         let lateNow = SleepSchedule.clockDate(23 * 60 + 53, on: noon, calendar: calendar)!
         let short = SleepSchedule.recommend(nights: detailed, target: 480, latestWake: wakeWindow.lowerBound,
                                            now: lateNow, calendar: calendar)!
-        check(short.fallsShort && short.bedtime >= lateNow && short.wake == wakeWindow.lowerBound && short.reservedMinutes == 240,
+        check(short.fallsShort && short.bedtime >= lateNow && short.wake == wakeWindow.lowerBound && short.reservedMinutes == 247,
               "late-night plan reserves only the real remaining hours")
+        let afterMidnight = calendar.date(byAdding: .minute, value: 30, to: calendar.startOfDay(for: wakeWindow.lowerBound))!
+        let ongoing = SleepSchedule.Night(start: lateNow, end: afterMidnight, asleepMinutes: 36)
+        let tonight = SleepSchedule.recommend(nights: detailed + [ongoing], target: 480, latestWake: wakeWindow.lowerBound,
+                                              now: afterMidnight, calendar: calendar)!
+        check(calendar.isDate(tonight.wake, inSameDayAs: afterMidnight) && tonight.wake == wakeWindow.lowerBound
+              && tonight.bedtime == afterMidnight && tonight.reservedMinutes == 210,
+              "after midnight, keep the remaining part of the same night")
+        check(tonight.basis?.observedNights == recommended.basis?.observedNights
+              && recommended.basis?.typicalAsleepMinutes == 420,
+              "explanation uses only completed nights before the plan")
+        let daylight = SleepSchedule.wakeWindow(now: wakeWindow.lowerBound, calendar: calendar)!
+        check(!calendar.isDate(daylight.lowerBound, inSameDayAs: wakeWindow.lowerBound), "roll to next night after the first wake time")
+        let fewRecords = SleepSchedule.recommend(nights: Array(detailed.prefix(2)), target: 480,
+                                                latestWake: wakeWindow.upperBound, now: noon, calendar: calendar)!
+        check(fewRecords.nightsUsed == 0 && fewRecords.basis?.observedNights == 2 && fewRecords.wake == zeroHistory.wake,
+              "insufficient history is distinguished from an empty history without changing the fallback")
         let earlyLimit = wakeWindow.lowerBound.addingTimeInterval(127 * 60)
         let adjusted = SleepSchedule.recommend(nights: detailed, target: 480, latestWake: earlyLimit, now: noon, calendar: calendar)!
         check(adjusted.wake <= earlyLimit && adjusted.reservedMinutes >= 480 && !adjusted.fallsShort,
