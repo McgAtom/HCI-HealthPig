@@ -21,6 +21,23 @@ setup从归档提取必要的标签字典，并用已保存的划分摘要在本
 
 手表已经自带原部署模型。复训不会自动替换它；`export_deployed.py`重导出原冻结逻辑回归，需先有对应的训练结果与数值核对文件。新的候选应另建实验计划，不能继续根据已披露的测试结果选方案。
 
+## 作业四模型判断
+
+运行原生 App 时，直接打开 iPhone 底栏「判断」。排行与分布从随包的 `apps/healthpig-native/Resources/model-insights.json` 加载。
+
+如需从输入复算，先按上一节运行 `setup_capture24.py` 和 `prepare.py`。实验使用原部署模型 JSON 与冻结验证集。用 Python 3.11 执行：
+
+```sh
+.venv/bin/python -m pip install -r 04-model-insights/code/requirements.txt
+.venv/bin/python 04-model-insights/code/compute_importance.py \
+  --data 01-lesson-1/capture24-walking/data/shared-activity-data.csv \
+  --splits 01-lesson-1/capture24-walking/data/frozen-splits.json \
+  --model apps/healthpig-native/Resources/motion-model.json \
+  --output /tmp/healthpig-model-insights.json
+```
+
+核对 30 人、12,993 窗口、85.3261% 基线、24 项各 40 次的结果。图表数据为聚合结果。置换分数表示整批动作分类表现的变化。线上版本的个例字段为空，课程交付版含两条去标识示例。 [校园睡眠模型复现](research/sleep-forecast/README.md)
+
 ## 睡眠基线与公平性
 
 ```sh

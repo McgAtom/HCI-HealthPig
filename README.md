@@ -1,12 +1,18 @@
 # 走走猪猪 · 人机交互课程项目
 
-面向iOS生态的宠物养成式综合健康伙伴。以真实行动反哺原创猪猪，用可解释的状态与趋势支持轻松的健康习惯；课程当前阶段实现动作陪伴、系统记录、收藏与公平性解释，完整多维愿景见原生工程说明。
+走走猪猪是 iOS 与 watchOS 的健康陪伴应用。用户在腕上计步陪走、看睡眠计划，也能在手机上查看健康记录和动作模型的判断依据。
 
 ## 当前原生双端入口
 
-[apps/healthpig-native/](apps/healthpig-native/) 是当前watchOS／iOS第7.1版，支持养猪陪伴、系统三环资格、收藏与同步、健康记录、公开模型输入编辑及独立公平性审核。用Xcode打开其中工程，或按该目录README启动模拟器；不需要先下载训练数据。
+[原生工程 0.8.14](apps/healthpig-native/HealthPigNative.xcodeproj)可用 Xcode 打开。iPhone 选择 `HealthPigPhone`，Apple Watch 选择 `HealthPigWatch`。随包提供模型参数和图表数据，可直接运行。 [原生应用说明](apps/healthpig-native/README.md)
 
 历史目录保留原始模型实验与早期手表代码。公开Git记录实际导出时间，不用补造的提交日期代替早期本地迭代证据。
+
+## 作业四 · 模型判断
+
+iPhone 底栏「判断」展示腕部动作分类器使用的特征。首屏有五项代表输入，点击条形可查验证集分布和样本量。固定 CAPTURE-24 验证集包含 30 人、12,993 个窗口，基线平衡准确率为 85.3261%。24 项特征各置换 40 次，平均偏差的分数下降最多，为 42.69 个百分点。图表保留零线、负值和重复置换的范围。 [计算代码](04-model-insights/code/compute_importance.py) · [汇总数据](apps/healthpig-native/Resources/model-insights.json) · [复现说明](REPRODUCE.md#作业四模型判断)
+
+0.8.14 也在双端离线预测当晚实睡时长。NetHealth 留出测试的平均绝对误差为 63.26 分钟，UVA 外部验证为 58.05 分钟。作息计划按用户目标与时段约束生成。 [训练与结果](research/sleep-forecast/README.md)
 
 ## 历史内容
 
